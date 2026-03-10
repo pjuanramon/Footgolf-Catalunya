@@ -16,10 +16,8 @@ class Footer extends HTMLElement {
                         <img src="${imgPath}" alt="Footgolf Catalunya" style="height: 60px; width: auto; margin-bottom: 1rem;">
                         <p style="margin-bottom: 1rem; font-size: 0.9rem;">Fomentando el deporte, la competición y los valores del footgolf en nuestra región y más allá.</p>
                         <div class="social-links">
-                            <a href="#" class="social-icon" aria-label="Facebook">📘</a>
+                            <a href="https://www.facebook.com/footgolfcatalunya" target="_blank" class="social-icon" aria-label="Facebook">📘</a>
                             <a href="https://www.instagram.com/footgolf_catalunya/" target="_blank" class="social-icon" aria-label="Instagram">📸</a>
-                            <a href="#" class="social-icon" aria-label="Twitter">🐦</a>
-                            <a href="#" class="social-icon" aria-label="YouTube">▶️</a>
                         </div>
                     </div>
                     <div>

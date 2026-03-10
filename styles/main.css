@@ -375,11 +375,16 @@ ul {
 
 .event-card {
     display: flex;
-    background: rgba(255, 255, 255, 0.05);
+    background: white;
     border-radius: 0.5rem;
     overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border-color);
     transition: var(--transition);
+}
+
+.event-card.dark-section {
+    background: var(--bg-dark);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .event-card:hover {

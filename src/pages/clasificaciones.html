@@ -125,7 +125,9 @@
 
                         // Update table
                         body.innerHTML = '';
-                        data.forEach((player, index) => {
+                        const filteredData = data.filter(player => player.total > 0);
+
+                        filteredData.forEach((player, index) => {
                             const tr = document.createElement('tr');
                             tr.style.borderBottom = '1px solid #f1f5f9';
                             tr.style.transition = 'background 0.2s ease';
