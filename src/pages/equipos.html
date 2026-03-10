@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campeonato por Equipos - Footgolf Catalunya</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <script src="../../src/components/Navbar.js" defer></script>
+    <script src="../../src/components/Footer.js" defer></script>
+</head>
+
+<body>
+    <app-navbar></app-navbar>
+
+    <main>
+        <header class="page-header">
+            <h1 class="gradient-text">Campeonato por Equipos</h1>
+            <p>La competición más apasionante. Formad un equipo y demostrad quién domina el circuito catalán.</p>
+        </header>
+
+        <section class="section">
+            <div class="container layout-split">
+                <div class="split-image glass-box"
+                    style="padding: 3rem; text-align: center; border-radius: 1rem; display: flex; align-items: center; justify-content: center; background: url('../../public/images/teams-placeholder.jpg') center/cover; background-color: var(--bg-dark);">
+                    <h2 style="color: white; z-index: 10;">Formato Match Play</h2>
+                </div>
+                <div class="split-text text-fade-in">
+                    <h2 class="section-title" style="text-align: left;">Sistema de Competición</h2>
+                    <p>El Campeonato de Catalunya por Equipos es la prueba reina del año. Los clubes se enfrentan en
+                        formato <strong>Match Play</strong>, donde la estrategia de los capitanes es tan importante como
+                        la precisión de los jugadores.</p>
+                    <ul class="feature-list" style="margin-top: 2rem;">
+                        <li>Equipos de un mínimo de 6 jugadores y máximo de 12.</li>
+                        <li>Enfrentamientos directos: 2 partidos individuales y 2 por parejas (Foursome).</li>
+                        <li>Fase de grupos + Play-offs finales (Final Four).</li>
+                        <li>El ganador representará a Catalunya en el Campeonato de España.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="section teams-display">
+            <div class="container">
+                <h2 class="section-title">Equipos y Jugadores 2026</h2>
+                <div class="about-grid"
+                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+
+                    <!-- JABALI TEAM FOOTGOLF -->
+                    <div class="about-card"
+                        style="text-align: left; padding: 2.5rem; border: 1px solid var(--border-color);">
+                        <div class="icon" style="font-size: 3rem; margin-bottom: 1.5rem;">🐗</div>
+                        <h3 style="color: var(--primary-color); font-size: 1.5rem; margin-bottom: 1rem;">JABALI TEAM
+                            FOOTGOLF</h3>
+                        <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.5rem;">
+                            <li style="color: var(--text-light);">Fernando Martínez Guillamón</li>
+                            <li style="color: var(--text-light);">Gustavo Verse</li>
+                            <li style="font-weight: 700; color: var(--text-main);">Chema Martínez Guillamón <span
+                                    style="font-size: 0.75rem; background: var(--primary-color); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; margin-left: 0.5rem;">Capitán</span>
+                            </li>
+                            <li style="color: var(--text-light);">Nico García</li>
+                            <li style="color: var(--text-light);">Alberto Salazar Fernández</li>
+                        </ul>
+                    </div>
+
+                    <!-- Apex FootGolf -->
+                    <div class="about-card"
+                        style="text-align: left; padding: 2.5rem; border: 1px solid var(--border-color);">
+                        <div class="icon" style="font-size: 3rem; margin-bottom: 1.5rem;">⛰️</div>
+                        <h3 style="color: var(--secondary-color); font-size: 1.5rem; margin-bottom: 1rem;">Apex FootGolf
+                        </h3>
+                        <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.5rem;">
+                            <li style="font-weight: 700; color: var(--text-main);">Alberto Leiva Cañada <span
+                                    style="font-size: 0.75rem; background: var(--secondary-color); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; margin-left: 0.5rem;">Capitán</span>
+                            </li>
+                            <li style="color: var(--text-light);">Daniel Abril Amador</li>
+                            <li style="color: var(--text-light);">Xavi Leiva Cañada</li>
+                            <li style="color: var(--text-light);">Ivan Luengo Robles</li>
+                            <li style="color: var(--text-light);">Gastón Masuck Cardozo</li>
+                            <li style="color: var(--text-light);">David Tellez Viana</li>
+                            <li style="color: var(--text-light);">Juan Carlos</li>
+                            <li style="color: var(--text-light);">Jack Cid (hijo)</li>
+                        </ul>
+                    </div>
+
+                    <!-- BARCELONA FOOTGOLF -->
+                    <div class="about-card"
+                        style="text-align: left; padding: 2.5rem; border: 1px solid var(--border-color);">
+                        <div class="icon" style="font-size: 3rem; margin-bottom: 1.5rem;">🏙️</div>
+                        <h3 style="color: var(--bg-dark); font-size: 1.5rem; margin-bottom: 1rem;">BARCELONA FOOTGOLF
+                        </h3>
+                        <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.5rem;">
+                            <li style="color: var(--text-light);">Olivier TRESSENS</li>
+                            <li style="color: var(--text-light);">Jorge Santiago Buqueras</li>
+                            <li style="font-weight: 700; color: var(--text-main);">JuanRa Perez <span
+                                    style="font-size: 0.75rem; background: var(--bg-dark); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; margin-left: 0.5rem;">Capitán</span>
+                            </li>
+                            <li style="color: var(--text-light);">Eduardo Martin Rodriguez</li>
+                            <li style="color: var(--text-light);">Nicola Perra</li>
+                            <li style="color: var(--text-light);">Sergi Perez Vilar</li>
+                            <li style="color: var(--text-light);">Abisay Padilla</li>
+                        </ul>
+                    </div>
+
+                    <!-- AC Maktub FG -->
+                    <div class="about-card"
+                        style="text-align: left; padding: 2.5rem; border: 1px solid var(--border-color);">
+                        <div class="icon" style="font-size: 3rem; margin-bottom: 1.5rem;">🦅</div>
+                        <h3 style="color: #64748b; font-size: 1.5rem; margin-bottom: 1rem;">AC Maktub FG</h3>
+                        <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.5rem;">
+                            <li style="font-weight: 700; color: var(--text-main);">Marc Company <span
+                                    style="font-size: 0.75rem; background: #64748b; color: white; padding: 0.2rem 0.5rem; border-radius: 4px; margin-left: 0.5rem;">Capitán</span>
+                            </li>
+                            <li style="color: var(--text-light);">Albert Navarro</li>
+                            <li style="color: var(--text-light);">Sergi Pahisa</li>
+                            <li style="color: var(--text-light);">Mario Moron</li>
+                            <li style="color: var(--text-light);">Jordi Ortega</li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <app-footer></app-footer>
+</body>
+
+</html>

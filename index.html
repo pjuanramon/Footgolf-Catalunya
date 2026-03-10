@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Footgolf Catalunya</title>
+    <meta name="description"
+        content="Descubre el Footgolf en Catalunya. Participa en nuestros torneos, clasificaciones y únete a los mejores jugadores.">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css">
+    <script src="src/components/Navbar.js" defer></script>
+    <script src="src/components/Footer.js" defer></script>
+</head>
+
+<body>
+    <app-navbar></app-navbar>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero glass-effect">
+            <div class="hero-content">
+                <h1 class="gradient-text" style="color: white; -webkit-text-fill-color: initial;">Descubre el Footgolf
+                    en Catalunya</h1>
+                <p class="subtitle" style="color: #e2e8f0;">Un deporte para todos: divertido, social y al aire libre.
+                </p>
+                <div class="hero-buttons">
+                    <a href="src/pages/jugadores.html" class="btn btn-primary">Empieza a jugar</a>
+                    <a href="src/pages/calendario.html" class="btn btn-secondary"
+                        style="color: white; border-color: white;">Ver calendario 2026</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Qué es el Footgolf -->
+        <section class="section about">
+            <div class="container">
+                <h2 class="section-title">¿Qué es el Footgolf?</h2>
+                <div class="about-grid">
+                    <div class="about-card">
+                        <div class="icon">⚽⛳</div>
+                        <h3>Fusión Perfecta</h3>
+                        <p>Se juega con un balón de fútbol en un campo de golf adaptado con hoyos de 53 centímetros de
+                            diámetro.</p>
+                    </div>
+                    <div class="about-card">
+                        <div class="icon">🏆</div>
+                        <h3>Competitivo y Social</h3>
+                        <p>Un deporte inclusivo, ideal para todas las edades. Compite a nivel regional o disfruta con
+                            amigos.</p>
+                    </div>
+                    <div class="about-card">
+                        <div class="icon">🌿</div>
+                        <h3>Naturaleza Pura</h3>
+                        <p>Disfruta de espectaculares campos de golf, caminar al aire libre y paisajes inmejorables.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Nuestros Campos -->
+        <section class="section courses dark-section" style="background: var(--bg-dark); position: relative;">
+            <div class="container">
+                <h2 class="section-title" style="color: white; margin-bottom: 3rem;">Campos de Footgolf en Catalunya
+                </h2>
+                <p style="text-align: center; max-width: 800px; margin: 0 auto 4rem; color: #cbd5e1;">Catalunya cuenta
+                    con dos recorridos oficiales de primer nivel donde puedes practicar Footgolf. Ambos ofrecen entornos
+                    espectaculares, un diseño técnico y todas las facilidades para jugadores de cualquier nivel.</p>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 3rem;">
+                    <!-- Golf La Garriga -->
+                    <div class="course-card"
+                        style="background: rgba(255,255,255,0.05); border-radius: 1.5rem; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); transition: transform 0.3s ease;">
+                        <div
+                            style="height: 300px; background: url('public/images/LaGarriga_Golf.jpg') center/cover; position: relative;">
+                            <span
+                                style="position: absolute; bottom: 1rem; left: 1rem; background: var(--primary-color); color: white; padding: 0.4rem 1rem; border-radius: 2rem; font-size: 0.8rem; font-weight: 700;">📍
+                                LA GARRIGA</span>
+                        </div>
+                        <div style="padding: 2rem;">
+                            <h3 style="color: white; font-size: 1.5rem; margin-bottom: 1rem;">Golf La Garriga</h3>
+                            <p style="color: #94a3b8; font-size: 0.95rem; line-height: 1.6;">Fue el primer campo de
+                                Footgolf oficial en Catalunya. Ubicado en un entorno natural idílico a los pies del
+                                Montseny, ofrece un relieve técnico y una experiencia inmersiva única.</p>
+                        </div>
+                    </div>
+
+                    <!-- Golf La Roca -->
+                    <div class="course-card"
+                        style="background: rgba(255,255,255,0.05); border-radius: 1.5rem; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); transition: transform 0.3s ease;">
+                        <div
+                            style="height: 300px; background: url('public/images/LaRoca_foto.jpeg') center/cover; position: relative;">
+                            <span
+                                style="position: absolute; bottom: 1rem; left: 1rem; background: var(--secondary-color); color: white; padding: 0.4rem 1rem; border-radius: 2rem; font-size: 0.8rem; font-weight: 700;">📍
+                                LA ROCA</span>
+                        </div>
+                        <div style="padding: 2rem;">
+                            <h3 style="color: white; font-size: 1.5rem; margin-bottom: 1rem;">Golf La Roca</h3>
+                            <p style="color: #94a3b8; font-size: 0.95rem; line-height: 1.6;">Un impresionante recorrido
+                                de más de 2600 metros instalado dentro de un campo de golf. Con vistas estratégicas a
+                                Montserrat, destaca por su escala y un diseño que exige máxima precisión.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+
+        <!-- Calendario 2026 -->
+        <section class="section calendar dark-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title" style="color: white; margin-bottom: 0;">Próximos Torneos 2026</h2>
+                    <a href="src/pages/calendario.html" class="link-more btn btn-secondary"
+                        style="padding: 0.5rem 1rem; font-size: 0.9rem; color: white; border-color: rgba(255,255,255,0.3);">Ver
+                        Calendario Completo &rarr;</a>
+                </div>
+                <div class="calendar-grid">
+                    <div class="event-card">
+                        <span class="date"><span style="font-size: 1.5rem; display: block;">15</span>Mar</span>
+                        <div class="event-info">
+                            <h4>Etapa 3: La Roca</h4>
+                            <p>Individual</p>
+                        </div>
+                    </div>
+                    <div class="event-card">
+                        <span class="date"><span style="font-size: 1.5rem; display: block;">12</span>Abr</span>
+                        <div class="event-info">
+                            <h4>Etapa 4: La Roca</h4>
+                            <p>Individual</p>
+                        </div>
+                    </div>
+                    <div class="event-card">
+                        <span class="date" style="background: var(--secondary-color);"><span
+                                style="font-size: 1.5rem; display: block;">10</span>May</span>
+                        <div class="event-info">
+                            <h4>Camp. Equipos J1</h4>
+                            <p>La Roca</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Redes Sociales -->
+        <section class="section">
+            <div class="container" style="text-align: center;">
+                <h2 class="section-title">Síguenos en Redes</h2>
+                <p class="subtitle" style="margin-bottom: 2rem; color: var(--text-light);">Únete a la comunidad de
+                    Footgolf Catalunya y no te pierdas nada.</p>
+                <div style="display: flex; justify-content: center; gap: 1rem; margin-bottom: 3rem;">
+                    <a href="https://www.instagram.com/footgolf_catalunya/" target="_blank" class="social-btn"
+                        style="background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);">
+                        <span style="font-size: 1.5rem; color: white;">📸</span> <span
+                            style="color: white; font-weight: 600;">Instagram</span>
+                    </a>
+                    <a href="#" class="social-btn" style="background: black;">
+                        <span style="font-size: 1.5rem; color: white;">🎵</span> <span
+                            style="color: white; font-weight: 600;">TikTok</span>
+                    </a>
+                    <a href="#" class="social-btn" style="background: #FF0000;">
+                        <span style="font-size: 1.5rem; color: white;">▶️</span> <span
+                            style="color: white; font-weight: 600;">YouTube</span>
+                    </a>
+                    <a href="#" class="social-btn" style="background: #1877F2;">
+                        <span style="font-size: 1.5rem; color: white;">📘</span> <span
+                            style="color: white; font-weight: 600;">Facebook</span>
+                    </a>
+                </div>
+                <!-- Instagram Grid Mockup -->
+                <div
+                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; border-radius: 1rem; overflow: hidden;">
+                    <div style="aspect-ratio: 1/1; background: url('public/images/JOrge_golpeando.png') center/cover;">
+                    </div>
+                    <div style="aspect-ratio: 1/1; background: url('public/images/golf_la_roca.png') center/cover;">
+                    </div>
+                    <div style="aspect-ratio: 1/1; background: url('public/images/JOrge_golpeando.png') center/cover;">
+                    </div>
+                    <div style="aspect-ratio: 1/1; background: url('public/images/golf_la_garriga.png') center/cover;">
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+
+    <app-footer></app-footer>
+</body>
+
+</html>

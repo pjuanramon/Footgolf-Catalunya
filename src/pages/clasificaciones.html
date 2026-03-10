@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clasificaciones - Footgolf Catalunya</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <script src="../../src/components/Navbar.js" defer></script>
+    <script src="../../src/components/Footer.js" defer></script>
+</head>
+
+<body>
+    <app-navbar></app-navbar>
+
+    <main>
+        <header class="page-header">
+            <h1 class="gradient-text">Clasificaciones</h1>
+            <p>Ranking general y estadísticas de los jugadores en la temporada actual.</p>
+        </header>
+
+        <section class="section rankings">
+            <div class="container">
+                <div class="section-header"
+                    style="display: flex; flex-direction: column; align-items: flex-start; gap: 1rem; margin-bottom: 3rem;">
+                    <div>
+                        <h2 class="section-title" style="text-align: left; margin-bottom: 0.5rem;">Ranking Catalán 2026
+                        </h2>
+                        <p style="color: var(--text-light);">Clasificación oficial de la temporada tras la Etapa 2.</p>
+                    </div>
+
+                    <div class="category-selector"
+                        style="display: flex; gap: 0.5rem; background: #f1f5f9; padding: 0.4rem; border-radius: 9999px; border: 1px solid var(--border-color);">
+                        <button onclick="updateRanking('masculino')" id="btn-masculino" class="btn-cat active"
+                            style="border: none; background: var(--primary-color); color: white; padding: 0.5rem 1.5rem; border-radius: 9999px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">Masculino</button>
+                        <button onclick="updateRanking('rookie')" id="btn-rookie" class="btn-cat"
+                            style="border: none; background: transparent; color: var(--text-main); padding: 0.5rem 1.5rem; border-radius: 9999px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">Rookie</button>
+                        <button onclick="updateRanking('senior')" id="btn-senior" class="btn-cat"
+                            style="border: none; background: transparent; color: var(--text-main); padding: 0.5rem 1.5rem; border-radius: 9999px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">Senior</button>
+                    </div>
+                </div>
+
+                <div class="table-container"
+                    style="background: white; border-radius: 1.5rem; border: 1px solid var(--border-color); overflow: hidden; box-shadow: var(--shadow-sm);">
+                    <table id="ranking-table" class="leaderboard-table" style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr
+                                style="background: #f8fafc; text-align: left; border-bottom: 1px solid var(--border-color);">
+                                <th
+                                    style="padding: 1.25rem 1.5rem; font-weight: 700; font-size: 0.85rem; color: var(--text-light); text-transform: uppercase; width: 80px;">
+                                    Pos</th>
+                                <th
+                                    style="padding: 1.25rem 1.5rem; font-weight: 700; font-size: 0.85rem; color: var(--text-light); text-transform: uppercase;">
+                                    Jugador</th>
+                                <th
+                                    style="padding: 1.25rem 1.5rem; font-weight: 700; font-size: 0.85rem; color: var(--text-light); text-transform: uppercase; text-align: center;">
+                                    Etapa 1</th>
+                                <th
+                                    style="padding: 1.25rem 1.5rem; font-weight: 700; font-size: 0.85rem; color: var(--text-light); text-transform: uppercase; text-align: center;">
+                                    Etapa 2</th>
+                                <th
+                                    style="padding: 1.25rem 1.5rem; font-weight: 700; font-size: 0.85rem; color: var(--text-light); text-transform: uppercase; text-align: right;">
+                                    Puntos</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ranking-body">
+                            <!-- Injected by JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <script>
+                    const rankings = {
+                        masculino: [
+                            { pos: 1, name: "Jorge Santiago Buqueras", e1: 250, e2: 250, total: 500 },
+                            { pos: 2, name: "Sergi Pahisa", e1: 200, e2: 230, total: 430 },
+                            { pos: 3, name: "Xavi Leiva Cañada", e1: 230, e2: 190, total: 420 },
+                            { pos: 4, name: "Olivier TRESSENS", e1: 190, e2: 215, total: 405 },
+                            { pos: 5, name: "Chema Martínez Guillamon", e1: 215, e2: 165, total: 380 },
+                            { pos: 6, name: "JuanRa Perez", e1: 180, e2: 180, total: 360 },
+                            { pos: 7, name: "Alberto Leiva cañada", e1: 170, e2: 120, total: 290 },
+                            { pos: 8, name: "Mario Morón Sancho", e1: 125, e2: 130, total: 255 },
+                            { pos: 9, name: "ivan luengo robles", e1: 105, e2: 150, total: 255 },
+                            { pos: 10, name: "Daniel Abril Amador", e1: 85, e2: 165, total: 250 }
+                        ],
+                        rookie: [
+                            { pos: 1, name: "Sergi Pahisa", e1: 230, e2: 250, total: 480 },
+                            { pos: 2, name: "Xavi Leiva Cañada", e1: 250, e2: 215, total: 465 },
+                            { pos: 3, name: "Alberto Leiva cañada", e1: 215, e2: 160, total: 375 },
+                            { pos: 4, name: "Mario Morón Sancho", e1: 185, e2: 170, total: 355 },
+                            { pos: 5, name: "ivan luengo robles", e1: 165, e2: 190, total: 355 },
+                            { pos: 6, name: "Raúl Linares Ramos", e1: 165, e2: 180, total: 345 },
+                            { pos: 7, name: "Daniel Abril Amador", e1: 140, e2: 200, total: 340 },
+                            { pos: 8, name: "David Tellez Viana", e1: 200, e2: 120, total: 320 },
+                            { pos: 9, name: "Gustavo Verse", e1: 150, e2: 130, total: 280 },
+                            { pos: 10, name: "Eduardo Martin Rodriguez", e1: 0, e2: 230, total: 230 }
+                        ],
+                        senior: [
+                            { pos: 1, name: "Olivier TRESSENS", e1: 250, e2: 250, total: 500 },
+                            { pos: 2, name: "Raúl Linares Ramos", e1: 230, e2: 230, total: 460 },
+                            { pos: 3, name: "Gustavo Verse", e1: 215, e2: 190, total: 405 },
+                            { pos: 4, name: "Fernando Martínez Guillamón", e1: 200, e2: 200, total: 400 },
+                            { pos: 5, name: "David Linares Ramos", e1: 0, e2: 215, total: 215 },
+                            { pos: 6, name: "Giacomo Bonacini", e1: 0, e2: 180, total: 180 },
+                            { pos: 7, name: "Jorge Santiago Buqueras", e1: 0, e2: 0, total: 0 },
+                            { pos: 8, name: "Chema Martínez Guillamon", e1: 0, e2: 0, total: 0 },
+                            { pos: 9, name: "JuanRa Perez", e1: 0, e2: 0, total: 0 },
+                            { pos: 10, name: "Xavi Leiva Cañada", e1: 0, e2: 0, total: 0 }
+                        ]
+                    };
+
+                    function updateRanking(category) {
+                        const body = document.getElementById('ranking-body');
+                        const data = rankings[category];
+
+                        // Update buttons
+                        document.querySelectorAll('.btn-cat').forEach(btn => {
+                            btn.style.background = 'transparent';
+                            btn.style.color = 'var(--text-main)';
+                        });
+                        const activeBtn = document.getElementById('btn-' + category);
+                        activeBtn.style.background = 'var(--primary-color)';
+                        activeBtn.style.color = 'white';
+
+                        // Update table
+                        body.innerHTML = '';
+                        data.forEach((player, index) => {
+                            const tr = document.createElement('tr');
+                            tr.style.borderBottom = '1px solid #f1f5f9';
+                            tr.style.transition = 'background 0.2s ease';
+                            tr.onmouseover = () => tr.style.background = '#f8fafc';
+                            tr.onmouseout = () => tr.style.background = 'transparent';
+
+                            const posColor = player.pos === 1 ? '#f59e0b' : player.pos === 2 ? '#94a3b8' : player.pos === 3 ? '#b45309' : 'var(--text-main)';
+                            const posWeight = player.pos <= 3 ? '800' : '500';
+
+                            tr.innerHTML = `
+                                <td style="padding: 1.25rem 1.5rem; font-weight: ${posWeight}; color: ${posColor};">#${player.pos}</td>
+                                <td style="padding: 1.25rem 1.5rem; font-weight: 600; color: var(--text-main);">${player.name}</td>
+                                <td style="padding: 1.25rem 1.5rem; text-align: center; color: var(--text-light); font-size: 0.9rem;">${player.e1}</td>
+                                <td style="padding: 1.25rem 1.5rem; text-align: center; color: var(--text-light); font-size: 0.9rem;">${player.e2}</td>
+                                <td style="padding: 1.25rem 1.5rem; text-align: right; font-weight: 700; color: var(--primary-color);">${player.total} pts</td>
+                            `;
+                            body.appendChild(tr);
+                        });
+                    }
+
+                    // Initial load
+                    updateRanking('masculino');
+                </script>
+            </div>
+        </section>
+    </main>
+
+    <app-footer></app-footer>
+</body>
+
+</html>
