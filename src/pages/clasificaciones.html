@@ -16,7 +16,8 @@
             left: 0;
             z-index: 10;
             background: #f8fafc;
-            min-width: 80px;
+            min-width: 60px;
+            width: 60px;
         }
 
         .leaderboard-table td:nth-child(1) {
@@ -26,10 +27,14 @@
         .leaderboard-table th:nth-child(2),
         .leaderboard-table td:nth-child(2) {
             position: sticky;
-            left: 80px;
+            left: 60px;
             z-index: 10;
             background: #f8fafc;
             border-right: 1px solid var(--border-color);
+            max-width: 140px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .leaderboard-table td:nth-child(2) {
@@ -104,7 +109,7 @@
                             <tr
                                 style="background: #f8fafc; text-align: left; border-bottom: 1px solid var(--border-color);">
                                 <th
-                                    style="padding: 1.25rem 1.5rem; font-weight: 700; font-size: 0.85rem; color: var(--text-light); text-transform: uppercase; width: 80px;">
+                                    style="padding: 1.25rem 1rem; font-weight: 700; font-size: 0.85rem; color: var(--text-light); text-transform: uppercase; width: 60px; text-align: center;">
                                     Pos</th>
                                 <th
                                     style="padding: 1.25rem 1.5rem; font-weight: 700; font-size: 0.85rem; color: var(--text-light); text-transform: uppercase;">
