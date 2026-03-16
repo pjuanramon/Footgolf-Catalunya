@@ -9,6 +9,62 @@
     <link rel="stylesheet" href="../../styles/main.css">
     <script src="/js/Navbar.js" defer></script>
     <script src="/js/Footer.js" defer></script>
+    <style>
+        .leaderboard-table th:nth-child(1),
+        .leaderboard-table td:nth-child(1) {
+            position: sticky;
+            left: 0;
+            z-index: 10;
+            background: #f8fafc;
+            min-width: 80px;
+        }
+
+        .leaderboard-table td:nth-child(1) {
+            background: white;
+        }
+
+        .leaderboard-table th:nth-child(2),
+        .leaderboard-table td:nth-child(2) {
+            position: sticky;
+            left: 80px;
+            z-index: 10;
+            background: #f8fafc;
+            border-right: 1px solid var(--border-color);
+        }
+
+        .leaderboard-table td:nth-child(2) {
+            background: white;
+        }
+
+        /* Shadow effect for sticky columns */
+        .leaderboard-table th:nth-child(2)::after,
+        .leaderboard-table td:nth-child(2)::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: -8px;
+            width: 8px;
+            height: 100%;
+            background: linear-gradient(to right, rgba(0, 0, 0, 0.05), transparent);
+            pointer-events: none;
+        }
+
+        .scroll-hint {
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-light);
+            font-size: 0.85rem;
+            margin-bottom: 0.75rem;
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .scroll-hint {
+                display: flex;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -36,9 +92,14 @@
                     </div>
                 </div>
 
-                <div class="table-container"
-                    style="background: white; border-radius: 1.5rem; border: 1px solid var(--border-color); overflow: hidden; box-shadow: var(--shadow-sm);">
-                    <table id="ranking-table" class="leaderboard-table" style="width: 100%; border-collapse: collapse;">
+                    <div class="scroll-hint">
+                        <span>↔️ Desliza lateralmente para ver todas las jornadas</span>
+                    </div>
+
+                    <div class="table-container"
+                        style="background: white; border-radius: 1.5rem; border: 1px solid var(--border-color); overflow-x: auto; -webkit-overflow-scrolling: touch; box-shadow: var(--shadow-sm);">
+                        <table id="ranking-table" class="leaderboard-table"
+                            style="width: 100%; border-collapse: separate; border-spacing: 0; min-width: 700px;">
                         <thead>
                             <tr
                                 style="background: #f8fafc; text-align: left; border-bottom: 1px solid var(--border-color);">
@@ -50,6 +111,9 @@
                                     Jugador</th>
                                 <th
                                     style="padding: 1.25rem 1.5rem; font-weight: 700; font-size: 0.85rem; color: var(--text-light); text-transform: uppercase; text-align: center;">
+                                    Puntos</th>
+                                <th
+                                    style="padding: 1.25rem 1.5rem; font-weight: 700; font-size: 0.85rem; color: var(--text-light); text-transform: uppercase; text-align: center;">
                                     J1</th>
                                 <th
                                     style="padding: 1.25rem 1.5rem; font-weight: 700; font-size: 0.85rem; color: var(--text-light); text-transform: uppercase; text-align: center;">
@@ -57,9 +121,6 @@
                                 <th
                                     style="padding: 1.25rem 1.5rem; font-weight: 700; font-size: 0.85rem; color: var(--text-light); text-transform: uppercase; text-align: center;">
                                     J3</th>
-                                <th
-                                    style="padding: 1.25rem 1.5rem; font-weight: 700; font-size: 0.85rem; color: var(--text-light); text-transform: uppercase; text-align: right;">
-                                    Puntos</th>
                             </tr>
                         </thead>
                         <tbody id="ranking-body">
@@ -144,10 +205,10 @@
                             tr.innerHTML = `
                                 <td style="padding: 1.25rem 1.5rem; font-weight: ${posWeight}; color: ${posColor};">#${player.pos}</td>
                                 <td style="padding: 1.25rem 1.5rem; font-weight: 600; color: var(--text-main);">${player.name}</td>
+                                <td style="padding: 1.25rem 1.5rem; text-align: center; font-weight: 700; color: var(--primary-color);">${player.total} pts</td>
                                 <td style="padding: 1.25rem 1.5rem; text-align: center; color: var(--text-light); font-size: 0.9rem;">${player.e1}</td>
                                 <td style="padding: 1.25rem 1.5rem; text-align: center; color: var(--text-light); font-size: 0.9rem;">${player.e2}</td>
                                 <td style="padding: 1.25rem 1.5rem; text-align: center; color: var(--text-light); font-size: 0.9rem;">${player.e3}</td>
-                                <td style="padding: 1.25rem 1.5rem; text-align: right; font-weight: 700; color: var(--primary-color);">${player.total} pts</td>
                             `;
                             body.appendChild(tr);
                         });

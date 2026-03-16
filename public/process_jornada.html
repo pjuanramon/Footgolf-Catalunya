@@ -122,7 +122,7 @@
                     { pos: 46, name: "cristian debon viñas", e1: 0, e2: 0, total: 0 },
                     { pos: 47, name: "guillermo Beroy Álvarez", e1: 0, e2: 0, total: 0 }
                 ],
-                senior: [
+                senior45: [
                     { pos: 1, name: "Olivier TRESSENS", e1: 250, e2: 250, total: 500 },
                     { pos: 2, name: "Raúl Linares Ramos", e1: 230, e2: 230, total: 460 },
                     { pos: 3, name: "Gustavo Verse", e1: 215, e2: 190, total: 405 },
@@ -167,6 +167,9 @@
                     { pos: 42, name: "adria alonso marti", e1: 0, e2: 0, total: 0 },
                     { pos: 43, name: "cristian debon viñas", e1: 0, e2: 0, total: 0 },
                     { pos: 44, name: "guillermo Beroy Álvarez", e1: 0, e2: 0, total: 0 }
+                ],
+                senior55: [
+                    { pos: 1, name: "Gustavo Verse", e1: 250, e2: 250, total: 500 }
                 ]
             };
         }
@@ -176,7 +179,8 @@
             if (targetCategory === 'Absoluta') searchCat = 'masculino';
             // Improved mapping
             if (targetCategory === 'Rookie') searchCat = 'rookie';
-            else if (targetCategory.includes('Senior')) searchCat = 'senior';
+            else if (targetCategory === 'Senior 55 +') searchCat = 'senior55';
+            else if (targetCategory.includes('Senior')) searchCat = 'senior45';
 
             const catData = historical[searchCat];
             if (!catData) return null;
