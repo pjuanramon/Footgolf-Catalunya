@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+</head>
+
+<body>
+    <div id="status">Processing...</div>
+    <div id="output" style="white-space: pre-wrap; font-family: monospace;"></div>
+    <script>
+        // Configuration
+        const JORNADA_NUM = 3;
+        const UNLICENSED = ["jordi pascual", "toni sanchez", "hugo vazquez", "dani vazquez", "joel marco", "santiago jimenez", "jordi martin", "alejandro rodriguez", "fcb"];
+        const NON_ROOKIES = ["jorge santiago buqueras", "olivier tressens", "chema martinez guillamon", "juanra perez", "fernando martinez guillamon", "sergi perez vilar", "nicola perra", "jesus pizarro gonzalvez", "giacomo bonacini", "alberto salazar fernandez", "joan torre rodriguez"];
+
+        // Exact points table
+        const POINTS_TABLE = [0, 250, 230, 215, 200, 190, 180, 170, 160, 150, 140, 130, 120, 110, 100, 95, 90, 85, 80, 75, 70, 66, 62, 58, 54, 50, 47, 44, 41, 38, 35, 33, 31, 29, 27, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0, 0];
+
+        function normalizeName(name) {
+            if (!name) return "";
+            return name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, " ").trim();
+        }
+
+        async function fetchHistorical() {
+            return {
+                masculino: [
+                    { pos: 1, name: "Jorge Santiago Buqueras", e1: 250, e2: 250, total: 500 },
+                    { pos: 2, name: "Sergi Pahisa", e1: 200, e2: 230, total: 430 },
+                    { pos: 3, name: "Xavi Leiva Cañada", e1: 230, e2: 190, total: 420 },
+                    { pos: 4, name: "Olivier TRESSENS", e1: 190, e2: 215, total: 405 },
+                    { pos: 5, name: "Chema Martínez Guillamon", e1: 215, e2: 165, total: 380 },
+                    { pos: 6, name: "JuanRa Perez", e1: 180, e2: 180, total: 360 },
+                    { pos: 7, name: "Alberto Leiva cañada", e1: 170, e2: 120, total: 290 },
+                    { pos: 8, name: "Mario Morón Sancho", e1: 125, e2: 130, total: 255 },
+                    { pos: 9, name: "ivan luengo robles", e1: 105, e2: 150, total: 255 },
+                    { pos: 10, name: "Daniel Abril Amador", e1: 85, e2: 165, total: 250 },
+                    { pos: 11, name: "Raúl Linares Ramos", e1: 105, e2: 140, total: 245 },
+                    { pos: 12, name: "David Tellez Viana", e1: 145, e2: 80, total: 225 },
+                    { pos: 13, name: "Eduardo Martin Rodriguez", e1: 0, e2: 200, total: 200 },
+                    { pos: 14, name: "Fernando Martínez Guillamón", e1: 90, e2: 100, total: 190 },
+                    { pos: 15, name: "Gustavo Verse", e1: 95, e2: 85, total: 180 },
+                    { pos: 16, name: "Sergi Perez Vilar", e1: 160, e2: 0, total: 160 },
+                    { pos: 17, name: "Nicola Perra", e1: 145, e2: 0, total: 145 },
+                    { pos: 18, name: "Juan Medina", e1: 75, e2: 62, total: 137 },
+                    { pos: 19, name: "Luca Rubinacci", e1: 70, e2: 66, total: 136 },
+                    { pos: 20, name: "Gastón Masuck Cardozo", e1: 125, e2: 0, total: 125 },
+                    { pos: 21, name: "David Linares Ramos", e1: 0, e2: 110, total: 110 },
+                    { pos: 22, name: "Marc Company Salvat", e1: 0, e2: 92, total: 92 },
+                    { pos: 23, name: "Erik Mata", e1: 0, e2: 92, total: 92 },
+                    { pos: 24, name: "Jesús Pizarro Gonzálvez", e1: 80, e2: 0, total: 80 },
+                    { pos: 25, name: "Jordi Ortega López", e1: 0, e2: 75, total: 75 },
+                    { pos: 26, name: "Giacomo Bonacini", e1: 0, e2: 70, total: 70 },
+                    { pos: 27, name: "Lucía Bernuz Culebras", e1: 0, e2: 0, total: 0 },
+                    { pos: 28, name: "Alberto Salazar Fernández", e1: 0, e2: 0, total: 0 },
+                    { pos: 29, name: "benito reyes gonzalez", e1: 0, e2: 0, total: 0 },
+                    { pos: 30, name: "Alex Trallero Domec", e1: 0, e2: 0, total: 0 },
+                    { pos: 31, name: "Marc Arrebola Sans", e1: 0, e2: 0, total: 0 },
+                    { pos: 32, name: "Sergi Nerin Velasco", e1: 0, e2: 0, total: 0 },
+                    { pos: 33, name: "Joan Torre Rodríguez", e1: 0, e2: 0, total: 0 },
+                    { pos: 34, name: "Pau Blas Molina", e1: 0, e2: 0, total: 0 },
+                    { pos: 35, name: "David Cortés Segura", e1: 0, e2: 0, total: 0 },
+                    { pos: 36, name: "Aleix Martínez Muñoz", e1: 0, e2: 0, total: 0 },
+                    { pos: 37, name: "Albert Arrebola Sans", e1: 0, e2: 0, total: 0 },
+                    { pos: 38, name: "Guillem Moya Niubó", e1: 0, e2: 0, total: 0 },
+                    { pos: 39, name: "Jack Cid", e1: 0, e2: 0, total: 0 },
+                    { pos: 40, name: "Jack Cid Barberá", e1: 0, e2: 0, total: 0 },
+                    { pos: 41, name: "David Gallego", e1: 0, e2: 0, total: 0 },
+                    { pos: 42, name: "David Rojo Dengra", e1: 0, e2: 0, total: 0 },
+                    { pos: 43, name: "Aitor Martin Maldonado", e1: 0, e2: 0, total: 0 },
+                    { pos: 44, name: "Xavier Altimira Gómez", e1: 0, e2: 0, total: 0 },
+                    { pos: 45, name: "adria alonso marti", e1: 0, e2: 0, total: 0 },
+                    { pos: 46, name: "cristian debon viñas", e1: 0, e2: 0, total: 0 },
+                    { pos: 47, name: "guillermo Beroy Álvarez", e1: 0, e2: 0, total: 0 }
+                ],
+                rookie: [
+                    { pos: 1, name: "Sergi Pahisa", e1: 230, e2: 250, total: 480 },
+                    { pos: 2, name: "Xavi Leiva Cañada", e1: 250, e2: 215, total: 465 },
+                    { pos: 3, name: "Alberto Leiva cañada", e1: 215, e2: 160, total: 375 },
+                    { pos: 4, name: "Mario Morón Sancho", e1: 185, e2: 170, total: 355 },
+                    { pos: 5, name: "ivan luengo robles", e1: 165, e2: 190, total: 355 },
+                    { pos: 6, name: "Raúl Linares Ramos", e1: 165, e2: 180, total: 345 },
+                    { pos: 7, name: "Daniel Abril Amador", e1: 140, e2: 200, total: 340 },
+                    { pos: 8, name: "David Tellez Viana", e1: 200, e2: 120, total: 320 },
+                    { pos: 9, name: "Gustavo Verse", e1: 150, e2: 130, total: 280 },
+                    { pos: 10, name: "Eduardo Martin Rodriguez", e1: 0, e2: 230, total: 230 },
+                    { pos: 11, name: "Juan Medina", e1: 130, e2: 95, total: 225 },
+                    { pos: 12, name: "Luca Rubinacci", e1: 120, e2: 100, total: 220 },
+                    { pos: 13, name: "Gastón Masuck Cardozo", e1: 185, e2: 0, total: 185 },
+                    { pos: 14, name: "Marc Company Salvat", e1: 0, e2: 145, total: 145 },
+                    { pos: 15, name: "Erik Mata", e1: 0, e2: 145, total: 145 },
+                    { pos: 16, name: "Jordi Ortega López", e1: 0, e2: 110, total: 110 },
+                    { pos: 17, name: "Olivier TRESSENS", e1: 0, e2: 0, total: 0 },
+                    { pos: 18, name: "Fernando Martínez Guillamón", e1: 0, e2: 0, total: 0 },
+                    { pos: 19, name: "Jorge Santiago Buqueras", e1: 0, e2: 0, total: 0 },
+                    { pos: 20, name: "Chema Martínez Guillamon", e1: 0, e2: 0, total: 0 },
+                    { pos: 21, name: "JuanRa Perez", e1: 0, e2: 0, total: 0 },
+                    { pos: 22, name: "Alberto Salazar Fernández", e1: 0, e2: 0, total: 0 },
+                    { pos: 23, name: "benito reyes gonzalez", e1: 0, e2: 0, total: 0 },
+                    { pos: 24, name: "David Linares Ramos", e1: 0, e2: 0, total: 0 },
+                    { pos: 25, name: "Jesús Pizarro Gonzálvez", e1: 0, e2: 0, total: 0 },
+                    { pos: 26, name: "Sergi Perez Vilar", e1: 0, e2: 0, total: 0 },
+                    { pos: 27, name: "Alex Trallero Domec", e1: 0, e2: 0, total: 0 },
+                    { pos: 28, name: "Nicola Perra", e1: 0, e2: 0, total: 0 },
+                    { pos: 29, name: "Marc Arrebola Sans", e1: 0, e2: 0, total: 0 },
+                    { pos: 30, name: "Sergi Nerin Velasco", e1: 0, e2: 0, total: 0 },
+                    { pos: 31, name: "Lucía Bernuz Culebras", e1: 0, e2: 0, total: 0 },
+                    { pos: 32, name: "Joan Torre Rodríguez", e1: 0, e2: 0, total: 0 },
+                    { pos: 33, name: "Giacomo Bonacini", e1: 0, e2: 0, total: 0 },
+                    { pos: 34, name: "Pau Blas Molina", e1: 0, e2: 0, total: 0 },
+                    { pos: 35, name: "David Cortés Segura", e1: 0, e2: 0, total: 0 },
+                    { pos: 36, name: "Aleix Martínez Muñoz", e1: 0, e2: 0, total: 0 },
+                    { pos: 37, name: "Albert Arrebola Sans", e1: 0, e2: 0, total: 0 },
+                    { pos: 38, name: "Guillem Moya Niubó", e1: 0, e2: 0, total: 0 },
+                    { pos: 39, name: "Jack Cid", e1: 0, e2: 0, total: 0 },
+                    { pos: 40, name: "Jack Cid Barberá", e1: 0, e2: 0, total: 0 },
+                    { pos: 41, name: "David Gallego", e1: 0, e2: 0, total: 0 },
+                    { pos: 42, name: "David Rojo Dengra", e1: 0, e2: 0, total: 0 },
+                    { pos: 43, name: "Aitor Martin Maldonado", e1: 0, e2: 0, total: 0 },
+                    { pos: 44, name: "Xavier Altimira Gómez", e1: 0, e2: 0, total: 0 },
+                    { pos: 45, name: "adria alonso marti", e1: 0, e2: 0, total: 0 },
+                    { pos: 46, name: "cristian debon viñas", e1: 0, e2: 0, total: 0 },
+                    { pos: 47, name: "guillermo Beroy Álvarez", e1: 0, e2: 0, total: 0 }
+                ],
+                senior: [
+                    { pos: 1, name: "Olivier TRESSENS", e1: 250, e2: 250, total: 500 },
+                    { pos: 2, name: "Raúl Linares Ramos", e1: 230, e2: 230, total: 460 },
+                    { pos: 3, name: "Gustavo Verse", e1: 215, e2: 190, total: 405 },
+                    { pos: 4, name: "Fernando Martínez Guillamón", e1: 200, e2: 200, total: 400 },
+                    { pos: 5, name: "David Linares Ramos", e1: 0, e2: 215, total: 215 },
+                    { pos: 6, name: "Giacomo Bonacini", e1: 0, e2: 180, total: 180 },
+                    { pos: 7, name: "Jorge Santiago Buqueras", e1: 0, e2: 0, total: 0 },
+                    { pos: 8, name: "Chema Martínez Guillamon", e1: 0, e2: 0, total: 0 },
+                    { pos: 9, name: "JuanRa Perez", e1: 0, e2: 0, total: 0 },
+                    { pos: 10, name: "Xavi Leiva Cañada", e1: 0, e2: 0, total: 0 },
+                    { pos: 11, name: "Eduardo Martin Rodriguez", e1: 0, e2: 0, total: 0 },
+                    { pos: 12, name: "Alberto Leiva cañada", e1: 0, e2: 0, total: 0 },
+                    { pos: 13, name: "Alberto Salazar Fernández", e1: 0, e2: 0, total: 0 },
+                    { pos: 14, name: "benito reyes gonzalez", e1: 0, e2: 0, total: 0 },
+                    { pos: 15, name: "David Tellez Viana", e1: 0, e2: 0, total: 0 },
+                    { pos: 16, name: "Jesús Pizarro Gonzálvez", e1: 0, e2: 0, total: 0 },
+                    { pos: 17, name: "Sergi Pahisa", e1: 0, e2: 0, total: 0 },
+                    { pos: 18, name: "ivan luengo robles", e1: 0, e2: 0, total: 0 },
+                    { pos: 19, name: "Sergi Perez Vilar", e1: 0, e2: 0, total: 0 },
+                    { pos: 20, name: "Daniel Abril Amador", e1: 0, e2: 0, total: 0 },
+                    { pos: 21, name: "Mario Morón Sancho", e1: 0, e2: 0, total: 0 },
+                    { pos: 22, name: "Marc Company Salvat", e1: 0, e2: 0, total: 0 },
+                    { pos: 23, name: "Alex Trallero Domec", e1: 0, e2: 0, total: 0 },
+                    { pos: 24, name: "Nicola Perra", e1: 0, e2: 0, total: 0 },
+                    { pos: 25, name: "Marc Arrebola Sans", e1: 0, e2: 0, total: 0 },
+                    { pos: 26, name: "Sergi Nerin Velasco", e1: 0, e2: 0, total: 0 },
+                    { pos: 27, name: "Gastón Masuck Cardozo", e1: 0, e2: 0, total: 0 },
+                    { pos: 28, name: "Lucía Bernuz Culebras", e1: 0, e2: 0, total: 0 },
+                    { pos: 29, name: "Joan Torre Rodríguez", e1: 0, e2: 0, total: 0 },
+                    { pos: 30, name: "Pau Blas Molina", e1: 0, e2: 0, total: 0 },
+                    { pos: 31, name: "David Cortés Segura", e1: 0, e2: 0, total: 0 },
+                    { pos: 32, name: "Aleix Martínez Muñoz", e1: 0, e2: 0, total: 0 },
+                    { pos: 33, name: "Albert Arrebola Sans", e1: 0, e2: 0, total: 0 },
+                    { pos: 34, name: "Guillem Moya Niubó", e1: 0, e2: 0, total: 0 },
+                    { pos: 35, name: "Jack Cid", e1: 0, e2: 0, total: 0 },
+                    { pos: 36, name: "Jack Cid Barberá", e1: 0, e2: 0, total: 0 },
+                    { pos: 37, name: "David Gallego", e1: 0, e2: 0, total: 0 },
+                    { pos: 38, name: "Juan Medina", e1: 0, e2: 0, total: 0 },
+                    { pos: 39, name: "David Rojo Dengra", e1: 0, e2: 0, total: 0 },
+                    { pos: 40, name: "Aitor Martin Maldonado", e1: 0, e2: 0, total: 0 },
+                    { pos: 41, name: "Xavier Altimira Gómez", e1: 0, e2: 0, total: 0 },
+                    { pos: 42, name: "adria alonso marti", e1: 0, e2: 0, total: 0 },
+                    { pos: 43, name: "cristian debon viñas", e1: 0, e2: 0, total: 0 },
+                    { pos: 44, name: "guillermo Beroy Álvarez", e1: 0, e2: 0, total: 0 }
+                ]
+            };
+        }
+
+        function getHistoricalPlayer(normName, targetCategory, historical) {
+            let searchCat = 'masculino';
+            if (targetCategory === 'Absoluta') searchCat = 'masculino';
+            // Improved mapping
+            if (targetCategory === 'Rookie') searchCat = 'rookie';
+            else if (targetCategory.includes('Senior')) searchCat = 'senior';
+
+            const catData = historical[searchCat];
+            if (!catData) return null;
+
+            return catData.find(p => normalizeName(p.name) === normName);
+        }
+
+        async function run() {
+            try {
+                const hist = await fetchHistorical();
+
+                const res = await fetch('/docs/jornada_3.xlsx');
+                const buf = await res.arrayBuffer();
+                const wb = XLSX.read(buf, { type: 'array' });
+                const sheet = wb.Sheets[wb.SheetNames[0]];
+                const data = XLSX.utils.sheet_to_json(sheet, { header: "A", defval: "" });
+
+                const rows = data.slice(1); // skip visual header
+
+                let players = [];
+                rows.forEach(row => {
+                    const rawName = String(row['D'] || "").trim();
+                    if (!rawName) return;
+
+                    const f = String(row['F']).trim().toUpperCase();
+                    const didNotPlay = (f === 'NO' || f === '');
+                    if (!rawName) return;
+
+                    const normName = normalizeName(rawName);
+                    const isUnlicensed = UNLICENSED.some(u => normName.includes(normalizeName(u)));
+                    if (isUnlicensed) return;
+
+                    const isNonRookie = NON_ROOKIES.some(nr => normalizeName(nr) === normName);
+
+                    let score = row['Y'];
+                    if (score === "" || score === undefined) score = 0;
+                    else score = Number(score);
+
+                    let cats = ["Absoluta"];
+                    if (!isNonRookie) cats.push("Rookie");
+
+                    let excelCat = String(row['C'] || "").trim();
+                    if (excelCat.toLowerCase() === "caballeros" || excelCat.toLowerCase() === "masculina") {
+                        excelCat = "";
+                    }
+                    if (excelCat && !cats.includes(excelCat)) cats.push(excelCat);
+
+                    players.push({ rawName, normName, isUnlicensed: false, score, categories: cats, didNotPlay });
+                });
+
+                let catGroups = {};
+                players.forEach(p => {
+                    p.categories.forEach(c => {
+                        if (!catGroups[c]) catGroups[c] = [];
+                        // Clone to avoid overwriting jornadaRank between categories
+                        catGroups[c].push({ ...p });
+                    });
+                });
+
+                let finalResults = {};
+                let tieDetected = null;
+
+                for (const cat in catGroups) {
+                    let presentPlayers = catGroups[cat].filter(p => !p.didNotPlay);
+                    let absentPlayers = catGroups[cat].filter(p => p.didNotPlay);
+
+                    let sorted = presentPlayers.sort((a, b) => a.score - b.score);
+
+                    let groupedByScore = [];
+                    sorted.forEach(p => {
+                        if (groupedByScore.length > 0 && groupedByScore[groupedByScore.length - 1].score === p.score) {
+                            groupedByScore[groupedByScore.length - 1].players.push(p);
+                        } else {
+                            groupedByScore.push({ score: p.score, players: [p] });
+                        }
+                    });
+
+                    let currentRank = 1;
+                    let processedPlayers = [];
+
+                    for (let group of groupedByScore) {
+                        let licensed = group.players.filter(p => !p.isUnlicensed);
+                        let unlicensed = group.players.filter(p => p.isUnlicensed);
+
+                        if (licensed.length > 1) {
+                            // Manual Tie Resoluion
+                            let isResolvedTie = false;
+
+                            // Absoluta: Jorge 1st (-9), Eduardo 2nd (-9)
+                            if (group.score === -9 && licensed.length === 2 &&
+                                licensed.some(p => p.normName === "jorge santiago buqueras") &&
+                                licensed.some(p => p.normName === "eduardo martin rodriguez")) {
+
+                                isResolvedTie = true;
+                                let jorge = licensed.find(p => p.normName === "jorge santiago buqueras");
+                                let eduardo = licensed.find(p => p.normName === "eduardo martin rodriguez");
+                                licensed = [jorge, eduardo];
+                            }
+
+                            // Rookie: Ivan 2nd (-3), Daniel 3rd (-3)
+                            if (group.score === -3 && licensed.length === 2 &&
+                                licensed.some(p => p.normName === "ivan luengo robles") &&
+                                licensed.some(p => p.normName === "daniel abril amador")) {
+
+                                isResolvedTie = true;
+                                // Enforce Ivan > Daniel
+                                let ivan = licensed.find(p => p.normName === "ivan luengo robles");
+                                let daniel = licensed.find(p => p.normName === "daniel abril amador");
+                                licensed = [ivan, daniel];
+                            }
+
+                            if (currentRank <= 3 && !isResolvedTie) {
+                                tieDetected = {
+                                    category: cat,
+                                    scores: group.score,
+                                    players: licensed.map(p => p.rawName),
+                                    positions: `${currentRank} to ${currentRank + licensed.length - 1}`
+                                };
+                                break;
+                            }
+
+                            if (isResolvedTie) {
+                                // Assign specific points for 1st and 2nd
+                                licensed.forEach((p, idx) => {
+                                    p.jornadaRank = currentRank + idx;
+                                    p.jornadaPoints = POINTS_TABLE[currentRank + idx] || 0;
+                                    processedPlayers.push(p);
+                                });
+                            } else {
+                                // Average points for non-top-3 ties
+                                let totalPts = 0;
+                                for (let i = 0; i < licensed.length; i++) {
+                                    totalPts += (POINTS_TABLE[currentRank + i] || 0);
+                                }
+                                let avgPts = totalPts / licensed.length;
+
+                                licensed.forEach(p => {
+                                    p.jornadaRank = currentRank;
+                                    p.jornadaPoints = avgPts;
+                                    processedPlayers.push(p);
+                                });
+                            }
+
+                            unlicensed.forEach(p => {
+                                p.jornadaRank = currentRank;
+                                p.jornadaPoints = 0;
+                                processedPlayers.push(p);
+                            });
+
+                            currentRank += licensed.length;
+                        } else if (licensed.length === 1) {
+                            let p = licensed[0];
+                            p.jornadaRank = currentRank;
+                            p.jornadaPoints = POINTS_TABLE[currentRank] || 0;
+                            processedPlayers.push(p);
+
+                            unlicensed.forEach(up => {
+                                up.jornadaRank = currentRank;
+                                up.jornadaPoints = 0;
+                                processedPlayers.push(up);
+                            });
+
+                            currentRank += 1;
+                        } else {
+                            unlicensed.forEach(up => {
+                                up.jornadaRank = currentRank;
+                                up.jornadaPoints = 0;
+                                processedPlayers.push(up);
+                            });
+                        }
+                    }
+
+                    absentPlayers.forEach(p => {
+                        p.jornadaRank = null;
+                        p.jornadaPoints = 0;
+                        processedPlayers.push(p);
+                    });
+
+                    if (tieDetected) break;
+
+                    processedPlayers.forEach(p => {
+                        let histP = getHistoricalPlayer(p.normName, cat, hist);
+                        let e1 = histP ? (histP.e1 || 0) : 0;
+                        let e2 = histP ? (histP.e2 || 0) : 0;
+                        let e3 = p.jornadaPoints;
+
+                        let scoresArray = [e1, e2, e3].sort((a, b) => b - a);
+                        let best8 = scoresArray.slice(0, 8).reduce((sum, val) => sum + val, 0);
+
+                        p.history = { e1, e2, e3 };
+                        p.total = best8;
+                    });
+
+                    processedPlayers.sort((a, b) => b.total - a.total);
+
+                    processedPlayers.forEach((p, idx) => {
+                        p.pos = idx + 1;
+                    });
+
+                    finalResults[cat] = processedPlayers.map(p => ({
+                        pos: p.pos,
+                        name: p.rawName,
+                        e1: p.history.e1,
+                        e2: p.history.e2,
+                        e3: p.history.e3,
+                        total: p.total,
+                        isUnlicensed: p.isUnlicensed
+                    }));
+                }
+
+                if (tieDetected) {
+                    document.getElementById('status').textContent = "TIE_DETECTED";
+                    document.getElementById('output').textContent = JSON.stringify(tieDetected, null, 2);
+                } else {
+                    document.getElementById('status').textContent = "SUCCESS";
+                    document.getElementById('output').textContent = JSON.stringify({
+                        jornada: JORNADA_NUM,
+                        categorias: finalResults
+                    }, null, 2);
+                }
+
+            } catch (e) {
+                document.getElementById('status').textContent = "ERROR";
+                document.getElementById('output').textContent = e.stack || e.toString();
+            }
+        }
+        run();
+    </script>
+</body>
+
+</html>

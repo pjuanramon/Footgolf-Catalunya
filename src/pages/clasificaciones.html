@@ -30,14 +30,9 @@
                         <p style="color: var(--text-light);">Clasificación oficial de la temporada tras la Etapa 2.</p>
                     </div>
 
-                    <div class="category-selector"
-                        style="display: flex; gap: 0.5rem; background: #f1f5f9; padding: 0.4rem; border-radius: 9999px; border: 1px solid var(--border-color);">
-                        <button onclick="updateRanking('masculino')" id="btn-masculino" class="btn-cat active"
-                            style="border: none; background: var(--primary-color); color: white; padding: 0.5rem 1.5rem; border-radius: 9999px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">Masculino</button>
-                        <button onclick="updateRanking('rookie')" id="btn-rookie" class="btn-cat"
-                            style="border: none; background: transparent; color: var(--text-main); padding: 0.5rem 1.5rem; border-radius: 9999px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">Rookie</button>
-                        <button onclick="updateRanking('senior')" id="btn-senior" class="btn-cat"
-                            style="border: none; background: transparent; color: var(--text-main); padding: 0.5rem 1.5rem; border-radius: 9999px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">Senior</button>
+                    <div class="category-selector" id="category-buttons"
+                        style="display: flex; gap: 0.5rem; background: #f1f5f9; padding: 0.4rem; border-radius: 9999px; border: 1px solid var(--border-color); flex-wrap: wrap;">
+                        <!-- Buttons injected by JS -->
                     </div>
                 </div>
 
@@ -55,10 +50,13 @@
                                     Jugador</th>
                                 <th
                                     style="padding: 1.25rem 1.5rem; font-weight: 700; font-size: 0.85rem; color: var(--text-light); text-transform: uppercase; text-align: center;">
-                                    Etapa 1</th>
+                                    J1</th>
                                 <th
                                     style="padding: 1.25rem 1.5rem; font-weight: 700; font-size: 0.85rem; color: var(--text-light); text-transform: uppercase; text-align: center;">
-                                    Etapa 2</th>
+                                    J2</th>
+                                <th
+                                    style="padding: 1.25rem 1.5rem; font-weight: 700; font-size: 0.85rem; color: var(--text-light); text-transform: uppercase; text-align: center;">
+                                    J3</th>
                                 <th
                                     style="padding: 1.25rem 1.5rem; font-weight: 700; font-size: 0.85rem; color: var(--text-light); text-transform: uppercase; text-align: right;">
                                     Puntos</th>
@@ -71,171 +69,69 @@
                 </div>
 
                 <script>
-                    const rankings = {
-                        masculino: [
-                            { pos: 1, name: "Jorge Santiago Buqueras", e1: 250, e2: 250, total: 500 },
-                            { pos: 2, name: "Sergi Pahisa", e1: 200, e2: 230, total: 430 },
-                            { pos: 3, name: "Xavi Leiva Cañada", e1: 230, e2: 190, total: 420 },
-                            { pos: 4, name: "Olivier TRESSENS", e1: 190, e2: 215, total: 405 },
-                            { pos: 5, name: "Chema Martínez Guillamon", e1: 215, e2: 165, total: 380 },
-                            { pos: 6, name: "JuanRa Perez", e1: 180, e2: 180, total: 360 },
-                            { pos: 7, name: "Alberto Leiva cañada", e1: 170, e2: 120, total: 290 },
-                            { pos: 8, name: "Mario Morón Sancho", e1: 125, e2: 130, total: 255 },
-                            { pos: 9, name: "ivan luengo robles", e1: 105, e2: 150, total: 255 },
-                            { pos: 10, name: "Daniel Abril Amador", e1: 85, e2: 165, total: 250 },
-                            { pos: 11, name: "Raúl Linares Ramos", e1: 105, e2: 140, total: 245 },
-                            { pos: 12, name: "David Tellez Viana", e1: 145, e2: 80, total: 225 },
-                            { pos: 13, name: "Eduardo Martin Rodriguez", e1: 0, e2: 200, total: 200 },
-                            { pos: 14, name: "Fernando Martínez Guillamón", e1: 90, e2: 100, total: 190 },
-                            { pos: 15, name: "Gustavo Verse", e1: 95, e2: 85, total: 180 },
-                            { pos: 16, name: "Sergi Perez Vilar", e1: 160, e2: 0, total: 160 },
-                            { pos: 17, name: "Nicola Perra", e1: 145, e2: 0, total: 145 },
-                            { pos: 18, name: "Juan Medina", e1: 75, e2: 62, total: 137 },
-                            { pos: 19, name: "Luca Rubinacci", e1: 70, e2: 66, total: 136 },
-                            { pos: 20, name: "Gastón Masuck Cardozo", e1: 125, e2: 0, total: 125 },
-                            { pos: 21, name: "David Linares Ramos", e1: 0, e2: 110, total: 110 },
-                            { pos: 22, name: "Marc Company Salvat", e1: 0, e2: 92, total: 92 },
-                            { pos: 23, name: "Erik Mata", e1: 0, e2: 92, total: 92 },
-                            { pos: 24, name: "Jesús Pizarro Gonzálvez", e1: 80, e2: 0, total: 80 },
-                            { pos: 25, name: "Jordi Ortega López", e1: 0, e2: 75, total: 75 },
-                            { pos: 26, name: "Giacomo Bonacini", e1: 0, e2: 70, total: 70 },
-                            { pos: 27, name: "Lucía Bernuz Culebras", e1: 0, e2: 0, total: 0 },
-                            { pos: 28, name: "Alberto Salazar Fernández", e1: 0, e2: 0, total: 0 },
-                            { pos: 29, name: "benito reyes gonzalez", e1: 0, e2: 0, total: 0 },
-                            { pos: 30, name: "Alex Trallero Domec", e1: 0, e2: 0, total: 0 },
-                            { pos: 31, name: "Marc Arrebola Sans", e1: 0, e2: 0, total: 0 },
-                            { pos: 32, name: "Sergi Nerin Velasco", e1: 0, e2: 0, total: 0 },
-                            { pos: 33, name: "Joan Torre Rodríguez", e1: 0, e2: 0, total: 0 },
-                            { pos: 34, name: "Pau Blas Molina", e1: 0, e2: 0, total: 0 },
-                            { pos: 35, name: "David Cortés Segura", e1: 0, e2: 0, total: 0 },
-                            { pos: 36, name: "Aleix Martínez Muñoz", e1: 0, e2: 0, total: 0 },
-                            { pos: 37, name: "Albert Arrebola Sans", e1: 0, e2: 0, total: 0 },
-                            { pos: 38, name: "Guillem Moya Niubó", e1: 0, e2: 0, total: 0 },
-                            { pos: 39, name: "Jack Cid", e1: 0, e2: 0, total: 0 },
-                            { pos: 40, name: "Jack Cid Barberá", e1: 0, e2: 0, total: 0 },
-                            { pos: 41, name: "David Gallego", e1: 0, e2: 0, total: 0 },
-                            { pos: 42, name: "David Rojo Dengra", e1: 0, e2: 0, total: 0 },
-                            { pos: 43, name: "Aitor Martin Maldonado", e1: 0, e2: 0, total: 0 },
-                            { pos: 44, name: "Xavier Altimira Gómez", e1: 0, e2: 0, total: 0 },
-                            { pos: 45, name: "adria alonso marti", e1: 0, e2: 0, total: 0 },
-                            { pos: 46, name: "cristian debon viñas", e1: 0, e2: 0, total: 0 },
-                            { pos: 47, name: "guillermo Beroy Álvarez", e1: 0, e2: 0, total: 0 }
-                        ],
-                        rookie: [
-                            { pos: 1, name: "Sergi Pahisa", e1: 230, e2: 250, total: 480 },
-                            { pos: 2, name: "Xavi Leiva Cañada", e1: 250, e2: 215, total: 465 },
-                            { pos: 3, name: "Alberto Leiva cañada", e1: 215, e2: 160, total: 375 },
-                            { pos: 4, name: "Mario Morón Sancho", e1: 185, e2: 170, total: 355 },
-                            { pos: 5, name: "ivan luengo robles", e1: 165, e2: 190, total: 355 },
-                            { pos: 6, name: "Raúl Linares Ramos", e1: 165, e2: 180, total: 345 },
-                            { pos: 7, name: "Daniel Abril Amador", e1: 140, e2: 200, total: 340 },
-                            { pos: 8, name: "David Tellez Viana", e1: 200, e2: 120, total: 320 },
-                            { pos: 9, name: "Gustavo Verse", e1: 150, e2: 130, total: 280 },
-                            { pos: 10, name: "Eduardo Martin Rodriguez", e1: 0, e2: 230, total: 230 },
-                            { pos: 11, name: "Juan Medina", e1: 130, e2: 95, total: 225 },
-                            { pos: 12, name: "Luca Rubinacci", e1: 120, e2: 100, total: 220 },
-                            { pos: 13, name: "Gastón Masuck Cardozo", e1: 185, e2: 0, total: 185 },
-                            { pos: 14, name: "Marc Company Salvat", e1: 0, e2: 145, total: 145 },
-                            { pos: 15, name: "Erik Mata", e1: 0, e2: 145, total: 145 },
-                            { pos: 16, name: "Jordi Ortega López", e1: 0, e2: 110, total: 110 },
-                            { pos: 17, name: "Olivier TRESSENS", e1: 0, e2: 0, total: 0 },
-                            { pos: 18, name: "Fernando Martínez Guillamón", e1: 0, e2: 0, total: 0 },
-                            { pos: 19, name: "Jorge Santiago Buqueras", e1: 0, e2: 0, total: 0 },
-                            { pos: 20, name: "Chema Martínez Guillamon", e1: 0, e2: 0, total: 0 },
-                            { pos: 21, name: "JuanRa Perez", e1: 0, e2: 0, total: 0 },
-                            { pos: 22, name: "Alberto Salazar Fernández", e1: 0, e2: 0, total: 0 },
-                            { pos: 23, name: "benito reyes gonzalez", e1: 0, e2: 0, total: 0 },
-                            { pos: 24, name: "David Linares Ramos", e1: 0, e2: 0, total: 0 },
-                            { pos: 25, name: "Jesús Pizarro Gonzálvez", e1: 0, e2: 0, total: 0 },
-                            { pos: 26, name: "Sergi Perez Vilar", e1: 0, e2: 0, total: 0 },
-                            { pos: 27, name: "Alex Trallero Domec", e1: 0, e2: 0, total: 0 },
-                            { pos: 28, name: "Nicola Perra", e1: 0, e2: 0, total: 0 },
-                            { pos: 29, name: "Marc Arrebola Sans", e1: 0, e2: 0, total: 0 },
-                            { pos: 30, name: "Sergi Nerin Velasco", e1: 0, e2: 0, total: 0 },
-                            { pos: 31, name: "Lucía Bernuz Culebras", e1: 0, e2: 0, total: 0 },
-                            { pos: 32, name: "Joan Torre Rodríguez", e1: 0, e2: 0, total: 0 },
-                            { pos: 33, name: "Giacomo Bonacini", e1: 0, e2: 0, total: 0 },
-                            { pos: 34, name: "Pau Blas Molina", e1: 0, e2: 0, total: 0 },
-                            { pos: 35, name: "David Cortés Segura", e1: 0, e2: 0, total: 0 },
-                            { pos: 36, name: "Aleix Martínez Muñoz", e1: 0, e2: 0, total: 0 },
-                            { pos: 37, name: "Albert Arrebola Sans", e1: 0, e2: 0, total: 0 },
-                            { pos: 38, name: "Guillem Moya Niubó", e1: 0, e2: 0, total: 0 },
-                            { pos: 39, name: "Jack Cid", e1: 0, e2: 0, total: 0 },
-                            { pos: 40, name: "Jack Cid Barberá", e1: 0, e2: 0, total: 0 },
-                            { pos: 41, name: "David Gallego", e1: 0, e2: 0, total: 0 },
-                            { pos: 42, name: "David Rojo Dengra", e1: 0, e2: 0, total: 0 },
-                            { pos: 43, name: "Aitor Martin Maldonado", e1: 0, e2: 0, total: 0 },
-                            { pos: 44, name: "Xavier Altimira Gómez", e1: 0, e2: 0, total: 0 },
-                            { pos: 45, name: "adria alonso marti", e1: 0, e2: 0, total: 0 },
-                            { pos: 46, name: "cristian debon viñas", e1: 0, e2: 0, total: 0 },
-                            { pos: 47, name: "guillermo Beroy Álvarez", e1: 0, e2: 0, total: 0 }
-                        ],
-                        senior: [
-                            { pos: 1, name: "Olivier TRESSENS", e1: 250, e2: 250, total: 500 },
-                            { pos: 2, name: "Raúl Linares Ramos", e1: 230, e2: 230, total: 460 },
-                            { pos: 3, name: "Gustavo Verse", e1: 215, e2: 190, total: 405 },
-                            { pos: 4, name: "Fernando Martínez Guillamón", e1: 200, e2: 200, total: 400 },
-                            { pos: 5, name: "David Linares Ramos", e1: 0, e2: 215, total: 215 },
-                            { pos: 6, name: "Giacomo Bonacini", e1: 0, e2: 180, total: 180 },
-                            { pos: 7, name: "Jorge Santiago Buqueras", e1: 0, e2: 0, total: 0 },
-                            { pos: 8, name: "Chema Martínez Guillamon", e1: 0, e2: 0, total: 0 },
-                            { pos: 9, name: "JuanRa Perez", e1: 0, e2: 0, total: 0 },
-                            { pos: 10, name: "Xavi Leiva Cañada", e1: 0, e2: 0, total: 0 },
-                            { pos: 11, name: "Eduardo Martin Rodriguez", e1: 0, e2: 0, total: 0 },
-                            { pos: 12, name: "Alberto Leiva cañada", e1: 0, e2: 0, total: 0 },
-                            { pos: 13, name: "Alberto Salazar Fernández", e1: 0, e2: 0, total: 0 },
-                            { pos: 14, name: "benito reyes gonzalez", e1: 0, e2: 0, total: 0 },
-                            { pos: 15, name: "David Tellez Viana", e1: 0, e2: 0, total: 0 },
-                            { pos: 16, name: "Jesús Pizarro Gonzálvez", e1: 0, e2: 0, total: 0 },
-                            { pos: 17, name: "Sergi Pahisa", e1: 0, e2: 0, total: 0 },
-                            { pos: 18, name: "ivan luengo robles", e1: 0, e2: 0, total: 0 },
-                            { pos: 19, name: "Sergi Perez Vilar", e1: 0, e2: 0, total: 0 },
-                            { pos: 20, name: "Daniel Abril Amador", e1: 0, e2: 0, total: 0 },
-                            { pos: 21, name: "Mario Morón Sancho", e1: 0, e2: 0, total: 0 },
-                            { pos: 22, name: "Marc Company Salvat", e1: 0, e2: 0, total: 0 },
-                            { pos: 23, name: "Alex Trallero Domec", e1: 0, e2: 0, total: 0 },
-                            { pos: 24, name: "Nicola Perra", e1: 0, e2: 0, total: 0 },
-                            { pos: 25, name: "Marc Arrebola Sans", e1: 0, e2: 0, total: 0 },
-                            { pos: 26, name: "Sergi Nerin Velasco", e1: 0, e2: 0, total: 0 },
-                            { pos: 27, name: "Gastón Masuck Cardozo", e1: 0, e2: 0, total: 0 },
-                            { pos: 28, name: "Lucía Bernuz Culebras", e1: 0, e2: 0, total: 0 },
-                            { pos: 29, name: "Joan Torre Rodríguez", e1: 0, e2: 0, total: 0 },
-                            { pos: 30, name: "Pau Blas Molina", e1: 0, e2: 0, total: 0 },
-                            { pos: 31, name: "David Cortés Segura", e1: 0, e2: 0, total: 0 },
-                            { pos: 32, name: "Aleix Martínez Muñoz", e1: 0, e2: 0, total: 0 },
-                            { pos: 33, name: "Albert Arrebola Sans", e1: 0, e2: 0, total: 0 },
-                            { pos: 34, name: "Guillem Moya Niubó", e1: 0, e2: 0, total: 0 },
-                            { pos: 35, name: "Jack Cid", e1: 0, e2: 0, total: 0 },
-                            { pos: 36, name: "Jack Cid Barberá", e1: 0, e2: 0, total: 0 },
-                            { pos: 37, name: "David Gallego", e1: 0, e2: 0, total: 0 },
-                            { pos: 38, name: "Juan Medina", e1: 0, e2: 0, total: 0 },
-                            { pos: 39, name: "David Rojo Dengra", e1: 0, e2: 0, total: 0 },
-                            { pos: 40, name: "Aitor Martin Maldonado", e1: 0, e2: 0, total: 0 },
-                            { pos: 41, name: "Xavier Altimira Gómez", e1: 0, e2: 0, total: 0 },
-                            { pos: 42, name: "adria alonso marti", e1: 0, e2: 0, total: 0 },
-                            { pos: 43, name: "cristian debon viñas", e1: 0, e2: 0, total: 0 },
-                            { pos: 44, name: "guillermo Beroy Álvarez", e1: 0, e2: 0, total: 0 }
-                        ]
-                    };
+                    let rankingsData = {};
+
+                    async function loadRankings() {
+                        try {
+                            const res = await fetch('/docs/clasificacion_jornada_3.json');
+                            const json = await res.json();
+                            rankingsData = json.categorias;
+
+                            const btnContainer = document.getElementById('category-buttons');
+                            btnContainer.innerHTML = '';
+
+                            const categories = Object.keys(rankingsData);
+                            // Sort categories strategically: Absoluta first, then Caballeros/Rookie/Senior...
+                            const catPriority = ['Absoluta', 'Caballeros', 'Rookie', 'Senior 45 +', 'Senior 55 +', 'Damas', 'Junior'];
+                            categories.sort((a, b) => {
+                                let idxA = catPriority.indexOf(a);
+                                let idxB = catPriority.indexOf(b);
+                                if (idxA === -1) idxA = 99;
+                                if (idxB === -1) idxB = 99;
+                                return idxA - idxB;
+                            });
+
+                            categories.forEach((cat) => {
+                                const btn = document.createElement('button');
+                                const safeId = cat.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase();
+                                btn.id = 'btn-' + safeId;
+                                btn.className = 'btn-cat';
+                                btn.textContent = cat;
+                                btn.onclick = () => updateRanking(cat);
+                                btn.style.cssText = `border: none; background: transparent; color: var(--text-main); padding: 0.5rem 1.5rem; border-radius: 9999px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;`;
+                                btnContainer.appendChild(btn);
+                            });
+
+                            const initialCat = categories.includes('Absoluta') ? 'Absoluta' : categories[0];
+                            if (initialCat) {
+                                updateRanking(initialCat);
+                            }
+                        } catch (e) {
+                            console.error("Error loading rankings:", e);
+                        }
+                    }
 
                     function updateRanking(category) {
                         const body = document.getElementById('ranking-body');
-                        const data = rankings[category];
+                        const data = rankingsData[category] || [];
 
-                        // Update buttons
                         document.querySelectorAll('.btn-cat').forEach(btn => {
                             btn.style.background = 'transparent';
                             btn.style.color = 'var(--text-main)';
                         });
-                        const activeBtn = document.getElementById('btn-' + category);
-                        activeBtn.style.background = 'var(--primary-color)';
-                        activeBtn.style.color = 'white';
 
-                        // Update table
+                        const safeId = category.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase();
+                        const activeBtn = document.getElementById('btn-' + safeId);
+                        if (activeBtn) {
+                            activeBtn.style.background = 'var(--primary-color)';
+                            activeBtn.style.color = 'white';
+                        }
+
                         body.innerHTML = '';
-                        const filteredData = data.filter(player => player.total > 0);
+                        // Filter out players with 0 points (and unlicensed per user rules)
+                        const filteredData = data.filter(player => player.total > 0 && !player.isUnlicensed);
 
-                        filteredData.forEach((player, index) => {
+                        filteredData.forEach((player) => {
                             const tr = document.createElement('tr');
                             tr.style.borderBottom = '1px solid #f1f5f9';
                             tr.style.transition = 'background 0.2s ease';
@@ -250,6 +146,7 @@
                                 <td style="padding: 1.25rem 1.5rem; font-weight: 600; color: var(--text-main);">${player.name}</td>
                                 <td style="padding: 1.25rem 1.5rem; text-align: center; color: var(--text-light); font-size: 0.9rem;">${player.e1}</td>
                                 <td style="padding: 1.25rem 1.5rem; text-align: center; color: var(--text-light); font-size: 0.9rem;">${player.e2}</td>
+                                <td style="padding: 1.25rem 1.5rem; text-align: center; color: var(--text-light); font-size: 0.9rem;">${player.e3}</td>
                                 <td style="padding: 1.25rem 1.5rem; text-align: right; font-weight: 700; color: var(--primary-color);">${player.total} pts</td>
                             `;
                             body.appendChild(tr);
@@ -257,7 +154,7 @@
                     }
 
                     // Initial load
-                    updateRanking('masculino');
+                    loadRankings();
                 </script>
             </div>
         </section>
