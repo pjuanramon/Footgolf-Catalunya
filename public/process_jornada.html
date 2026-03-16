@@ -224,6 +224,10 @@
                     }
                     if (excelCat && !cats.includes(excelCat)) cats.push(excelCat);
 
+                    if (cats.includes("Senior 55 +") || excelCat === "Senior 55 +") {
+                        if (!cats.includes("Senior 45 +")) cats.push("Senior 45 +");
+                    }
+
                     players.push({ rawName, normName, isUnlicensed: false, score, categories: cats, didNotPlay });
                 });
 

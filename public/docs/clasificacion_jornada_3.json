@@ -461,12 +461,21 @@
                 "name": "Raúl Linares Ramos",
                 "e1": 230,
                 "e2": 230,
-                "e3": 230,
-                "total": 690,
+                "e3": 215,
+                "total": 675,
                 "isUnlicensed": false
             },
             {
                 "pos": 3,
+                "name": "Gustavo Verse",
+                "e1": 215,
+                "e2": 190,
+                "e3": 230,
+                "total": 635,
+                "isUnlicensed": false
+            },
+            {
+                "pos": 4,
                 "name": "Fernando Martínez Guillamón",
                 "e1": 200,
                 "e2": 200,
@@ -475,21 +484,12 @@
                 "isUnlicensed": false
             },
             {
-                "pos": 4,
+                "pos": 5,
                 "name": "Giacomo Bonacini",
                 "e1": 0,
                 "e2": 180,
-                "e3": 200,
-                "total": 380,
-                "isUnlicensed": false
-            },
-            {
-                "pos": 5,
-                "name": "Joan Torre Rodríguez",
-                "e1": 0,
-                "e2": 0,
-                "e3": 215,
-                "total": 215,
+                "e3": 190,
+                "total": 370,
                 "isUnlicensed": false
             },
             {
@@ -499,6 +499,15 @@
                 "e2": 215,
                 "e3": 0,
                 "total": 215,
+                "isUnlicensed": false
+            },
+            {
+                "pos": 7,
+                "name": "Joan Torre Rodríguez",
+                "e1": 0,
+                "e2": 0,
+                "e3": 200,
+                "total": 200,
                 "isUnlicensed": false
             }
         ],
