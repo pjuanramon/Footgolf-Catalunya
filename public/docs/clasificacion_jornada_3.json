@@ -175,6 +175,15 @@
             },
             {
                 "pos": 20,
+                "name": "Sergi Perez Vilar",
+                "e1": 160,
+                "e2": 0,
+                "e3": 0,
+                "total": 160,
+                "isUnlicensed": false
+            },
+            {
+                "pos": 21,
                 "name": "Marc Company Salvat",
                 "e1": 0,
                 "e2": 92,
@@ -183,7 +192,43 @@
                 "isUnlicensed": false
             },
             {
-                "pos": 21,
+                "pos": 22,
+                "name": "Erik Matarrubia",
+                "e1": 0,
+                "e2": 92,
+                "e3": 62,
+                "total": 154,
+                "isUnlicensed": false
+            },
+            {
+                "pos": 23,
+                "name": "Nicola Perra",
+                "e1": 145,
+                "e2": 0,
+                "e3": 0,
+                "total": 145,
+                "isUnlicensed": false
+            },
+            {
+                "pos": 24,
+                "name": "Luca Rubinacci",
+                "e1": 70,
+                "e2": 66,
+                "e3": 0,
+                "total": 136,
+                "isUnlicensed": false
+            },
+            {
+                "pos": 25,
+                "name": "Gastón Masuck Cardozo",
+                "e1": 125,
+                "e2": 0,
+                "e3": 0,
+                "total": 125,
+                "isUnlicensed": false
+            },
+            {
+                "pos": 26,
                 "name": "Giacomo Bonacini",
                 "e1": 0,
                 "e2": 70,
@@ -192,7 +237,7 @@
                 "isUnlicensed": false
             },
             {
-                "pos": 22,
+                "pos": 27,
                 "name": "David Linares Ramos",
                 "e1": 0,
                 "e2": 110,
@@ -201,7 +246,7 @@
                 "isUnlicensed": false
             },
             {
-                "pos": 23,
+                "pos": 28,
                 "name": "Marc Arrebola Sans",
                 "e1": 0,
                 "e2": 0,
@@ -210,7 +255,7 @@
                 "isUnlicensed": false
             },
             {
-                "pos": 24,
+                "pos": 29,
                 "name": "Lucía Bernuz Culebras",
                 "e1": 0,
                 "e2": 0,
@@ -219,16 +264,7 @@
                 "isUnlicensed": false
             },
             {
-                "pos": 25,
-                "name": "Erik Matarrubia",
-                "e1": 0,
-                "e2": 0,
-                "e3": 62,
-                "total": 62,
-                "isUnlicensed": false
-            },
-            {
-                "pos": 26,
+                "pos": 30,
                 "name": "David Cortés Segura",
                 "e1": 0,
                 "e2": 0,
@@ -237,7 +273,7 @@
                 "isUnlicensed": false
             },
             {
-                "pos": 27,
+                "pos": 31,
                 "name": "David Rojo Dengra",
                 "e1": 0,
                 "e2": 0,
@@ -246,7 +282,7 @@
                 "isUnlicensed": false
             },
             {
-                "pos": 28,
+                "pos": 32,
                 "name": "Joan Torre Rodríguez",
                 "e1": 0,
                 "e2": 0,
@@ -255,7 +291,7 @@
                 "isUnlicensed": false
             },
             {
-                "pos": 29,
+                "pos": 33,
                 "name": "Daniel Vázquez Arjona",
                 "e1": 0,
                 "e2": 0,
@@ -384,6 +420,33 @@
             },
             {
                 "pos": 14,
+                "name": "Erik Matarrubia",
+                "e1": 0,
+                "e2": 145,
+                "e3": 90,
+                "total": 235,
+                "isUnlicensed": false
+            },
+            {
+                "pos": 15,
+                "name": "Luca Rubinacci",
+                "e1": 120,
+                "e2": 100,
+                "e3": 0,
+                "total": 220,
+                "isUnlicensed": false
+            },
+            {
+                "pos": 16,
+                "name": "Gastón Masuck Cardozo",
+                "e1": 185,
+                "e2": 0,
+                "e3": 0,
+                "total": 185,
+                "isUnlicensed": false
+            },
+            {
+                "pos": 17,
                 "name": "Marc Arrebola Sans",
                 "e1": 0,
                 "e2": 0,
@@ -392,7 +455,7 @@
                 "isUnlicensed": false
             },
             {
-                "pos": 15,
+                "pos": 18,
                 "name": "Lucía Bernuz Culebras",
                 "e1": 0,
                 "e2": 0,
@@ -401,16 +464,7 @@
                 "isUnlicensed": false
             },
             {
-                "pos": 16,
-                "name": "Erik Matarrubia",
-                "e1": 0,
-                "e2": 0,
-                "e3": 90,
-                "total": 90,
-                "isUnlicensed": false
-            },
-            {
-                "pos": 17,
+                "pos": 19,
                 "name": "David Cortés Segura",
                 "e1": 0,
                 "e2": 0,
@@ -419,7 +473,7 @@
                 "isUnlicensed": false
             },
             {
-                "pos": 18,
+                "pos": 20,
                 "name": "David Rojo Dengra",
                 "e1": 0,
                 "e2": 0,
@@ -428,7 +482,7 @@
                 "isUnlicensed": false
             },
             {
-                "pos": 19,
+                "pos": 21,
                 "name": "Daniel Vázquez Arjona",
                 "e1": 0,
                 "e2": 0,
@@ -437,7 +491,7 @@
                 "isUnlicensed": false
             },
             {
-                "pos": 20,
+                "pos": 22,
                 "name": "David Linares Ramos",
                 "e1": 0,
                 "e2": 0,

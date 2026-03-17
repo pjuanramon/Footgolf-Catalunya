@@ -235,6 +235,34 @@
                     players.push({ rawName, normName, isUnlicensed: false, score, categories: cats, didNotPlay });
                 });
 
+                // ADD MISSING HISTORICAL PLAYERS
+                Object.values(hist).flat().forEach(hp => {
+                    const hNormName = normalizeName(hp.name);
+                    let existing = players.find(p => p.normName === hNormName);
+                    
+                    if (!existing) {
+                        let cats = ["Absoluta"];
+                        const isNonRookie = NON_ROOKIES.some(nr => normalizeName(nr) === hNormName);
+                        if (!isNonRookie) cats.push("Rookie");
+                        
+                        // Check other categories in history
+                        if (hist.senior45.some(s => normalizeName(s.name) === hNormName)) cats.push("Senior 45 +");
+                        if (hist.senior55.some(s => normalizeName(s.name) === hNormName)) {
+                            if (!cats.includes("Senior 55 +")) cats.push("Senior 55 +");
+                            if (!cats.includes("Senior 45 +")) cats.push("Senior 45 +");
+                        }
+
+                        players.push({ 
+                            rawName: hp.name, 
+                            normName: hNormName, 
+                            isUnlicensed: false, 
+                            score: 0, 
+                            categories: cats, 
+                            didNotPlay: true 
+                        });
+                    }
+                });
+
                 let catGroups = {};
                 players.forEach(p => {
                     p.categories.forEach(c => {
