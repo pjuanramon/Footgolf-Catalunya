@@ -88,7 +88,7 @@
                     <div>
                         <h2 class="section-title" style="text-align: left; margin-bottom: 0.5rem;">Ranking Catalán 2026
                         </h2>
-                        <p style="color: var(--text-light);">Clasificación oficial de la temporada tras la Etapa 2.</p>
+                        <p id="jornada-text" style="color: var(--text-light);">Cargando clasificación...</p>
                     </div>
 
                     <div class="category-selector" id="category-buttons"
@@ -142,6 +142,12 @@
                             const res = await fetch('/docs/clasificacion_jornada_3.json');
                             const json = await res.json();
                             rankingsData = json.categorias;
+
+                            // Update dynamic stage text
+                            const jornadaText = document.getElementById('jornada-text');
+                            if (jornadaText) {
+                                jornadaText.textContent = `Clasificación oficial de la temporada tras la Etapa ${json.jornada}.`;
+                            }
 
                             const btnContainer = document.getElementById('category-buttons');
                             btnContainer.innerHTML = '';
