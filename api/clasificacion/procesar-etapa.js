@@ -1,220 +1,141 @@
 // ============================================================
 // POST /api/clasificacion/procesar-etapa
-// Procesa los resultados de una etapa:
-//   1. Recibe el Excel de resultados
-//   2. Matching de jugadores con la BD
-//   3. Determina quién puntúa (solo con licencia)
-//   4. Invoca el motor de clasificación existente (NO lo modifica)
-//   5. Genera JSON de clasificación
-//   6. Automatización: finalizar + abrir siguiente + emails
+// Procesa los resultados de una etapa de forma 100% automatizada
 // ============================================================
 const { supabase } = require('../../lib/supabase');
 const { matchPlayerToDb, normalizeName } = require('../../lib/matching');
 const { ejecutarAutomatizacionCompleta } = require('../../lib/stage-automation');
+const { calcularPuntosEtapa, calcularClasificacionGeneral } = require('../../lib/ranking-engine');
 const XLSX = require('xlsx');
+const fs = require('fs');
+const path = require('path');
 
-// Config para Vercel: permitir archivos más grandes y más tiempo
 module.exports.config = {
-    api: {
-        bodyParser: {
-            sizeLimit: '10mb'
-        }
-    },
+    api: { bodyParser: { sizeLimit: '10mb' } },
     maxDuration: 60
 };
 
 module.exports = async function handler(req, res) {
-    if (req.method !== 'POST') {
-        return res.status(405).json({ error: 'Método no permitido' });
-    }
+    if (req.method !== 'POST') return res.status(405).json({ error: 'Método no permitido' });
 
-    // Verificar auth admin
     const adminSecret = req.headers['x-admin-secret'];
-    if (adminSecret !== process.env.ADMIN_SECRET) {
-        return res.status(401).json({ error: 'No autorizado.' });
-    }
+    if (adminSecret !== process.env.ADMIN_SECRET) return res.status(401).json({ error: 'No autorizado.' });
 
     try {
         const { etapa_id, excel_base64 } = req.body;
+        if (!etapa_id || !excel_base64) return res.status(400).json({ error: 'Faltan parámetros (etapa_id, excel_base64).' });
 
-        if (!etapa_id) {
-            return res.status(400).json({ error: 'etapa_id es obligatorio.' });
-        }
-        if (!excel_base64) {
-            return res.status(400).json({ error: 'excel_base64 es obligatorio (archivo Excel en base64).' });
-        }
+        // 1. Obtener datos básicos
+        const { data: etapa } = await supabase.from('etapas').select('*').eq('id', etapa_id).single();
+        const { data: dbPlayers } = await supabase.from('jugadores').select('*');
+        
+        if (!etapa) return res.status(404).json({ error: 'Etapa no encontrada.' });
 
-        // 1. Verificar la etapa
-        const { data: etapa, error: etapaError } = await supabase
-            .from('etapas')
-            .select('*')
-            .eq('id', etapa_id)
-            .single();
-
-        if (etapaError || !etapa) {
-            return res.status(404).json({ error: 'Etapa no encontrada.' });
-        }
-
-        // 2. Leer el Excel
+        // 2. Leer Excel
         const buffer = Buffer.from(excel_base64, 'base64');
         const workbook = XLSX.read(buffer, { type: 'buffer' });
         const sheet = workbook.Sheets[workbook.SheetNames[0]];
-        const excelData = XLSX.utils.sheet_to_json(sheet, { header: 'A', defval: '' });
-        const rows = excelData.slice(1); // Saltar cabecera visual
+        const rows = XLSX.utils.sheet_to_json(sheet, { header: 'A', defval: '' }).slice(1);
 
-        // 3. Obtener todos los jugadores de la BD
-        const { data: dbPlayers, error: playersError } = await supabase
-            .from('jugadores')
-            .select('*');
-
-        if (playersError) throw playersError;
-
-        // 4. Procesar cada fila del Excel y hacer matching
-        const resultados = [];
-        const matchReport = [];
-        const jugadoresSinLicencia = [];
-
+        // 3. Preparar resultados para el motor
+        const resultadosBrutos = [];
         for (const row of rows) {
             const rawName = String(row['D'] || '').trim();
             if (!rawName) continue;
+            if (String(row['F']).trim().toUpperCase() === 'NO') continue;
 
-            const f = String(row['F']).trim().toUpperCase();
-            const didNotPlay = (f === 'NO' || f === '');
-            if (didNotPlay) continue;
-
-            // Matching con la BD
             const match = matchPlayerToDb(rawName, dbPlayers || []);
-
-            const tieneLicencia = match.player ? match.player.tiene_licencia : false;
-
-            // Score del Excel
-            let score = row['Y'];
-            if (score === '' || score === undefined) score = 0;
-            else score = Number(score);
-
-            // Categorías del Excel
-            let excelCat = String(row['C'] || '').trim();
-
-            // Registrar el resultado del matching
-            matchReport.push({
-                excelName: rawName,
-                matchedTo: match.player ? match.player.nickname : null,
-                matchType: match.matchType,
-                confidence: match.confidence,
-                tieneLicencia,
-                score
-            });
-
-            // Si no tiene licencia, registrar para el motor
-            if (!tieneLicencia) {
-                jugadoresSinLicencia.push(rawName);
-            }
-
-            resultados.push({
+            resultadosBrutos.push({
                 rawName,
                 normName: normalizeName(rawName),
-                isUnlicensed: !tieneLicencia,
-                score,
-                excelCat,
-                dbPlayer: match.player
+                score: Number(row['Y'] || 0),
+                dbPlayer: match.player,
+                isUnlicensed: match.player ? !match.player.tiene_licencia : true
             });
         }
 
-        // 5. Preparar los datos para el motor de clasificación
-        // El motor existente espera:
-        //   - UNLICENSED: array de nombres sin licencia
-        //   - NON_ROOKIES: array de nombres que no son rookies
-        //   - Los datos del Excel
-        //
-        // IMPORTANTE: NO modificamos el motor. Solo preparamos los inputs.
+        // 4. Calcular Puntos de la Etapa
+        const puntosEtapa = calcularPuntosEtapa(resultadosBrutos);
 
-        const unlicensedNames = resultados
-            .filter(r => r.isUnlicensed)
-            .map(r => normalizeName(r.rawName));
-
-        const nonRookieNames = resultados
-            .filter(r => {
-                if (!r.dbPlayer) return false;
-                return !r.dbPlayer.es_rookie;
-            })
-            .map(r => normalizeName(r.rawName));
-
-        // 6. Obtener clasificación histórica de la BD
-        // Buscar el JSON de clasificación anterior si existe
-        const jornadaAnterior = etapa_id - 1;
-        let historicalData = null;
-
-        if (jornadaAnterior >= 1) {
-            // Intentar obtener la clasificación anterior del storage o BD
-            // Por ahora, leer del archivo JSON existente si está disponible
-            try {
-                const { data: etapaAnterior } = await supabase
-                    .from('etapas')
-                    .select('archivo_excel')
-                    .eq('id', jornadaAnterior)
-                    .single();
-
-                // La clasificación histórica se tomará del JSON existente
-                // que el motor ya sabe leer
-            } catch (e) {
-                console.log('No se encontró clasificación anterior, primera jornada.');
-            }
+        // 5. Guardar resultados en la BD
+        for (const r of puntosEtapa) {
+            await supabase.from('resultados_etapas').upsert({
+                etapa_id: etapa_id,
+                jugador_id: r.jugador_id,
+                puntos_absoluta: r.puntos['Absoluta'] || 0,
+                puntos_rookie: r.puntos['Rookie'] || 0,
+                puntos_senior45: r.puntos['Senior 45 +'] || 0,
+                puntos_senior55: r.puntos['Senior 55 +'] || 0,
+                puntos_femenino: r.puntos['Femenino'] || 0,
+                score: r.score
+            }, { onConflict: 'etapa_id, jugador_id' });
         }
 
-        // 7. Generar la configuración para el motor
-        // El motor se ejecuta en el navegador (process_jornada.html)
-        // Desde el backend, generamos los datos de entrada que necesita
-        const motorInput = {
-            jornada: etapa_id,
-            unlicensed: unlicensedNames,
-            nonRookies: nonRookieNames,
-            resultados: resultados.map(r => ({
-                rawName: r.rawName,
-                normName: r.normName,
-                isUnlicensed: r.isUnlicensed,
-                score: r.score,
-                excelCat: r.excelCat
-            }))
+        // 6. Generar Clasificación General Automatizada
+        const { data: todosLosResultados } = await supabase
+            .from('resultados_etapas')
+            .select('*, jugadores(nickname, tiene_licencia)')
+            .order('etapa_id', { ascending: true });
+
+        const general = calcularClasificacionGeneral(todosLosResultados);
+
+        // Formatear para el frontend (manteniendo compatibilidad con el motor antiguo)
+        const categoriasFinal = {
+            'Absoluta': [], 'Rookie': [], 'Senior 45 +': [], 'Senior 55 +': [], 'Femenino': []
         };
 
-        // 8. Guardar el archivo Excel en la BD
-        const { error: updateExcelError } = await supabase
-            .from('etapas')
-            .update({ archivo_excel: excel_base64.substring(0, 100) + '...' }) // Referencia, no el archivo completo
-            .eq('id', etapa_id);
+        Object.keys(categoriasFinal).forEach(cat => {
+            const rankingCat = general
+                .map(j => {
+                    const catData = j.categorias[cat] || { total: 0, etapas: [] };
+                    return {
+                        name: j.nickname,
+                        total: catData.total,
+                        e1: catData.etapas[0] || 0,
+                        e2: catData.etapas[1] || 0,
+                        e3: catData.etapas[2] || 0,
+                        e4: catData.etapas[3] || 0,
+                        e5: catData.etapas[4] || 0,
+                        e6: catData.etapas[5] || 0,
+                        e7: catData.etapas[6] || 0,
+                        e8: catData.etapas[7] || 0,
+                        e9: catData.etapas[8] || 0,
+                        e10: catData.etapas[9] || 0,
+                        isUnlicensed: false // Solo puntuamos licenciados
+                    };
+                })
+                .filter(j => j.total > 0)
+                .sort((a, b) => b.total - a.total);
 
-        // 9. Ejecutar automatización (finalizar etapa, abrir siguiente, emails)
-        const resumenAutomatizacion = await ejecutarAutomatizacionCompleta(etapa_id);
+            rankingCat.forEach((p, idx) => p.pos = idx + 1);
+            categoriasFinal[cat] = rankingCat;
+        });
 
-        // 10. Devolver resultados
+        const finalJson = {
+            jornada: etapa_id,
+            ultima_actualizacion: new Date().toISOString(),
+            categorias: categoriasFinal
+        };
+
+        // 7. Guardar JSON (Simulamos persistencia en carpeta data para el frontend)
+        // En Vercel no podemos escribir en disco de forma persistente fácilmente, 
+        // pero podemos devolverlo o guardarlo en Supabase Storage.
+        // Por ahora, lo guardamos en Supabase en una columna de la etapa o similar.
+        await supabase.from('etapas').update({ archivo_excel: JSON.stringify(finalJson) }).eq('id', etapa_id);
+
+        // 8. Automatización adicional
+        const resumenAuto = await ejecutarAutomatizacionCompleta(etapa_id);
+
         return res.status(200).json({
             ok: true,
-            etapa: {
-                id: etapa.id,
-                nombre: etapa.nombre
-            },
-            motorInput: motorInput,
-            matchReport: matchReport,
-            resumen: {
-                totalJugadores: resultados.length,
-                conLicencia: resultados.filter(r => !r.isUnlicensed).length,
-                sinLicencia: resultados.filter(r => r.isUnlicensed).length,
-                matchExacto: matchReport.filter(m => m.matchType.startsWith('exact')).length,
-                matchFuzzy: matchReport.filter(m => m.matchType === 'fuzzy').length,
-                sinMatch: matchReport.filter(m => m.matchType === 'none').length
-            },
-            automatizacion: resumenAutomatizacion,
-            instrucciones: {
-                paso1: 'Revisa el matchReport para verificar que los nombres se vincularon correctamente.',
-                paso2: 'Los datos de motorInput contienen las listas UNLICENSED y NON_ROOKIES actualizadas.',
-                paso3: 'Actualiza process_jornada.html con estas listas y ejecuta el motor para generar la clasificación.',
-                paso4: 'La etapa se ha finalizado y la siguiente se ha abierto automáticamente.',
-                nota: 'El motor de clasificación existente NO ha sido modificado.'
-            }
+            message: 'Etapa procesada y ranking actualizado automáticamente.',
+            jornada: etapa_id,
+            resumen: resumenAuto,
+            data: finalJson // Enviamos el JSON para que el admin lo vea
         });
 
     } catch (error) {
-        console.error('Error procesando etapa:', error);
+        console.error('Error procesando clasificación:', error);
         return res.status(500).json({ error: 'Error interno: ' + error.message });
     }
 };

@@ -139,8 +139,18 @@
 
                     async function loadRankings() {
                         try {
-                            const res = await fetch('/docs/clasificacion_jornada_3.json');
-                            const json = await res.json();
+                            // Obtenemos el ranking de la última etapa finalizada
+                            const res = await fetch('/api/etapas/listado?estado=finalizada');
+                            const etapas = await res.json();
+                            
+                            if (etapas.length === 0) {
+                                document.getElementById('jornada-text').textContent = "Aún no hay clasificaciones disponibles.";
+                                return;
+                            }
+
+                            // La última etapa finalizada tiene el JSON en archivo_excel (según la nueva lógica)
+                            const ultimaEtapa = etapas[etapas.length - 1];
+                            const json = JSON.parse(ultimaEtapa.archivo_excel);
                             rankingsData = json.categorias;
 
                             // Update dynamic stage text
