@@ -1,7 +1,14 @@
 {
+  "version": 2,
   "build": {
     "env": {
       "NODE_VERSION": "18"
+    }
+  },
+  "functions": {
+    "api/clasificacion/procesar-etapa.js": {
+      "maxDuration": 60,
+      "memory": 1024
     }
   }
 }

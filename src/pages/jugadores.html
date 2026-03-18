@@ -33,7 +33,7 @@
                         <li><span>Los jugadores que ya disponen de licencia en temporadas anteriores siempre renovarán
                                 por el año completo.</span></li>
                     </ul>
-                    <a href="#" class="btn btn-primary" style="background: var(--primary-color);">Renovar / Solicitar
+                    <a id="btn-licencia" href="#" class="btn btn-primary" style="background: var(--primary-color);">Renovar / Solicitar
                         Licencia</a>
                 </div>
                 <div class="split-image glass-box"
@@ -50,7 +50,31 @@
                 </div>
             </div>
         </section>
+<script>
+  document.getElementById("btn-licencia").addEventListener("click", async () => {
+    console.log("click detectado");
+    try {
+      const res = await fetch("/api/licencias/crear-sesion-pago", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: "test@example.com",
+          nickname: "juanratest"
+        })
+      });
 
+      const data = await res.json();
+
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        alert("Error creando la sesión de pago");
+      }
+    } catch (err) {
+      alert("Error conectando con el servidor");
+    }
+  });
+</script>
     </main>
 
     <app-footer></app-footer>
