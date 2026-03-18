@@ -10,5 +10,8 @@
       "path": "/api/cron/automation",
       "schedule": "0 13 * * *"
     }
+  ],
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "/api/main" }
   ]
 }

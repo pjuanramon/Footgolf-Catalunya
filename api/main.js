@@ -1,0 +1,61 @@
+// ============================================================
+// Unified API Router - Footgolf Catalunya
+// Consolidación para evitar límites de Vercel Hobby (12 funciones)
+// ============================================================
+const { parse } = require('url');
+
+// Configuración de Vercel: deshabilitar bodyParser para manejar Raw Body (Webhooks)
+module.exports.config = {
+    api: { bodyParser: false }
+};
+
+module.exports = async function handler(req, res) {
+    const { pathname } = parse(req.url);
+    const path = pathname.replace('/api/', '');
+
+    try {
+        // --- ENRUTADOR DINÁMICO ---
+        
+        switch (path) {
+            case 'etapas/listado':
+                return require('../api-logic/etapas/listado')(req, res);
+            
+            case 'licencias/crear-sesion-pago':
+                return require('../api-logic/licencias/crear-sesion-pago')(req, res);
+            
+            case 'licencias/webhook':
+                return require('../api-logic/licencias/webhook')(req, res);
+            
+            case 'inscripciones/crear-sesion-pago':
+                return require('../api-logic/inscripciones/crear-sesion-pago')(req, res);
+            
+            case 'inscripciones/webhook':
+                return require('../api-logic/inscripciones/webhook')(req, res);
+            
+            case 'clasificacion/procesar-etapa':
+                return require('../api-logic/clasificacion/procesar-etapa')(req, res);
+            
+            case 'cron/automation':
+                return require('../api-logic/cron/automation')(req, res);
+            
+            case 'debug/status':
+                return require('../api-logic/debug/status')(req, res);
+            
+            case 'debug/env-check':
+                return require('../api-logic/debug/env-check')(req, res);
+
+            default:
+                return res.status(404).json({ 
+                    error: `Ruta ${path} no encontrada en la API unificada.`,
+                    path_debug: path
+                });
+        }
+
+    } catch (e) {
+        console.error('API Router Error:', e);
+        return res.status(500).json({ 
+            error: 'Error interno en el Router de la API.',
+            message: e.message 
+        });
+    }
+};
