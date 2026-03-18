@@ -87,8 +87,8 @@ module.exports = async function handler(req, res) {
                 anio_primera_licencia: String(anio_primera_licencia),
                 anio: String(anioActual)
             },
-            success_url: `${process.env.APP_URL}/licencias?resultado=exito`,
-            cancel_url: `${process.env.APP_URL}/licencias?resultado=cancelado`
+            success_url: `${process.env.APP_URL}/src/pages/licencias.html?resultado=exito`,
+            cancel_url: `${process.env.APP_URL}/src/pages/licencias.html?resultado=cancelado`
         });
 
         return res.status(200).json({

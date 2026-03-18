@@ -29,8 +29,8 @@ module.exports = async function handler(req, res) {
     }
 
     try {
-        // 1. Verificar firma
-        const rawBody = await getRawBody(req);
+        // 1. Verificar firma (usamos el rawBody que nos pasa el router)
+        const rawBody = req.rawBody;
         const signature = req.headers['stripe-signature'];
         const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET_INSCRIPCIONES;
 

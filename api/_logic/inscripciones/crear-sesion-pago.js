@@ -116,8 +116,8 @@ module.exports = async function handler(req, res) {
                 email: jugador.email,
                 tiene_licencia: String(jugador.tiene_licencia)
             },
-            success_url: `${process.env.APP_URL}/inscripciones?resultado=exito&etapa=${etapa_id}`,
-            cancel_url: `${process.env.APP_URL}/inscripciones?resultado=cancelado`
+            success_url: `${process.env.APP_URL}/src/pages/inscripciones.html?resultado=exito&etapa=${etapa_id}`,
+            cancel_url: `${process.env.APP_URL}/src/pages/inscripciones.html?resultado=cancelado`
         });
 
         return res.status(200).json({

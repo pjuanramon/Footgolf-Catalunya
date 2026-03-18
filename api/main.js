@@ -9,11 +9,24 @@ module.exports.config = {
     api: { bodyParser: false }
 };
 
-module.exports = async function handler(req, res) {
-    const { pathname } = parse(req.url);
-    const path = pathname.replace('/api/', '');
+async function getRawBody(req) {
+    return new Promise((resolve, reject) => {
+        const chunks = [];
+        req.on('data', chunk => chunks.push(chunk));
+        req.on('end', () => resolve(Buffer.concat(chunks)));
+        req.on('error', reject);
+    });
+}
 
+module.exports = async function handler(req, res) {
     try {
+        const { pathname } = parse(req.url);
+        const path = pathname.replace('/api/', '');
+
+        // 1. Obtener Raw Body y adjuntarlo a la request para que los sub-handlers lo usen
+        const rawBody = await getRawBody(req);
+        req.rawBody = rawBody;
+
         // --- ENRUTADOR DINÁMICO ---
         
         switch (path) {
