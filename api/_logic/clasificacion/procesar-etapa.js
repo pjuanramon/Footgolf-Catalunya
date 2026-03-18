@@ -2,10 +2,10 @@
 // POST /api/clasificacion/procesar-etapa
 // Procesa los resultados de una etapa de forma 100% automatizada
 // ============================================================
-const { supabase } = require('../../lib/supabase');
-const { matchPlayerToDb, normalizeName } = require('../../lib/matching');
-const { ejecutarAutomatizacionCompleta } = require('../../lib/stage-automation');
-const { calcularPuntosEtapa, calcularClasificacionGeneral } = require('../../lib/ranking-engine');
+const { supabase } = require('../../../lib/supabase');
+const { matchPlayerToDb, normalizeName } = require('../../../lib/matching');
+const { ejecutarAutomatizacionCompleta } = require('../../../lib/stage-automation');
+const { calcularPuntosEtapa, calcularClasificacionGeneral } = require('../../../lib/ranking-engine');
 const XLSX = require('xlsx');
 const fs = require('fs');
 const path = require('path');

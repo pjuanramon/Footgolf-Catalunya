@@ -2,13 +2,13 @@
 // GET /api/cron/automation
 // Endpoint para tareas programadas (Vercel Cron)
 // ============================================================
-const { supabase } = require('../../lib/supabase');
+const { supabase } = require('../../../lib/supabase');
 const { 
     calcularFechaCierre, 
     calcularFechaRecordatorioCierre,
     obtenerTodosLosJugadores
-} = require('../../lib/stage-automation');
-const { enviarCierreEtapa } = require('../../lib/email');
+} = require('../../../lib/stage-automation');
+const { enviarCierreEtapa } = require('../../../lib/email');
 
 module.exports = async function handler(req, res) {
     // Verificar que la petición viene de Vercel Cron (o usar admin secret para pruebas)

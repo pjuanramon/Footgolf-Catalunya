@@ -2,7 +2,7 @@
 // GET /api/etapas/listado
 // Lista las etapas (opcionalmente filtradas por estado)
 // ============================================================
-const { supabase } = require('../../lib/supabase');
+const { supabase } = require('../../../lib/supabase');
 
 module.exports = async function handler(req, res) {
     if (req.method !== 'GET') {

@@ -2,12 +2,12 @@
 // POST /api/inscripciones/webhook
 // Webhook de Stripe para confirmar pago de inscripción
 // ============================================================
-const { supabase } = require('../../lib/supabase');
-const { verificarWebhook } = require('../../lib/stripe');
+const { supabase } = require('../../../lib/supabase');
+const { verificarWebhook } = require('../../../lib/stripe');
 const {
     enviarConfirmacionInscripcionConLicencia,
     enviarConfirmacionInscripcionSinLicencia
-} = require('../../lib/email');
+} = require('../../../lib/email');
 
 // Desactivar body parser para raw body
 module.exports.config = {

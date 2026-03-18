@@ -2,9 +2,9 @@
 // POST /api/licencias/crear-sesion-pago
 // Crea una sesión de Stripe Checkout para pagar la licencia
 // ============================================================
-const { supabase } = require('../../lib/supabase');
-const { stripe } = require('../../lib/stripe');
-const { calcularPrecioLicencia, obtenerJornadasJugadas } = require('../../lib/pricing');
+const { supabase } = require('../../../lib/supabase');
+const { stripe } = require('../../../lib/stripe');
+const { calcularPrecioLicencia, obtenerJornadasJugadas } = require('../../../lib/pricing');
 
 module.exports = async function handler(req, res) {
     // Solo POST

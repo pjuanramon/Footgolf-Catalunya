@@ -2,9 +2,9 @@
 // POST /api/inscripciones/crear-sesion-pago
 // Crea una sesión de Stripe Checkout para inscribirse a una etapa
 // ============================================================
-const { supabase } = require('../../lib/supabase');
-const { stripe } = require('../../lib/stripe');
-const { PRECIO_INSCRIPCION } = require('../../lib/pricing');
+const { supabase } = require('../../../lib/supabase');
+const { stripe } = require('../../../lib/stripe');
+const { PRECIO_INSCRIPCION } = require('../../../lib/pricing');
 
 module.exports = async function handler(req, res) {
     if (req.method !== 'POST') {

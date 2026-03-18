@@ -2,9 +2,9 @@
 // POST /api/licencias/webhook
 // Webhook de Stripe para confirmar pago de licencia
 // ============================================================
-const { supabase } = require('../../lib/supabase');
-const { verificarWebhook } = require('../../lib/stripe');
-const { enviarConfirmacionLicencia } = require('../../lib/email');
+const { supabase } = require('../../../lib/supabase');
+const { verificarWebhook } = require('../../../lib/stripe');
+const { enviarConfirmacionLicencia } = require('../../../lib/email');
 
 // Desactivar el body parser de Vercel para recibir el raw body
 module.exports.config = {
