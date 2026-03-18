@@ -13,6 +13,12 @@ module.exports = async function handler(req, res) {
     }
 
     try {
+        console.log('--- Nueva solicitud de pago de licencia ---');
+        console.log('Body:', req.body);
+
+        if (!supabase) return res.status(500).json({ error: 'Error de configuración: Supabase no inicializado.' });
+        if (!stripe) return res.status(500).json({ error: 'Error de configuración: Stripe no inicializado.' });
+
         const { nickname, email, nombre_completo, fecha_nacimiento, genero, telefono, club, anio_primera_licencia } = req.body;
 
         // Validaciones
