@@ -218,15 +218,17 @@
 
                 const data = await res.json();
 
-                if (data.url) {
+                if (res.ok && data.url) {
                     window.location.href = data.url;
                 } else {
-                    alert(data.error || 'Error al iniciar el pago');
+                    const errorMsg = data.error || (res.status + ' ' + res.statusText);
+                    alert('Error del servidor: ' + errorMsg);
                     submitBtn.disabled = false;
                     submitBtn.textContent = 'Continuar al Pago con Stripe →';
                 }
             } catch (err) {
-                alert('Error de conexión con el servidor');
+                console.error('Fetch error:', err);
+                alert('Error de conexión: ' + err.message);
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Continuar al Pago con Stripe →';
             }
