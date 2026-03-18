@@ -177,10 +177,11 @@
 
                 const data = await res.json();
 
-                if (data.url) {
+                if (res.ok && data.url) {
                     window.location.href = data.url;
                 } else {
-                    alert(data.error || 'Error al procesar la inscripción');
+                    const errorMsg = data.message || data.error || (res.status + ' ' + res.statusText);
+                    alert('Error del servidor: ' + errorMsg);
                 }
             } catch (err) {
                 alert('Error conectando con el servidor');

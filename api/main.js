@@ -18,31 +18,31 @@ module.exports = async function handler(req, res) {
         
         switch (path) {
             case 'etapas/listado':
-                return require('../api-logic/etapas/listado')(req, res);
+                return require('./_logic/etapas/listado')(req, res);
             
             case 'licencias/crear-sesion-pago':
-                return require('../api-logic/licencias/crear-sesion-pago')(req, res);
+                return require('./_logic/licencias/crear-sesion-pago')(req, res);
             
             case 'licencias/webhook':
-                return require('../api-logic/licencias/webhook')(req, res);
+                return require('./_logic/licencias/webhook')(req, res);
             
             case 'inscripciones/crear-sesion-pago':
-                return require('../api-logic/inscripciones/crear-sesion-pago')(req, res);
+                return require('./_logic/inscripciones/crear-sesion-pago')(req, res);
             
             case 'inscripciones/webhook':
-                return require('../api-logic/inscripciones/webhook')(req, res);
+                return require('./_logic/inscripciones/webhook')(req, res);
             
             case 'clasificacion/procesar-etapa':
-                return require('../api-logic/clasificacion/procesar-etapa')(req, res);
+                return require('./_logic/clasificacion/procesar-etapa')(req, res);
             
             case 'cron/automation':
-                return require('../api-logic/cron/automation')(req, res);
+                return require('./_logic/cron/automation')(req, res);
             
             case 'debug/status':
-                return require('../api-logic/debug/status')(req, res);
+                return require('./_logic/debug/status')(req, res);
             
             case 'debug/env-check':
-                return require('../api-logic/debug/env-check')(req, res);
+                return require('./_logic/debug/env-check')(req, res);
 
             default:
                 return res.status(404).json({ 

@@ -221,7 +221,7 @@
                 if (res.ok && data.url) {
                     window.location.href = data.url;
                 } else {
-                    const errorMsg = data.error || (res.status + ' ' + res.statusText);
+                    const errorMsg = data.message || data.error || (res.status + ' ' + res.statusText);
                     alert('Error del servidor: ' + errorMsg);
                     submitBtn.disabled = false;
                     submitBtn.textContent = 'Continuar al Pago con Stripe →';
