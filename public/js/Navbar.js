@@ -19,6 +19,7 @@ class Navbar extends HTMLElement {
                     <a href="${homeLink}">Inicio</a>
                     <a href="/src/pages/calendario.html">Calendario 2026</a>
                     <a href="/src/pages/clasificaciones.html">Clasificaciones</a>
+                    <a href="/src/pages/inscripciones.html">Inscripciones</a>
                     <a href="/src/pages/jugadores.html">Jugadores & Licencias</a>
                     <a href="/src/pages/institucional.html">Institucional</a>
                     <a href="/src/pages/equipos.html">Campeonato Equipos</a>

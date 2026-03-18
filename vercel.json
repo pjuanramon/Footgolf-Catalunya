@@ -2,7 +2,13 @@
   "version": 2,
   "build": {
     "env": {
-      "NODE_VERSION": "18"
+      "NODE_VERSION": "20"
     }
-  }
+  },
+  "crons": [
+    {
+      "path": "/api/cron/automation",
+      "schedule": "0 13 * * *"
+    }
+  ]
 }

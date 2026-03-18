@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscripciones - Footgolf Catalunya</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <script src="/js/Navbar.js" defer></script>
+    <script src="/js/Footer.js" defer></script>
+    <style>
+        .stage-card {
+            background: var(--glass-bg);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .stage-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255,255,255,0.1);
+        }
+
+        .stage-info h3 {
+            margin: 0 0 0.5rem 0;
+            color: white;
+        }
+
+        .stage-info p {
+            margin: 0;
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .search-container {
+            max-width: 600px;
+            margin: 0 auto 3rem;
+            text-align: center;
+        }
+
+        #nickname-search {
+            width: 100%;
+            padding: 1.2rem;
+            font-size: 1.1rem;
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 1rem;
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        #nickname-search:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+        }
+
+        .player-found {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgb(34, 197, 94, 0.5);
+            padding: 1rem;
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+            display: none;
+        }
+
+        .not-found-warning {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.5);
+            padding: 1rem;
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <app-navbar></app-navbar>
+
+    <main>
+        <header class="page-header">
+            <h1 class="gradient-text">Inscripciones Online</h1>
+            <p>Selecciona una etapa abierta para inscribirte y realizar el pago.</p>
+        </header>
+
+        <section class="section">
+            <div class="container">
+                <div class="search-container">
+                    <h3>Paso 1: Identifícate</h3>
+                    <p style="margin-bottom: 1.5rem; color: var(--text-light);">Introduce tus datos para vincular tu inscripción.</p>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                        <input type="email" id="email-input" placeholder="Tu Email *" required style="margin-bottom: 0;">
+                        <input type="text" id="nickname-input" placeholder="Tu Nickname *" required style="margin-bottom: 0;">
+                    </div>
+                    
+                    <p style="font-size: 0.85rem; color: var(--text-light); margin-top: 1rem;">
+                        * Si eres un jugador nuevo, se creará tu ficha automáticamente. Si ya estás registrado, asegúrate de usar el mismo email.
+                    </p>
+                </div>
+
+                <div id="stages-container">
+                    <h2 class="section-title">Etapas Abiertas</h2>
+                    <div id="stages-list">
+                        <!-- Se cargará vía JS -->
+                        <p style="text-align: center; color: var(--text-light);">Cargando etapas disponibles...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <app-footer></app-footer>
+
+    <script>
+        const emailInput = document.getElementById('email-input');
+        const nicknameInput = document.getElementById('nickname-input');
+        const stagesList = document.getElementById('stages-list');
+
+        async function loadStages() {
+            try {
+                const res = await fetch('/api/etapas/listado?estado=abierta');
+                const stages = await res.json();
+
+                if (stages.length === 0) {
+                    stagesList.innerHTML = '<p style="text-align: center; color: var(--text-light);">No hay etapas abiertas para inscripción en este momento.</p>';
+                    return;
+                }
+
+                stagesList.innerHTML = stages.map(etapa => `
+                    <div class="stage-card">
+                        <div class="stage-info">
+                            <h3>${etapa.nombre}</h3>
+                            <p>📅 ${new Date(etapa.fecha).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}</p>
+                        </div>
+                        <div class="stage-action">
+                            <button onclick="inscribirse(${etapa.id})" class="btn btn-primary" style="background: var(--secondary-color);">Inscribirse (22€) →</button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (err) {
+                stagesList.innerHTML = '<p style="text-align: center; color: var(--error-color);">Error al cargar las etapas.</p>';
+            }
+        }
+
+        async function inscribirse(etapaId) {
+            const emailValue = emailInput.value.trim();
+            const nicknameValue = nicknameInput.value.trim();
+
+            if (!emailValue || !nicknameValue) {
+                alert('Por favor, introduce tu Email y Nickname.');
+                if (!emailValue) emailInput.focus();
+                else nicknameInput.focus();
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/inscripciones/crear-sesion-pago', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        etapa_id: etapaId,
+                        email: emailValue,
+                        nickname: nicknameValue
+                    })
+                });
+
+                const data = await res.json();
+
+                if (data.url) {
+                    window.location.href = data.url;
+                } else {
+                    alert(data.error || 'Error al procesar la inscripción');
+                }
+            } catch (err) {
+                alert('Error conectando con el servidor');
+            }
+        }
+
+        loadStages();
+    </script>
+</body>
+
+</html>

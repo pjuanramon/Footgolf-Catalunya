@@ -169,3 +169,25 @@ BEGIN
     RETURN (viernes_anterior::TEXT || ' 13:00:00')::TIMESTAMPTZ AT TIME ZONE 'Europe/Madrid';
 END;
 $$ LANGUAGE plpgsql IMMUTABLE;
+
+-- ============================================================
+-- Trigger C: Validar que la etapa esté abierta al inscribirse
+-- ============================================================
+CREATE OR REPLACE FUNCTION fn_verificar_etapa_abierta()
+RETURNS TRIGGER AS $$
+DECLARE
+    estado_etapa TEXT;
+BEGIN
+    SELECT estado INTO estado_etapa FROM etapas WHERE id = NEW.etapa_id;
+    IF estado_etapa IS NULL OR estado_etapa != 'abierta' THEN
+        RAISE EXCEPTION 'No es posible inscribirse: la etapa no está abierta o no existe.';
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_verificar_etapa_abierta ON inscripciones;
+CREATE TRIGGER trg_verificar_etapa_abierta
+    BEFORE INSERT ON inscripciones
+    FOR EACH ROW
+    EXECUTE FUNCTION fn_verificar_etapa_abierta();
