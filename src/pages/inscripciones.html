@@ -143,14 +143,18 @@
                     const colorStyle = esEquipo ? 'style="background: var(--secondary-color);"' : '';
 
                     return `
-                        <div class="event-card active dark-section" style="margin-bottom: 1.5rem; ${esEquipo ? 'border-color: var(--secondary-color);' : ''}">
-                            <div class="date" ${colorStyle}>
-                                <span style="font-size: 1.8rem; line-height: 1;">${new Date(etapa.fecha).getDate()}</span>
-                                <span style="font-size: 0.8rem; text-transform: uppercase; opacity: 0.9;">${new Date(etapa.fecha).toLocaleString('es-ES', { month: 'short' }).replace('.', '')}</span>
+                        <div class="event-card active dark-section" style="margin-bottom: 1.5rem; background: var(--bg-dark); color: white; border: 1px solid rgba(255,255,255,0.1); ${esEquipo ? 'border-color: var(--secondary-color);' : ''}">
+                            <div class="date" ${colorStyle} style="min-width: 100px; padding: 1.5rem;">
+                                <span style="font-size: 2rem; line-height: 1; display: block;">${new Date(etapa.fecha).getDate()}</span>
+                                <span style="font-size: 0.9rem; text-transform: uppercase; opacity: 0.9;">${new Date(etapa.fecha).toLocaleString('es-ES', { month: 'short' }).replace('.', '')}</span>
                             </div>
-                            <div class="event-info" style="flex-grow: 1; padding: 1.5rem;">
-                                <h3 ${esEquipo ? 'style="color: var(--secondary-color);"' : ''}>${etapa.nombre}</h3>
-                                <p style="margin-top: 0.5rem;"><span style="background: rgba(255,255,255,0.1); padding: 0.3rem 0.8rem; border-radius: 99px; font-size: 0.85rem; color: #cbd5e1; border: 1px solid rgba(255,255,255,0.1);">📍 ${etapa.ubicacion || 'Por determinar'}</span></p>
+                            <div class="event-info" style="flex-grow: 1; padding: 1.5rem; display: flex; flex-direction: column; justify-content: center;">
+                                <h3 style="margin: 0; font-size: 1.5rem; ${esEquipo ? 'color: var(--secondary-color);' : 'color: white;'}">${etapa.nombre}</h3>
+                                <div style="margin-top: 0.75rem;">
+                                    <span style="background: rgba(255,255,255,0.1); padding: 0.4rem 1rem; border-radius: 99px; font-size: 0.9rem; color: #cbd5e1; border: 1px solid rgba(255,255,255,0.1); display: inline-flex; align-items: center; gap: 0.5rem;">
+                                        📍 ${etapa.ubicacion || 'Por determinar'}
+                                    </span>
+                                </div>
                             </div>
                             <div class="stage-action" style="padding: 1.25rem; display: flex; flex-direction: column; align-items: flex-end; justify-content: center;">
                                 ${esEquipo ? `
