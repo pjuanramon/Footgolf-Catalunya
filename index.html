@@ -154,10 +154,11 @@
 
                                 return `
                                     <div class="event-card active dark-section">
-                                        <span class="date" ${dateStyle}><span style="font-size: 1.5rem; display: block;">${dia}</span>${mes}</span>
+                                        <div class="date" ${dateStyle}><span style="font-size: 1.5rem; display: block;">${dia}</span>${mes}</div>
                                         <div class="event-info">
-                                            <h4>${s.nombre}: ${s.ubicacion}</h4>
-                                            <p>${s.nombre.toLowerCase().includes('equipos') ? 'Por Equipos' : 'Individual'}</p>
+                                            <h4>${s.nombre}</h4>
+                                            <p style="margin-top: 0.3rem;"><span style="background: rgba(255,255,255,0.1); padding: 0.2rem 0.6rem; border-radius: 99px; font-size: 0.75rem; color: #cbd5e1; border: 1px solid rgba(255,255,255,0.1);">📍 ${s.ubicacion}</span></p>
+                                            <p style="margin-top: 0.3rem; opacity: 0.7;">${s.nombre.toLowerCase().includes('equipos') ? 'Por Equipos' : 'Individual'}</p>
                                         </div>
                                     </div>
                                 `;
