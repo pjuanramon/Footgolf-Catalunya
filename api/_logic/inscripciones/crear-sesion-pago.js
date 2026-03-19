@@ -4,7 +4,7 @@
 // ============================================================
 const { supabase } = require('../../../lib/supabase');
 const { stripe } = require('../../../lib/stripe');
-const { PRECIO_INSCRIPCION } = require('../../../lib/pricing');
+const { calcularPrecioInscripcion } = require('../../../lib/pricing');
 
 module.exports = async function handler(req, res) {
     if (req.method !== 'POST') {
@@ -12,85 +12,47 @@ module.exports = async function handler(req, res) {
     }
 
     try {
-        const { nickname, email, etapa_id } = req.body;
+        const { nickname, email, etapa_id, equipo_nombre } = req.body;
 
-        // Validaciones
-        if (!nickname || !nickname.trim()) {
-            return res.status(400).json({ error: 'El nickname es obligatorio.' });
-        }
-        if (!email || !email.trim()) {
-            return res.status(400).json({ error: 'El email es obligatorio.' });
-        }
-        if (!etapa_id) {
-            return res.status(400).json({ error: 'La etapa es obligatoria.' });
+        if (!nickname || !nickname.trim() || !email || !email.trim() || !etapa_id) {
+            return res.status(400).json({ error: 'Nickname, Email y Etapa son obligatorios.' });
         }
 
-        // Verificar que la etapa existe y está abierta
-        // 4. Calcular precio
-        const { data: etapa } = await supabase.from('etapas').select('*').eq('id', etapa_id).single();
-        if (!etapa) return res.status(404).json({ error: 'Etapa no encontrada.' });
-
-        if (etapa.estado !== 'abierta') {
-            return res.status(400).json({ error: 'La etapa no está abierta para inscripciones.' });
-        }
-
-        // Buscar o crear jugador
-        let jugador;
         const emailNorm = email.trim().toLowerCase();
 
-        const { data: jugadorExistente } = await supabase
-            .from('jugadores')
-            .select('*')
-            .eq('email', emailNorm)
-            .single();
+        // 1. Verificar Etapa
+        const { data: etapa } = await supabase.from('etapas').select('*').eq('id', etapa_id).single();
+        if (!etapa) return res.status(404).json({ error: 'Etapa no encontrada.' });
+        if (etapa.estado !== 'abierta') {
+            return res.status(400).json({ error: 'La etapa no está abierta.' });
+        }
+
+        // 2. Calcular Precio
+        const precio = calcularPrecioInscripcion(etapa, emailNorm);
+
+        // 3. Buscar o crear jugador
+        let jugador;
+        const { data: jugadorExistente } = await supabase.from('jugadores').select('*').eq('email', emailNorm).single();
 
         if (jugadorExistente) {
             jugador = jugadorExistente;
         } else {
-            // Crear jugador sin licencia
-            const { data: newPlayer, error: insertError } = await supabase
-                .from('jugadores')
-                .insert({
-                    nickname: nickname.trim(),
-                    email: emailNorm,
-                    tiene_licencia: false
-                })
-                .select('*')
-                .single();
-
-            if (insertError) {
-                // Puede fallar si el nickname ya existe
-                if (insertError.code === '23505') {
-                    return res.status(400).json({ error: 'Este nickname ya está registrado con otro email.' });
-                }
-                throw insertError;
-            }
+            const { data: newPlayer, error: pErr } = await supabase.from('jugadores').insert({
+                nickname: nickname.trim(),
+                email: emailNorm,
+                tiene_licencia: false
+            }).select('*').single();
+            if (pErr) throw pErr;
             jugador = newPlayer;
         }
 
-        // Verificar que no esté ya inscrito
-        const { data: inscripcionExistente } = await supabase
-            .from('inscripciones')
-            .select('id')
-            .eq('jugador_id', jugador.id)
-            .eq('etapa_id', etapa_id)
-            .eq('estado', 'pagada')
-            .single();
+        // 4. Verificar inscripción previa
+        const { data: yaInscrito } = await supabase.from('inscripciones')
+            .select('id').eq('jugador_id', jugador.id).eq('etapa_id', etapa_id).eq('estado', 'pagada').single();
+        if (yaInscrito) return res.status(400).json({ error: 'Ya estás inscrito en esta etapa.' });
 
-        if (inscripcionExistente) {
-            return res.status(400).json({ error: 'Ya estás inscrito en esta etapa.' });
-        }
-
-        // Preparar respuesta con advertencia si no tiene licencia
-        const advertencia = !jugador.tiene_licencia
-            ? 'Puedes jugar sin licencia, pero no puntuarás en la Liga Catalana.'
-            : null;
-
-        // Crear sesión de Stripe Checkout
-        const { equipo_nombre } = req.body;
+        // 5. Crear sesión Stripe
         const esEquipo = etapa.tipo === 'equipos';
-        const precio = esEquipo ? (etapa.precio_equipo || 110) : (etapa.precio_inscripcion || PRECIO_INSCRIPCION);
-
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
             mode: 'payment',
@@ -99,7 +61,7 @@ module.exports = async function handler(req, res) {
                     currency: 'eur',
                     product_data: {
                         name: `Inscripción ${etapa.nombre}${esEquipo ? ` - Equipo: ${equipo_nombre}` : ''}`,
-                        description: `Inscripción para ${jugador.nickname}${esEquipo ? ` (Equipo: ${equipo_nombre})` : ''} — ${etapa.nombre}`
+                        description: `Inscripción para ${jugador.nickname}`
                     },
                     unit_amount: Math.round(precio * 100)
                 },
@@ -111,23 +73,16 @@ module.exports = async function handler(req, res) {
                 etapa_id: String(etapa_id),
                 nickname: jugador.nickname,
                 email: jugador.email,
-                tiene_licencia: String(jugador.tiene_licencia),
                 equipo_nombre: equipo_nombre || ''
             },
             success_url: `${process.env.APP_URL}/src/pages/inscripciones.html?resultado=exito&etapa=${etapa_id}`,
             cancel_url: `${process.env.APP_URL}/src/pages/inscripciones.html?resultado=cancelado`
         });
 
-        return res.status(200).json({
-            url: session.url,
-            precio: precio,
-            sessionId: session.id,
-            tieneLicencia: jugador.tiene_licencia,
-            advertencia: advertencia
-        });
+        return res.status(200).json({ url: session.url, precio, tieneLicencia: jugador.tiene_licencia });
 
     } catch (error) {
-        console.error('Error creando sesión de inscripción:', error);
-        return res.status(500).json({ error: 'Error interno del servidor.' });
+        console.error('Error inscripciones API:', error);
+        return res.status(500).json({ error: 'Error interno.' });
     }
 };

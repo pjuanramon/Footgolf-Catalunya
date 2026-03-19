@@ -31,11 +31,31 @@ module.exports = async function handler(req, res) {
         }
 
         // Buscar si el jugador ya existe
+        const itemEmail = email.trim().toLowerCase();
         const { data: jugadorExistente } = await supabase
             .from('jugadores')
             .select('*')
-            .eq('email', email.trim().toLowerCase())
+            .eq('email', itemEmail)
             .single();
+
+        // 1. VALIDACIÓN ESPECIAL: Si dice que ya pagó, verificar NickName en clasificaciones
+        if (yaFuePagado) {
+            console.log(`Verificando NickName para pago externo: ${nickname}`);
+            // Buscamos si el nickname aparece en alguna puntuación de las primeras etapas (1, 2, 3)
+            // Las etapas suelen tener nombres que contienen "Etapa 1", "Etapa 2", etc.
+            // O podemos buscar simplemente cualquier puntuación en el año 2026.
+            const { data: participacion, error: partError } = await supabase
+                .from('puntuaciones_etapa')
+                .select('id')
+                .ilike('jugador_nickname', `%${nickname.trim()}%`)
+                .limit(1);
+
+            if (partError || !participacion || participacion.length === 0) {
+                return res.status(400).json({ 
+                    error: 'Validación fallida: Tu NickName no aparece en las clasificaciones de este año. Si ya pagaste tu licencia físicamente pero no has jugado aún, contacta con la organización.' 
+                });
+            }
+        }
 
         // Verificar si ya tiene licencia pagada (si no marcó ya_pagado)
         if (jugadorExistente && !yaFuePagado) {
@@ -71,7 +91,7 @@ module.exports = async function handler(req, res) {
             } else {
                 const { data: newPlayer, error: pErr } = await supabase.from('jugadores').insert({
                     nickname: nickname.trim(),
-                    email: email.trim().toLowerCase(),
+                    email: itemEmail,
                     nombre_completo: nombre_completo || null,
                     telefono: telefono || null,
                     club: club || 'Independiente',
@@ -113,7 +133,7 @@ module.exports = async function handler(req, res) {
             metadata: {
                 tipo: 'licencia',
                 nickname: nickname.trim(),
-                email: email.trim().toLowerCase(),
+                email: itemEmail,
                 nombre_completo: nombre_completo || '',
                 telefono: telefono || '',
                 club: club || '',
