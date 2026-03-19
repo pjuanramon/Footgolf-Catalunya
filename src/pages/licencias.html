@@ -132,23 +132,24 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="nombre_completo">Nombre Completo</label>
-                        <input type="text" id="nombre_completo" name="nombre_completo" placeholder="Tu nombre y apellidos">
+                        <label for="nombre_completo">Nombre Completo *</label>
+                        <input type="text" id="nombre_completo" name="nombre_completo" required placeholder="Tu nombre y apellidos">
                     </div>
 
                     <div class="form-group">
-                        <label for="telefono">Teléfono</label>
-                        <input type="tel" id="telefono" name="telefono" placeholder="+34 600 000 000">
+                        <label for="telefono">Teléfono *</label>
+                        <input type="tel" id="telefono" name="telefono" required placeholder="+34 600 000 000">
                     </div>
 
                     <div class="form-group">
-                        <label for="fecha_nacimiento">Fecha de Nacimiento</label>
-                        <input type="date" id="fecha_nacimiento" name="fecha_nacimiento">
+                        <label for="fecha_nacimiento">Fecha de Nacimiento *</label>
+                        <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" required>
                     </div>
 
                     <div class="form-group">
-                        <label for="genero">Género</label>
-                        <select id="genero" name="genero">
+                        <label for="genero">Género *</label>
+                        <select id="genero" name="genero" required>
+                            <option value="">Selecciona...</option>
                             <option value="masculino">Masculino</option>
                             <option value="femenino">Femenino</option>
                         </select>

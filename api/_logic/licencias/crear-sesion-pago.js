@@ -41,12 +41,13 @@ module.exports = async function handler(req, res) {
         if (!nickname || !nickname.trim() || !email || !email.trim()) {
             return res.status(400).json({ error: 'Nickname y Email son obligatorios.' });
         }
+        if (!nombre_completo || !nombre_completo.trim() || !fecha_nacimiento || !genero || !telefono) {
+            return res.status(400).json({ error: 'Todos los campos (Nombre completo, Fecha Nacimiento, Género y Teléfono) son obligatorios para poder categorizarte correctamente.' });
+        }
 
         // 1. VALIDACIÓN ESPECIAL: Si dice que ya pagó, verificar NickName en clasificaciones
         if (yaFuePagado) {
             console.log(`Verificando NickName para pago externo: [${nickname}]`);
-            
-            // Obtenemos TODAS las etapas finalizadas recientes para mayor seguridad
             const { data: etapas } = await supabase
                 .from('etapas')
                 .select('archivo_excel, nombre')
@@ -54,36 +55,26 @@ module.exports = async function handler(req, res) {
                 .order('id', { ascending: false });
 
             if (!etapas || etapas.length === 0) {
-                console.log('No hay etapas finalizadas para validar ranking. Se permite el paso por seguridad.');
+                console.log('No hay etapas finalizadas para validar ranking.');
             } else {
                 let encontrado = false;
                 const targetNorm = normalizar(nickname);
-
-                console.log(`Buscando 'fingerprint': ${targetNorm}`);
-
-                // Buscamos en todas las etapas finalizadas (por si alguien faltó en la última pero estuvo en la anterior)
                 for (const etapa of etapas) {
                     try {
                         const rankingJson = JSON.parse(etapa.archivo_excel);
                         const categorias = rankingJson.categorias || {};
-                        
                         for (const cat in categorias) {
-                            const jugadores = categorias[cat];
-                            if (jugadores.some(p => normalizar(p.name) === targetNorm)) {
+                            if (categorias[cat].some(p => normalizar(p.name) === targetNorm)) {
                                 encontrado = true;
-                                console.log(`Encontrado en Etapa: ${etapa.nombre}, Cat: ${cat}`);
                                 break;
                             }
                         }
-                    } catch (e) {
-                         console.error('Error parseando JSON de etapa:', etapa.nombre);
-                    }
+                    } catch (e) {}
                     if (encontrado) break;
                 }
-
                 if (!encontrado) {
                     return res.status(400).json({ 
-                        error: `No hemos encontrado el NickName "${nickname}" en las clasificaciones oficiales de 2026. Para acogerte a esta opción, debes haber puntuado en alguna etapa previa. Si crees que es un error, asegúrate de escribirlo exactamente igual que en la tabla de clasificación.` 
+                        error: `No hemos encontrado el NickName "${nickname}" en las clasificaciones oficiales de 2026. Para acogerte a esta opción, debes haber puntuado en alguna etapa previa.` 
                     });
                 }
             }
@@ -119,24 +110,24 @@ module.exports = async function handler(req, res) {
         if (precio === 0) {
             console.log('Precio 0€: Registro directo');
             let jugadorId;
+            const userData = {
+                nombre_completo: nombre_completo.trim(),
+                fecha_nacimiento: fecha_nacimiento,
+                genero: genero,
+                telefono: telefono.trim(),
+                club: club || 'Independiente',
+                anio_licencia: anioActual,
+                tiene_licencia: true
+            };
+
             if (jugadorExistente) {
                 jugadorId = jugadorExistente.id;
-                await supabase.from('jugadores').update({
-                    nombre_completo: nombre_completo || jugadorExistente.nombre_completo,
-                    telefono: telefono || jugadorExistente.telefono,
-                    club: club || jugadorExistente.club,
-                    anio_licencia: anioActual,
-                    tiene_licencia: true
-                }).eq('id', jugadorId);
+                await supabase.from('jugadores').update(userData).eq('id', jugadorId);
             } else {
                 const { data: newPlayer, error: pErr } = await supabase.from('jugadores').insert({
                     nickname: nickname.trim(),
                     email: itemEmail,
-                    nombre_completo: nombre_completo || null,
-                    telefono: telefono || null,
-                    club: club || 'Independiente',
-                    anio_licencia: anioActual,
-                    tiene_licencia: true
+                    ...userData
                 }).select('id').single();
                 if (pErr) throw pErr;
                 jugadorId = newPlayer.id;
@@ -164,7 +155,7 @@ module.exports = async function handler(req, res) {
                     currency: 'eur',
                     product_data: {
                         name: `Licencia Liga Catalana FootGolf ${anioActual}`,
-                        description: `Licencia para ${nickname} (${esAntiguo ? 'Renovación' : 'Nueva desde Etapa ' + etapaInic})`
+                        description: `Licencia para ${nickname}`
                     },
                     unit_amount: Math.round(precio * 100)
                 },
@@ -174,8 +165,10 @@ module.exports = async function handler(req, res) {
                 tipo: 'licencia',
                 nickname: nickname.trim(),
                 email: itemEmail,
-                nombre_completo: nombre_completo || '',
-                telefono: telefono || '',
+                nombre_completo: nombre_completo.trim(),
+                fecha_nacimiento: fecha_nacimiento,
+                genero: genero,
+                telefono: telefono.trim(),
                 club: club || '',
                 anio_primera_licencia: String(esAntiguo ? (jugadorExistente?.anio_licencia || 2025) : anioActual),
                 anio: String(anioActual),
