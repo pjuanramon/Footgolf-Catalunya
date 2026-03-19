@@ -59,6 +59,9 @@ module.exports = async function handler(req, res) {
             case 'admin/jugadores':
                 return require('./_logic/admin/jugadores')(req, res);
             
+            case 'admin/crear-jugador':
+                return require('./_logic/admin/crear-jugador')(req, res);
+            
             case 'admin/inscripciones':
                 return require('./_logic/admin/inscripciones')(req, res);
             

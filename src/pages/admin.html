@@ -142,6 +142,9 @@
 
     <!-- Tab Jugadores -->
     <div id="tabContent-jugadores" class="tab-content">
+        <div style="display:flex; justify-content:flex-end; margin-bottom:1rem">
+            <button onclick="openModal('nuevo-jugador')" class="btn btn-primary btn-sm">+ Nuevo Jugador</button>
+        </div>
         <div class="admin-card">
             <table>
                 <thead>
@@ -279,6 +282,83 @@
             if (res.ok) renderData();
         }
 
+        async function openModal(type, extra = null) {
+            const modal = document.getElementById('modal');
+            const overlay = document.getElementById('overlay');
+            const content = document.getElementById('modalContent');
+            
+            if (type === 'nuevo-jugador') {
+                document.getElementById('modalTitle').textContent = 'Registrar Nuevo Jugador';
+                content.innerHTML = `
+                    <form onsubmit="crearJugador(event)">
+                        <div style="margin-bottom:1rem">
+                            <label>Nombre Completo:</label>
+                            <input type="text" name="nombre" class="btn" style="width:100%; background:var(--admin-bg)" required>
+                        </div>
+                        <div style="margin-bottom:1rem">
+                            <label>Nickname:</label>
+                            <input type="text" name="nickname" class="btn" style="width:100%; background:var(--admin-bg)" required>
+                        </div>
+                        <div style="margin-bottom:1rem">
+                            <label>Email:</label>
+                            <input type="email" name="email" class="btn" style="width:100%; background:var(--admin-bg)" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width:100%">Guardar Jugador</button>
+                    </form>
+                `;
+            } else if (type === 'nueva-inscripcion') {
+                const {etapa_id, nombre} = extra;
+                const jugadores = await api('admin/jugadores');
+                document.getElementById('modalTitle').textContent = `Inscribir en ${nombre}`;
+                content.innerHTML = `
+                    <form onsubmit="inscribirManual(event, ${etapa_id})">
+                        <div style="margin-bottom:1rem">
+                            <label>Seleccionar Jugador:</label>
+                            <select name="jugador_id" class="btn" style="width:100%; background:var(--admin-bg)" required>
+                                ${jugadores.map(j => `<option value="${j.id}">${j.nickname} (${j.nombre_completo})</option>`).join('')}
+                            </select>
+                        </div>
+                        <div style="margin-bottom:1rem">
+                            <label>Nombre Equipo (Opcional):</label>
+                            <input type="text" name="equipo" placeholder="Dejar vacío si es individual" class="btn" style="width:100%; background:var(--admin-bg)">
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width:100%">Confirmar Inscripción</button>
+                    </form>
+                `;
+            }
+
+            modal.style.display = 'block';
+            overlay.style.display = 'block';
+        }
+
+        async function crearJugador(e) {
+            e.preventDefault();
+            const f = e.target;
+            const res = await api('admin/crear-jugador', 'POST', {
+                nombre_completo: f.nombre.value,
+                nickname: f.nickname.value,
+                email: f.email.value
+            });
+            if (res.ok) {
+                closeModal();
+                renderData();
+            }
+        }
+
+        async function inscribirManual(e, etapa_id) {
+            e.preventDefault();
+            const f = e.target;
+            const res = await api('admin/inscripcion-manual', 'POST', {
+                etapa_id,
+                jugador_id: f.jugador_id.value,
+                equipo_nombre: f.equipo.value
+            });
+            if (res.ok) {
+                closeModal();
+                renderData();
+            }
+        }
+
         async function verInscritos(id, nombre) {
             const inscritos = await api(`admin/inscripciones?etapa_id=${id}`);
             const modal = document.getElementById('modal');
@@ -286,7 +366,11 @@
             const content = document.getElementById('modalContent');
             
             document.getElementById('modalTitle').textContent = `Inscritos: ${nombre}`;
-            content.innerHTML = inscritos.length === 0 ? '<p>No hay inscritos todavía.</p>' : `
+            content.innerHTML = `
+                <div style="display:flex; justify-content:flex-end; margin-bottom:1rem">
+                    <button onclick="openModal('nueva-inscripcion', {etapa_id:${id}, nombre:'${nombre}'})" class="btn btn-sm btn-primary">+ Añadir a Mano</button>
+                </div>
+                ${inscritos.length === 0 ? '<p>No hay inscritos todavía.</p>' : `
                 <table style="font-size:0.85rem">
                     <thead><tr><th>Jornada</th><th>Nickname</th><th>Pago</th></tr></thead>
                     <tbody>
@@ -299,7 +383,7 @@
                         `).join('')}
                     </tbody>
                 </table>
-            `;
+            `}`;
 
             modal.style.display = 'block';
             overlay.style.display = 'block';
