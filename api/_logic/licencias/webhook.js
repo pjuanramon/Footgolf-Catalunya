@@ -74,6 +74,7 @@ module.exports = async function handler(req, res) {
             if (meta.genero) updateData.genero = meta.genero;
             if (meta.telefono) updateData.telefono = meta.telefono;
             if (meta.club) updateData.club = meta.club;
+            if (meta.anio_primera_licencia) updateData.anio_licencia = parseInt(meta.anio_primera_licencia);
 
             if (Object.keys(updateData).length > 0) {
                 await supabase

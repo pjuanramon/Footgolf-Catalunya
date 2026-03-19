@@ -19,10 +19,14 @@ module.exports = async function handler(req, res) {
         if (!supabase) return res.status(500).json({ error: 'Error de configuración: Supabase no inicializado.' });
         if (!stripe) return res.status(500).json({ error: 'Error de configuración: Stripe no inicializado.' });
 
-        const { nickname, email, nombre_completo, fecha_nacimiento, genero, telefono, club, es_primera_licencia, anio_inicio } = req.body;
+        const { 
+            nickname, email, nombre_completo, fecha_nacimiento, genero, 
+            telefono, club, es_renovacion, etapa_inicio 
+        } = req.body;
 
         const anioActual = new Date().getFullYear();
-        const anioPrimeraLicencia = es_primera_licencia === 'si' ? anioActual : parseInt(anio_inicio);
+        const esAntiguo = es_renovacion === 'si';
+        const etapaInic = parseInt(etapa_inicio) || 1;
 
         // Validaciones
         if (!nickname || !nickname.trim()) {
@@ -31,8 +35,8 @@ module.exports = async function handler(req, res) {
         if (!email || !email.trim()) {
             return res.status(400).json({ error: 'El email es obligatorio.' });
         }
-        if (!anioPrimeraLicencia) {
-            return res.status(400).json({ error: 'El año de primera licencia es obligatorio.' });
+        if (!es_renovacion) {
+            return res.status(400).json({ error: 'Debe indicar si es una renovación o primera licencia.' });
         }
 
         // Buscar si el jugador ya existe
@@ -57,9 +61,8 @@ module.exports = async function handler(req, res) {
             }
         }
 
-        // Calcular precio
-        const jornadasJugadas = await obtenerJornadasJugadas(supabase);
-        const precio = calcularPrecioLicencia(jugadorExistente, jornadasJugadas);
+        // Calcular precio usando la nueva lógica
+        const precio = calcularPrecioLicencia(jugadorExistente, esAntiguo, etapaInic);
 
         // Crear sesión de Stripe Checkout
         const session = await stripe.checkout.sessions.create({
@@ -70,7 +73,7 @@ module.exports = async function handler(req, res) {
                     currency: 'eur',
                     product_data: {
                         name: `Licencia Liga Catalana FootGolf ${anioActual}`,
-                        description: `Licencia para ${nickname}`
+                        description: `Licencia para ${nickname} (${esAntiguo ? 'Renovación' : 'Nueva desde Etapa ' + etapaInic})`
                     },
                     unit_amount: Math.round(precio * 100) // Stripe usa céntimos
                 },
@@ -85,8 +88,10 @@ module.exports = async function handler(req, res) {
                 genero: genero || '',
                 telefono: telefono || '',
                 club: club || '',
-                anio_primera_licencia: String(anioPrimeraLicencia),
-                anio: String(anioActual)
+                anio_primera_licencia: String(esAntiguo ? (jugadorExistente?.anio_primera_licencia || 2025) : anioActual),
+                anio: String(anioActual),
+                etapa_inicio: String(etapaInic),
+                es_renovacion: String(esAntiguo)
             },
             success_url: `${process.env.APP_URL}/src/pages/licencias.html?resultado=exito`,
             cancel_url: `${process.env.APP_URL}/src/pages/licencias.html?resultado=cancelado`
