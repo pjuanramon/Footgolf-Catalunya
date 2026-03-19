@@ -1,0 +1,45 @@
+{
+  "usuarios": [
+    {
+      "id": "80808d1a-3f56-4879-ab0f-d2891e2d36c8",
+      "nickname": "JuanRa Perez",
+      "nickname_normalizado": "juanra perez",
+      "nombre_completo": "Juan Ramón Pérez González",
+      "email": "pjuanramon@hotmail.com",
+      "fecha_nacimiento": "1981-03-17",
+      "genero": "masculino",
+      "telefono": "660310877",
+      "club": "BARCELONA FOOTGOLF",
+      "anio_licencia": 2026,
+      "tiene_licencia": true,
+      "es_rookie": true,
+      "categorias_calculadas": [
+        "Absoluta",
+        "Rookie"
+      ],
+      "override_precio_licencia": null,
+      "created_at": "2026-03-19T15:17:12.73526+00:00"
+    }
+  ],
+  "sospechoso": [
+    {
+      "id": "c419dc15-7dc4-4cf2-ae3b-68589a8dcedf",
+      "nickname": "G",
+      "nickname_normalizado": "g",
+      "nombre_completo": null,
+      "email": "jacmeinbc@gmail.com",
+      "fecha_nacimiento": null,
+      "genero": null,
+      "telefono": null,
+      "club": null,
+      "anio_licencia": null,
+      "tiene_licencia": false,
+      "es_rookie": false,
+      "categorias_calculadas": [
+        "Absoluta"
+      ],
+      "override_precio_licencia": null,
+      "created_at": "2026-03-19T14:13:48.091721+00:00"
+    }
+  ]
+}
