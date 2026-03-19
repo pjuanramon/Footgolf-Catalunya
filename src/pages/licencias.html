@@ -189,6 +189,12 @@
                         </select>
                     </div>
 
+                    <div id="group-anio-primera" class="form-group" style="display: none;">
+                        <label for="anio_primera_licencia">¿En qué año te sacaste tu primera licencia? *</label>
+                        <input type="number" id="anio_primera_licencia" name="anio_primera_licencia" min="2010" max="2025" value="2025">
+                        <p style="font-size: 0.8rem; color: var(--text-light); margin-top: 0.5rem;">Indica el año aproximado si no lo recuerdas con exactitud.</p>
+                    </div>
+
                     <div id="group-etapa-inicio" class="form-group" style="display: none;">
                         <label for="etapa_inicio">¿Desde qué jornada quieres tener licencia? *</label>
                         <select id="etapa_inicio" name="etapa_inicio" onchange="updateUI()">
@@ -257,16 +263,20 @@
             const esRenovacion = document.getElementById('es_renovacion');
             const groupRenovacion = document.getElementById('group-es-renovacion');
             const groupEtapa = document.getElementById('group-etapa-inicio');
+            const groupAnioPrimera = document.getElementById('group-anio-primera');
 
             if (yaPagado) {
                 groupRenovacion.style.display = 'none';
                 groupEtapa.style.display = 'none';
+                groupAnioPrimera.style.display = 'none';
             } else {
                 groupRenovacion.style.display = 'block';
                 if (esRenovacion.value === 'no') {
                     groupEtapa.style.display = 'block';
+                    groupAnioPrimera.style.display = 'none';
                 } else {
                     groupEtapa.style.display = 'none';
+                    groupAnioPrimera.style.display = 'block';
                 }
             }
             calcPrice();

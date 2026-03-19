@@ -27,7 +27,7 @@ module.exports = async function handler(req, res) {
         console.log('--- Nueva solicitud de pago de licencia ---');
         const { 
             nickname, email, nombre_completo, fecha_nacimiento, genero, 
-            telefono, club, es_renovacion, etapa_inicio, ya_pagado 
+            telefono, club, es_renovacion, etapa_inicio, ya_pagado, anio_primera_licencia 
         } = req.body;
 
         if (!supabase || !stripe) return res.status(500).json({ error: 'Falta configuración en el servidor.' });
@@ -116,7 +116,7 @@ module.exports = async function handler(req, res) {
                 genero: genero,
                 telefono: telefono.trim(),
                 club: club || 'Independiente',
-                anio_licencia: anioActual,
+                anio_licencia: esAntiguo ? (parseInt(anio_primera_licencia) || anioActual) : anioActual,
                 tiene_licencia: true
             };
 
@@ -170,7 +170,7 @@ module.exports = async function handler(req, res) {
                 genero: genero,
                 telefono: telefono.trim(),
                 club: club || '',
-                anio_primera_licencia: String(esAntiguo ? (jugadorExistente?.anio_licencia || 2025) : anioActual),
+                anio_primera_licencia: String(esAntiguo ? (parseInt(anio_primera_licencia) || 2025) : anioActual),
                 anio: String(anioActual),
                 etapa_inicio: String(etapaInic),
                 es_renovacion: String(esAntiguo)
