@@ -26,17 +26,12 @@ module.exports = async function handler(req, res) {
         }
 
         // Verificar que la etapa existe y está abierta
-        const { data: etapa, error: etapaError } = await supabase
-            .from('etapas')
-            .select('*')
-            .eq('id', etapa_id)
-            .single();
+        // 4. Calcular precio
+        const { data: etapa } = await supabase.from('etapas').select('*').eq('id', etapa_id).single();
+        if (!etapa) return res.status(404).json({ error: 'Etapa no encontrada.' });
 
-        if (etapaError || !etapa) {
-            return res.status(404).json({ error: 'Etapa no encontrada.' });
-        }
         if (etapa.estado !== 'abierta') {
-            return res.status(400).json({ error: 'Las inscripciones para esta etapa están cerradas.' });
+            return res.status(400).json({ error: 'La etapa no está abierta para inscripciones.' });
         }
 
         // Buscar o crear jugador

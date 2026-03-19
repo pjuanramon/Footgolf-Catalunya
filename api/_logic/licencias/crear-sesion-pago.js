@@ -4,39 +4,30 @@
 // ============================================================
 const { supabase } = require('../../../lib/supabase');
 const { stripe } = require('../../../lib/stripe');
-const { calcularPrecioLicencia, obtenerJornadasJugadas } = require('../../../lib/pricing');
+const { calcularPrecioLicencia } = require('../../../lib/pricing');
 
 module.exports = async function handler(req, res) {
-    // Solo POST
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Método no permitido' });
     }
 
     try {
         console.log('--- Nueva solicitud de pago de licencia ---');
-        console.log('Body:', req.body);
-
-        if (!supabase) return res.status(500).json({ error: 'Error de configuración: Supabase no inicializado.' });
-        if (!stripe) return res.status(500).json({ error: 'Error de configuración: Stripe no inicializado.' });
-
         const { 
             nickname, email, nombre_completo, fecha_nacimiento, genero, 
-            telefono, club, es_renovacion, etapa_inicio 
+            telefono, club, es_renovacion, etapa_inicio, ya_pagado 
         } = req.body;
+
+        if (!supabase || !stripe) return res.status(500).json({ error: 'Falta configuración en el servidor.' });
 
         const anioActual = new Date().getFullYear();
         const esAntiguo = es_renovacion === 'si';
         const etapaInic = parseInt(etapa_inicio) || 1;
+        const yaFuePagado = ya_pagado === 'si';
 
-        // Validaciones
-        if (!nickname || !nickname.trim()) {
-            return res.status(400).json({ error: 'El nickname es obligatorio.' });
-        }
-        if (!email || !email.trim()) {
-            return res.status(400).json({ error: 'El email es obligatorio.' });
-        }
-        if (!es_renovacion) {
-            return res.status(400).json({ error: 'Debe indicar si es una renovación o primera licencia.' });
+        // Validaciones básicas
+        if (!nickname || !nickname.trim() || !email || !email.trim()) {
+            return res.status(400).json({ error: 'Nickname y Email son obligatorios.' });
         }
 
         // Buscar si el jugador ya existe
@@ -46,8 +37,8 @@ module.exports = async function handler(req, res) {
             .eq('email', email.trim().toLowerCase())
             .single();
 
-        // Verificar si ya tiene licencia pagada del año actual
-        if (jugadorExistente) {
+        // Verificar si ya tiene licencia pagada (si no marcó ya_pagado)
+        if (jugadorExistente && !yaFuePagado) {
             const { data: licenciaExistente } = await supabase
                 .from('licencias')
                 .select('id')
@@ -61,10 +52,50 @@ module.exports = async function handler(req, res) {
             }
         }
 
-        // Calcular precio usando la nueva lógica
-        const precio = calcularPrecioLicencia(jugadorExistente, esAntiguo, etapaInic);
+        // Calcular precio
+        const precio = calcularPrecioLicencia(jugadorExistente, esAntiguo, etapaInic, yaFuePagado);
 
-        // Crear sesión de Stripe Checkout
+        // CASO 0€: Registro directo
+        if (precio === 0) {
+            console.log('Precio 0€: Registro directo');
+            let jugadorId;
+            if (jugadorExistente) {
+                jugadorId = jugadorExistente.id;
+                await supabase.from('jugadores').update({
+                    nombre_completo: nombre_completo || jugadorExistente.nombre_completo,
+                    telefono: telefono || jugadorExistente.telefono,
+                    club: club || jugadorExistente.club,
+                    anio_licencia: anioActual,
+                    tiene_licencia: true
+                }).eq('id', jugadorId);
+            } else {
+                const { data: newPlayer, error: pErr } = await supabase.from('jugadores').insert({
+                    nickname: nickname.trim(),
+                    email: email.trim().toLowerCase(),
+                    nombre_completo: nombre_completo || null,
+                    telefono: telefono || null,
+                    club: club || 'Independiente',
+                    anio_licencia: anioActual,
+                    tiene_licencia: true
+                }).select('id').single();
+                if (pErr) throw pErr;
+                jugadorId = newPlayer.id;
+            }
+
+            await supabase.from('licencias').insert({
+                jugador_id: jugadorId,
+                anio: anioActual,
+                estado: 'pagada',
+                stripe_payment_id: 'PRE-PAID-EXTERNAL'
+            });
+
+            return res.status(200).json({
+                url: `${process.env.APP_URL}/src/pages/licencias.html?resultado=exito`,
+                precio: 0
+            });
+        }
+
+        // CASO PAGO: Stripe Checkout
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
             mode: 'payment',
@@ -75,7 +106,7 @@ module.exports = async function handler(req, res) {
                         name: `Licencia Liga Catalana FootGolf ${anioActual}`,
                         description: `Licencia para ${nickname} (${esAntiguo ? 'Renovación' : 'Nueva desde Etapa ' + etapaInic})`
                     },
-                    unit_amount: Math.round(precio * 100) // Stripe usa céntimos
+                    unit_amount: Math.round(precio * 100)
                 },
                 quantity: 1
             }],
@@ -84,11 +115,9 @@ module.exports = async function handler(req, res) {
                 nickname: nickname.trim(),
                 email: email.trim().toLowerCase(),
                 nombre_completo: nombre_completo || '',
-                fecha_nacimiento: fecha_nacimiento || '',
-                genero: genero || '',
                 telefono: telefono || '',
                 club: club || '',
-                anio_primera_licencia: String(esAntiguo ? (jugadorExistente?.anio_primera_licencia || 2025) : anioActual),
+                anio_primera_licencia: String(esAntiguo ? (jugadorExistente?.anio_licencia || 2025) : anioActual),
                 anio: String(anioActual),
                 etapa_inicio: String(etapaInic),
                 es_renovacion: String(esAntiguo)
@@ -97,14 +126,10 @@ module.exports = async function handler(req, res) {
             cancel_url: `${process.env.APP_URL}/src/pages/licencias.html?resultado=cancelado`
         });
 
-        return res.status(200).json({
-            url: session.url,
-            precio: precio,
-            sessionId: session.id
-        });
+        return res.status(200).json({ url: session.url, precio });
 
     } catch (error) {
-        console.error('Error creando sesión de pago de licencia:', error);
+        console.error('Error en licencias API:', error);
         return res.status(500).json({ error: 'Error interno del servidor.' });
     }
 };
