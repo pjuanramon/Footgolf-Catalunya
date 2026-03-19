@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solicitar Licencia - Footgolf Catalunya</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <script src="/js/Navbar.js" defer></script>
+    <script src="/js/Footer.js" defer></script>
+    <style>
+        .form-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 3rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 2rem;
+            box-shadow: var(--shadow-xl);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            font-size: 0.9rem;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid var(--border-color);
+            border-radius: 0.8rem;
+            color: var(--text-main);
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .price-display {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            padding: 2rem;
+            border-radius: 1.5rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            color: white;
+        }
+
+        .price-value {
+            font-size: 3rem;
+            font-weight: 800;
+            display: block;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 1.2rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            .form-group.full-width {
+                grid-column: span 1;
+            }
+            .form-container {
+                padding: 1.5rem;
+                margin: 1rem;
+            }
+        }
+    </style>
+  <link rel="stylesheet" crossorigin href="/assets/main-2iTdLJGo.css">
+</head>
+
+<body>
+    <app-navbar></app-navbar>
+
+    <main>
+        <header class="page-header">
+            <h1 class="gradient-text">Licencia 2026</h1>
+            <p>Obtén tu licencia oficial de la Asociación Catalana de Footgolf para la temporada 2026.</p>
+        </header>
+
+        <div class="container">
+            <div class="form-container">
+                <div class="price-display">
+                    <span style="font-size: 0.9rem; opacity: 0.9; text-transform: uppercase; letter-spacing: 1px;">Importe Licencia Actual</span>
+                    <span class="price-value" id="price-value">--€</span>
+                    <p style="margin: 0; font-size: 0.9rem; opacity: 0.8;">* El precio se calcula según las etapas restantes para nuevos jugadores.</p>
+                </div>
+
+                <form id="licencia-form" class="form-grid">
+                    <div class="form-group">
+                        <label for="nickname">Nickname (Identificador oficial) *</label>
+                        <input type="text" id="nickname" name="nickname" required placeholder="Ej: JUAN_RAMON">
+                        <p style="font-size: 0.8rem; color: #fbbf24; margin-top: 0.5rem; line-height: 1.4;">
+                            ⚠️ <strong>IMPORTANTE:</strong> Debe coincidir exactamente con tu nickname en <strong>Footgolf World</strong> para que el sistema reconozca tus resultados automáticamente.
+                        </p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Correo Electrónico *</label>
+                        <input type="email" id="email" name="email" required placeholder="tu@email.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="nombre_completo">Nombre Completo *</label>
+                        <input type="text" id="nombre_completo" name="nombre_completo" required placeholder="Tu nombre y apellidos">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="telefono">Teléfono *</label>
+                        <input type="tel" id="telefono" name="telefono" required placeholder="+34 600 000 000">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="fecha_nacimiento">Fecha de Nacimiento *</label>
+                        <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="genero">Género *</label>
+                        <select id="genero" name="genero" required>
+                            <option value="">Selecciona...</option>
+                            <option value="masculino">Masculino</option>
+                            <option value="femenino">Femenino</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="club">Club *</label>
+                        <select id="club" name="club" required>
+                            <option value="Independiente">Independiente (Sin Club)</option>
+                            <option value="JABALI TEAM FOOTGOLF">JABALI TEAM FOOTGOLF</option>
+                            <option value="Apex FootGolf">Apex FootGolf</option>
+                            <option value="BARCELONA FOOTGOLF">BARCELONA FOOTGOLF</option>
+                            <option value="AC Maktub FG">AC Maktub FG</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="display:flex; align-items:flex-start; gap:0.75rem; border:1px solid rgba(255,255,255,0.05); padding:1rem; border-radius:1rem; background:rgba(255,255,255,0.02)">
+                        <input type="checkbox" id="rgpd" name="rgpd" required style="width:auto; margin-top:0.3rem">
+                        <label for="rgpd" style="font-size:0.85rem; line-height:1.4; color:var(--text-light); text-align:left; font-weight:normal;">
+                            He leído y acepto la política de privacidad y autorizo el tratamiento de mis datos personales para la gestión de mi licencia y participación en competiciones de la <strong>Liga Catalana de FootGolf 2026</strong>. ❤️
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ya_pagado">¿Ya has pagado físicamente tu licencia este año? *</label>
+                        <select id="ya_pagado" name="ya_pagado" required onchange="updateUI()">
+                            <option value="no">No, quiero pagar ahora</option>
+                            <option value="si">Sí, ya la he pagado</option>
+                        </select>
+                    </div>
+
+                    <div id="group-es-renovacion" class="form-group">
+                        <label for="es_renovacion">¿Ya tenías licencia en 2025 o antes? *</label>
+                        <select id="es_renovacion" name="es_renovacion" required onchange="updateUI()">
+                            <option value="no">No, es mi primera licencia</option>
+                            <option value="si">Sí, es una renovación</option>
+                        </select>
+                    </div>
+
+                    <div id="group-etapa-inicio" class="form-group" style="display: none;">
+                        <label for="etapa_inicio">¿Desde qué jornada quieres tener licencia? *</label>
+                        <select id="etapa_inicio" name="etapa_inicio" onchange="updateUI()">
+                            <option value="1">Jornada 1</option>
+                            <option value="2">Jornada 2</option>
+                            <option value="3">Jornada 3</option>
+                            <option value="4">Jornada 4</option>
+                            <option value="5">Jornada 5</option>
+                            <option value="6">Jornada 6</option>
+                            <option value="7">Jornada 7</option>
+                            <option value="8">Jornada 8</option>
+                            <option value="9">Jornada 9</option>
+                            <option value="10">Jornada 10</option>
+                            <option value="11">Jornada 11</option>
+                            <option value="12">Jornada 12</option>
+                        </select>
+                        <p style="font-size: 0.8rem; color: var(--text-light); margin-top: 0.5rem;">
+                            El precio se prorratea según la jornada de inicio seleccionada.
+                        </p>
+                    </div>
+
+                    <div class="price-preview" id="price-display">
+                        Total a pagar: 30€
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block" id="submit-btn" style="width: 100%;">
+                        Sacar mi licencia 2026 →
+                    </button>
+                </form>
+
+                <!-- Listado de Licenciados 2026 -->
+                <div id="roster-2026" style="margin-top: 4rem;">
+                    <h2 class="gradient-text" style="font-size: 2rem; margin-bottom: 2rem; text-align: center;">🛡️ Jugadores con Licencia 2026</h2>
+                    <div class="admin-card" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 1.5rem; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 0.95rem;">
+                            <thead>
+                                <tr style="background: rgba(255,255,255,0.03); color: var(--secondary-color); text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1px;">
+                                    <th style="padding: 1.2rem 1.5rem; text-align: left; font-weight: 800;">Nombre Jugador</th>
+                                    <th style="padding: 1.2rem 1.5rem; text-align: center; font-weight: 800;">Categorías</th>
+                                    <th style="padding: 1.2rem 1.5rem; text-align: right; font-weight: 800;">Desde</th>
+                                </tr>
+                            </thead>
+                            <tbody id="roster-table-body">
+                                <tr>
+                                    <td colspan="3" style="padding: 3rem; text-align: center; color: var(--text-light); opacity: 0.6;">
+                                        Cargando listado oficial de la temporada...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <app-footer></app-footer>
+
+    <script>
+        const form = document.getElementById('licencia-form');
+        const priceDisplay = document.getElementById('price-value');
+        const submitBtn = document.getElementById('submit-btn');
+
+        function updateUI() {
+            const yaPagado = document.getElementById('ya_pagado').value === 'si';
+            const esRenovacion = document.getElementById('es_renovacion');
+            const groupRenovacion = document.getElementById('group-es-renovacion');
+            const groupEtapa = document.getElementById('group-etapa-inicio');
+
+            if (yaPagado) {
+                groupRenovacion.style.display = 'none';
+                groupEtapa.style.display = 'none';
+            } else {
+                groupRenovacion.style.display = 'block';
+                if (esRenovacion.value === 'no') {
+                    groupEtapa.style.display = 'block';
+                } else {
+                    groupEtapa.style.display = 'none';
+                }
+            }
+            calcPrice();
+        }
+
+        function calcPrice() {
+            const yaPagado = document.getElementById('ya_pagado').value === 'si';
+            const esRenovacion = document.getElementById('es_renovacion').value === 'si';
+            const etapaInicio = parseInt(document.getElementById('etapa_inicio').value);
+            
+            const display = document.getElementById('price-display');
+            const mainPriceDisplay = document.getElementById('price-value');
+
+            let finalPrice = 0;
+            let text = '';
+
+            if (yaPagado) {
+                finalPrice = 0;
+                text = 'Confirmar Registro (0€)';
+            } else if (esRenovacion) {
+                finalPrice = 30;
+                text = 'Total a pagar: 30€';
+            } else {
+                finalPrice = Math.max(5, Math.round(30 - ((etapaInicio - 1) / 12) * 30));
+                text = `Total a pagar: ${finalPrice}€`;
+            }
+
+            display.innerText = text;
+            mainPriceDisplay.innerText = `${finalPrice}€`;
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            submitBtn.disabled = true;
+            const originalText = 'Sacar mi licencia 2026 →';
+            submitBtn.textContent = 'Procesando...';
+
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+
+            try {
+                const res = await fetch('/api/licencias/crear-sesion-pago', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const resData = await res.json();
+
+                if (res.ok && resData.url) {
+                    window.location.href = resData.url;
+                } else {
+                    const errorMsg = resData.message || resData.error || (res.status + ' ' + res.statusText);
+                    alert('Error del servidor: ' + errorMsg);
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = originalText;
+                }
+            } catch (err) {
+                console.error('Fetch error:', err);
+                alert('Error de conexión: ' + err.message);
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+            }
+        });
+
+        // Al iniciar
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('resultado') === 'exito') {
+            alert('¡Pago completado con éxito! Recibirás un email de confirmación en breve.');
+        } else if (params.get('resultado') === 'cancelado') {
+            alert('El pago ha sido cancelado.');
+        }
+
+        // Cargar listado de licenciados 2026
+        async function loadRoster() {
+            try {
+                const res = await fetch('/api/licencias/listado-2026');
+                const listado = await res.json();
+                const tbody = document.getElementById('roster-table-body');
+                
+                if (!tbody) return;
+                if (!listado || listado.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="3" style="padding: 3rem; text-align: center; opacity: 0.6;">Sé el primero en sacar tu licencia 2026 🏁</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = listado.map(j => {
+                    const yearSince = j.desde || 2026;
+                    const categories = (j.categorias || []).map(c => `
+                        <span style="background: rgba(255,255,255,0.05); padding: 0.2rem 0.6rem; border-radius: 99px; font-size: 0.75rem; border: 1px solid rgba(255,255,255,0.1); margin: 0 0.1rem; white-space: nowrap;">
+                            ${c}
+                        </span>
+                    `).join('');
+
+                    return `
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.03); transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='none'">
+                            <td style="padding: 1.2rem 1.5rem; font-weight: 600;">${j.nombre}</td>
+                            <td style="padding: 1.2rem 1.5rem; text-align: center; display: flex; flex-wrap: wrap; justify-content: center; gap: 0.2rem;">${categories}</td>
+                            <td style="padding: 1.2rem 1.5rem; text-align: right; font-weight: 800; color: var(--secondary-color); opacity: 0.8;">
+                                ${yearSince === 2026 ? '✨ 2026' : yearSince}
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (err) {
+                console.error('Error cargando listado:', err);
+            }
+        }
+
+        calcPrice();
+        loadRoster();
+    </script>
+</body>
+
+</html>

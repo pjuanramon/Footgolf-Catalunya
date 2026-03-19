@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+</head>
+
+<body>
+    <div id="output">Loading...</div>
+    <script>
+        async function run() {
+            try {
+                const res = await fetch('/docs/jornada_3.xlsx');
+                const buf = await res.arrayBuffer();
+                const wb = XLSX.read(buf, { type: 'array' });
+                const sheet = wb.Sheets[wb.SheetNames[0]];
+                const data = XLSX.utils.sheet_to_json(sheet, { header: "A", defval: "" }); // Use column letters
+
+                // Get header row to find exactly where "Category", "Name", "NO", "Score" are
+                document.getElementById('output').textContent = JSON.stringify(data.slice(0, 50), null, 2);
+            } catch (e) {
+                document.getElementById('output').textContent = e.toString();
+            }
+        }
+        run();
+    </script>
+</body>
+
+</html>

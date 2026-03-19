@@ -7,7 +7,7 @@ class Footer extends HTMLElement {
         // Absolute paths for links and images to ensure reliability on Vercel
         const homeLink = '/index.html';
         const imgPath = '/images/Logo.png';
-        const pagesPrefix = '/src/pages/';
+        const pagesPrefix = '/';
 
         this.innerHTML = `
             <footer class="footer">

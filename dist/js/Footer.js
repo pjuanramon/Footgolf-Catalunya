@@ -4,8 +4,10 @@ class Footer extends HTMLElement {
     }
 
     connectedCallback() {
-        const imgPath = '/images/Logo.png';
+        // Absolute paths for links and images to ensure reliability on Vercel
         const homeLink = '/index.html';
+        const imgPath = '/images/Logo.png';
+        const pagesPrefix = '/src/pages/';
 
         this.innerHTML = `
             <footer class="footer">
@@ -21,18 +23,18 @@ class Footer extends HTMLElement {
                     <div>
                         <h3 class="footer-title">Competición</h3>
                         <ul class="footer-links">
-                            <li><a href="/calendario.html">Calendario 2026</a></li>
-                            <li><a href="/clasificaciones.html">Clasificaciones</a></li>
-                            <li><a href="/equipos.html">Campeonato por Equipos</a></li>
-                            <li><a href="/palmares.html">Palmarés</a></li>
+                            <li><a href="${pagesPrefix}calendario.html">Calendario 2026</a></li>
+                            <li><a href="${pagesPrefix}clasificaciones.html">Clasificaciones</a></li>
+                            <li><a href="${pagesPrefix}equipos.html">Campeonato por Equipos</a></li>
+                            <li><a href="${pagesPrefix}palmares.html">Palmarés</a></li>
                         </ul>
                     </div>
                     <div>
                         <h3 class="footer-title">Institucional</h3>
                         <ul class="footer-links">
-                            <li><a href="/institucional.html">Sobre nosotros</a></li>
-                            <li><a href="/jugadores.html">Licencias</a></li>
-                            <li><a href="/circular.html">Circular Oficial</a></li>
+                            <li><a href="${pagesPrefix}institucional.html">Sobre nosotros</a></li>
+                            <li><a href="${pagesPrefix}jugadores.html">Licencias</a></li>
+                            <li><a href="${pagesPrefix}circular.html">Circular Oficial</a></li>
                             <li><a href="#">Contacto</a></li>
                         </ul>
                     </div>

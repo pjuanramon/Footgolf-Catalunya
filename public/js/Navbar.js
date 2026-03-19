@@ -17,14 +17,14 @@ class Navbar extends HTMLElement {
                 <button class="menu-toggle" aria-label="Toggle menu">☰</button>
                 <div class="nav-links">
                     <a href="${homeLink}">Inicio</a>
-                    <a href="/src/pages/calendario.html">Calendario 2026</a>
-                    <a href="/src/pages/clasificaciones.html">Clasificaciones</a>
-                    <a href="/src/pages/inscripciones.html">Inscripciones</a>
-                    <a href="/src/pages/jugadores.html">Jugadores & Licencias</a>
-                    <a href="/src/pages/institucional.html">Institucional</a>
-                    <a href="/src/pages/equipos.html">Campeonato Equipos</a>
-                    <a href="/src/pages/circular.html">Circular Oficial</a>
-                    <a href="/src/pages/palmares.html">Palmarés</a>
+                    <a href="/calendario.html">Calendario 2026</a>
+                    <a href="/clasificaciones.html">Clasificaciones</a>
+                    <a href="/inscripciones.html">Inscripciones</a>
+                    <a href="/jugadores.html">Jugadores & Licencias</a>
+                    <a href="/institucional.html">Institucional</a>
+                    <a href="/equipos.html">Campeonato Equipos</a>
+                    <a href="/circular.html">Circular Oficial</a>
+                    <a href="/palmares.html">Palmarés</a>
                 </div>
             </nav>
         `;

@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Footgolf Catalunya</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --admin-bg: #0f172a;
+            --admin-card: #1e293b;
+            --admin-border: #334155;
+        }
+        body.admin-body {
+            background: var(--admin-bg);
+            color: white;
+            padding: 2rem;
+            font-family: 'Outfit', sans-serif;
+        }
+        .login-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--admin-bg);
+            display: flex;
+            align-items: center; justify-content: center;
+            z-index: 1000;
+        }
+        .login-card {
+            background: var(--admin-card);
+            padding: 2.5rem;
+            border-radius: 1.5rem;
+            border: 1px solid var(--admin-border);
+            width: 100%; max-width: 400px;
+            text-align: center;
+        }
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+        }
+        .tab-nav {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--admin-border);
+            padding-bottom: 1rem;
+        }
+        .tab-btn {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            transition: all 0.3s;
+        }
+        .tab-btn.active {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+        }
+        .admin-card {
+            background: var(--admin-card);
+            border-radius: 1.25rem;
+            border: 1px solid var(--admin-border);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th {
+            background: rgba(255,255,255,0.05);
+            text-align: left;
+            padding: 1rem 1.5rem;
+            color: #94a3b8;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+        td {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--admin-border);
+        }
+        .badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .badge-success { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
+        .badge-warn { background: rgba(234, 179, 8, 0.2); color: #facc15; }
+        .badge-error { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+        
+        button.btn-sm {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
+        }
+        
+        .modal {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--admin-card);
+            border: 1px solid var(--admin-border);
+            padding: 2rem;
+            border-radius: 1.5rem;
+            z-index: 1100;
+            width: 90%; max-width: 600px;
+            display: none;
+        }
+        .overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 1050;
+            display: none;
+        }
+    </style>
+  <link rel="stylesheet" crossorigin href="/assets/main-2iTdLJGo.css">
+</head>
+<body class="admin-body">
+    
+    <div id="loginOverlay" class="login-overlay">
+        <div class="login-card">
+            <h2 style="margin-bottom: 1rem;">Acceso Admin</h2>
+            <input type="password" id="secretInput" placeholder="Clave Administrador" class="btn" style="background: var(--admin-bg); color: white; width: 100%; margin-bottom: 1rem;">
+            <button onclick="login()" class="btn btn-primary" style="width: 100%;">Entrar →</button>
+        </div>
+    </div>
+
+    <div class="admin-header">
+        <h1 class="gradient-text">Panel Control 2026</h1>
+        <button onclick="logout()" class="btn btn-sm" style="background: var(--admin-border);">Cerrar Sesión</button>
+    </div>
+
+    <nav class="tab-nav">
+        <button onclick="showTab('jugadores')" id="tab-jugadores" class="tab-btn active">Jugadores</button>
+        <button onclick="showTab('torneos')" id="tab-torneos" class="tab-btn">Torneos 2026</button>
+    </nav>
+
+    <!-- Tab Jugadores -->
+    <div id="tabContent-jugadores" class="tab-content">
+        <div style="display:flex; justify-content:flex-end; margin-bottom:1rem">
+            <button onclick="openModal('nuevo-jugador')" class="btn btn-primary btn-sm">+ Nuevo Jugador</button>
+        </div>
+        <div class="admin-card">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nickname</th>
+                        <th>Nombre Completo</th>
+                        <th>Email / Telefono</th>
+                        <th>Edad / Género</th>
+                        <th>Club</th>
+                        <th>Licencia 2026</th>
+                        <th>Categorías</th>
+                    </tr>
+                </thead>
+                <tbody id="jugadoresTable">
+                    <!-- Injected -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Tab Torneos -->
+    <div id="tabContent-torneos" class="tab-content" style="display: none;">
+        <div class="admin-card">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Etapa</th>
+                        <th>Fecha</th>
+                        <th>Tipo</th>
+                        <th>Estado</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody id="torneosTable">
+                    <!-- Injected -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal Inscritos -->
+    <div id="overlay" class="overlay" onclick="closeModal()"></div>
+    <div id="modal" class="modal">
+        <h3 id="modalTitle" style="margin-bottom: 1.5rem;">Lista de Inscritos</h3>
+        <div id="modalContent" style="max-height: 400px; overflow-y: auto;">
+            <!-- Injected -->
+        </div>
+        <button onclick="closeModal()" class="btn btn-primary" style="margin-top: 1.5rem; width: 100%;">Cerrar</button>
+    </div>
+
+    <script>
+        let adminSecret = localStorage.getItem('adminSecret');
+        if (adminSecret) login(adminSecret);
+
+        async function api(path, method = 'GET', body = null) {
+            const headers = {
+                'x-admin-secret': adminSecret,
+                'Content-Type': 'application/json'
+            };
+            const options = { method, headers };
+            if (body) options.body = JSON.stringify(body);
+
+            const res = await fetch(`/api/${path}`, options);
+            if (res.status === 401) {
+                logout();
+                return null;
+            }
+            return res.json();
+        }
+
+        async function login(explicitSecret = null) {
+            const input = document.getElementById('secretInput').value;
+            adminSecret = explicitSecret || input;
+            
+            // Probar acceso con una ruta simple
+            const data = await api('admin/jugadores');
+            if (data) {
+                localStorage.setItem('adminSecret', adminSecret);
+                document.getElementById('loginOverlay').style.display = 'none';
+                renderData();
+            } else if (!explicitSecret) {
+                alert('Clave incorrecta');
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('adminSecret');
+            location.reload();
+        }
+
+        function showTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`tabContent-${tab}`).style.display = 'block';
+            document.getElementById(`tab-${tab}`).classList.add('active');
+        }
+
+        async function renderData() {
+            // Cargar Jugadores
+            const jugadores = await api('admin/jugadores');
+            const jTable = document.getElementById('jugadoresTable');
+            jTable.innerHTML = jugadores.map(j => `
+                <tr>
+                    <td style="font-weight:800; color:var(--primary-color)">${j.nickname}</td>
+                    <td>${j.nombre_completo || '-'}</td>
+                    <td style="font-size:0.8rem">${j.email}<br><span style="opacity:0.6">${j.telefono || '-'}</span></td>
+                    <td style="font-size:0.8rem">${j.fecha_nacimiento || '-'}<br><span style="opacity:0.6">${j.genero || '-'}</span></td>
+                    <td style="font-size:0.8rem">${j.club || 'Independiente'}</td>
+                    <td><span class="badge ${j.tiene_licencia ? 'badge-success' : 'badge-error'}">${j.tiene_licencia ? 'SÍ' : 'NO'}</span></td>
+                    <td><span style="font-size:0.8rem">${(j.categorias_calculadas || []).join(', ') || '-'}</span></td>
+                </tr>
+            `).join('');
+
+            // Cargar Torneos
+            const torneos = await api('etapas/listado');
+            const tTable = document.getElementById('torneosTable');
+            tTable.innerHTML = torneos.map(t => `
+                <tr>
+                    <td>${t.nombre}</td>
+                    <td>${new Date(t.fecha).toLocaleDateString()}</td>
+                    <td><span class="badge" style="background:rgba(255,255,255,0.1)">${t.tipo.toUpperCase()}</span></td>
+                    <td><span class="badge ${t.estado === 'abierta' ? 'badge-success' : t.estado === 'cerrada' ? 'badge-warn' : 'badge-error'}">${t.estado.toUpperCase()}</span></td>
+                    <td style="display:flex; gap:0.5rem">
+                        <button onclick="verInscritos(${t.id}, '${t.nombre}')" class="btn btn-sm btn-primary">Inscritos</button>
+                        <select onchange="updateEstado(${t.id}, this.value)" class="btn btn-sm" style="background:var(--admin-bg); color:white; border:1px solid var(--admin-border)">
+                            <option value="">Cambiar...</option>
+                            <option value="abierta">Abrir</option>
+                            <option value="cerrada">Cerrar</option>
+                            <option value="finalizada">Finalizar</option>
+                        </select>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function updateEstado(id, estado) {
+            if (!estado) return;
+            const res = await api('admin/modificar-etapa', 'POST', { id, estado });
+            if (res.ok) renderData();
+        }
+
+        async function openModal(type, extra = null) {
+            const modal = document.getElementById('modal');
+            const overlay = document.getElementById('overlay');
+            const content = document.getElementById('modalContent');
+            
+            if (type === 'nuevo-jugador') {
+                document.getElementById('modalTitle').textContent = 'Registrar Nuevo Jugador';
+                content.innerHTML = `
+                    <form onsubmit="crearJugador(event)">
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem">
+                            <div style="margin-bottom:1rem">
+                                <label>Nombre Completo:</label>
+                                <input type="text" name="nombre" class="btn" style="width:100%; background:var(--admin-bg)" required>
+                            </div>
+                            <div style="margin-bottom:1rem">
+                                <label>Nickname:</label>
+                                <input type="text" name="nickname" class="btn" style="width:100%; background:var(--admin-bg)" required>
+                            </div>
+                        </div>
+                        <div style="margin-bottom:1rem">
+                            <label>Email:</label>
+                            <input type="email" name="email" class="btn" style="width:100%; background:var(--admin-bg)" required>
+                        </div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem">
+                            <div style="margin-bottom:1rem">
+                                <label>Teléfono:</label>
+                                <input type="tel" name="telefono" class="btn" style="width:100%; background:var(--admin-bg)">
+                            </div>
+                            <div style="margin-bottom:1rem">
+                                <label>F. Nacimiento:</label>
+                                <input type="date" name="fecha_nacimiento" class="btn" style="width:100%; background:var(--admin-bg)">
+                            </div>
+                        </div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem">
+                            <div style="margin-bottom:1rem">
+                                <label>Género:</label>
+                                <select name="genero" class="btn" style="width:100%; background:var(--admin-bg)">
+                                    <option value="masculino">Masculino</option>
+                                    <option value="femenino">Femenino</option>
+                                </select>
+                            </div>
+                            <div style="margin-bottom:1rem">
+                                <label>Club:</label>
+                                <select name="club" class="btn" style="width:100%; background:var(--admin-bg)">
+                                    <option value="Independiente">Independiente</option>
+                                    <option value="JABALI TEAM FOOTGOLF">JABALI TEAM FOOTGOLF</option>
+                                    <option value="Apex FootGolf">Apex FootGolf</option>
+                                    <option value="BARCELONA FOOTGOLF">BARCELONA FOOTGOLF</option>
+                                    <option value="AC Maktub FG">AC Maktub FG</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width:100%; margin-top:1rem">Guardar Jugador</button>
+                    </form>
+                `;
+            } else if (type === 'nueva-inscripcion') {
+                const {etapa_id, nombre} = extra;
+                const jugadores = await api('admin/jugadores');
+                document.getElementById('modalTitle').textContent = `Inscribir en ${nombre}`;
+                content.innerHTML = `
+                    <form onsubmit="inscribirManual(event, ${etapa_id})">
+                        <div style="margin-bottom:1rem">
+                            <label>Seleccionar Jugador:</label>
+                            <select name="jugador_id" class="btn" style="width:100%; background:var(--admin-bg)" required>
+                                ${jugadores.map(j => `<option value="${j.id}">${j.nickname} (${j.nombre_completo})</option>`).join('')}
+                            </select>
+                        </div>
+                        <div style="margin-bottom:1rem">
+                            <label>Nombre Equipo (Opcional):</label>
+                            <input type="text" name="equipo" placeholder="Dejar vacío si es individual" class="btn" style="width:100%; background:var(--admin-bg)">
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width:100%">Confirmar Inscripción</button>
+                    </form>
+                `;
+            }
+
+            modal.style.display = 'block';
+            overlay.style.display = 'block';
+        }
+
+        async function crearJugador(e) {
+            e.preventDefault();
+            const f = e.target;
+            const res = await api('admin/crear-jugador', 'POST', {
+                nombre_completo: f.nombre.value,
+                nickname: f.nickname.value,
+                email: f.email.value,
+                telefono: f.telefono ? f.telefono.value : null,
+                fecha_nacimiento: f.fecha_nacimiento ? f.fecha_nacimiento.value : null,
+                genero: f.genero ? f.genero.value : null,
+                club: f.club ? f.club.value : 'Independiente'
+            });
+            if (res.ok) {
+                closeModal();
+                renderData();
+            }
+        }
+
+        async function inscribirManual(e, etapa_id) {
+            e.preventDefault();
+            const f = e.target;
+            const res = await api('admin/inscripcion-manual', 'POST', {
+                etapa_id,
+                jugador_id: f.jugador_id.value,
+                equipo_nombre: f.equipo.value
+            });
+            if (res.ok) {
+                closeModal();
+                renderData();
+            }
+        }
+
+        async function verInscritos(id, nombre) {
+            const inscritos = await api(`admin/inscripciones?etapa_id=${id}`);
+            const modal = document.getElementById('modal');
+            const overlay = document.getElementById('overlay');
+            const content = document.getElementById('modalContent');
+            
+            document.getElementById('modalTitle').textContent = `Inscritos: ${nombre}`;
+            content.innerHTML = `
+                <div style="display:flex; justify-content:flex-end; margin-bottom:1rem">
+                    <button onclick="openModal('nueva-inscripcion', {etapa_id:${id}, nombre:'${nombre}'})" class="btn btn-sm btn-primary">+ Añadir a Mano</button>
+                </div>
+                ${inscritos.length === 0 ? '<p>No hay inscritos todavía.</p>' : `
+                <table style="font-size:0.85rem">
+                    <thead><tr><th>Jornada</th><th>Nickname</th><th>Pago</th></tr></thead>
+                    <tbody>
+                        ${inscritos.map(i => `
+                            <tr>
+                                <td>${i.equipo_nombre || 'Individual'}</td>
+                                <td>${i.jugadores.nickname}</td>
+                                <td><span class="badge badge-success">SÍ</span></td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `}`;
+
+            modal.style.display = 'block';
+            overlay.style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+        }
+
+    </script>
+</body>
+</html>

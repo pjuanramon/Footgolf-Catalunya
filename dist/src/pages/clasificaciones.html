@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clasificaciones - Footgolf Catalunya</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <script src="/js/Navbar.js" defer></script>
+    <script src="/js/Footer.js" defer></script>
+    <style>
+        .leaderboard-table th:nth-child(1),
+        .leaderboard-table td:nth-child(1) {
+            position: sticky;
+            left: 0;
+            z-index: 10;
+            background: #f8fafc;
+            min-width: 60px;
+            width: 60px;
+        }
+
+        .leaderboard-table td:nth-child(1) {
+            background: white;
+        }
+
+        .leaderboard-table th:nth-child(2),
+        .leaderboard-table td:nth-child(2) {
+            position: sticky;
+            left: 60px;
+            z-index: 10;
+            background: #f8fafc;
+            border-right: 1px solid var(--border-color);
+            max-width: 140px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .leaderboard-table td:nth-child(2) {
+            background: white;
+        }
+
+        /* Shadow effect for sticky columns */
+        .leaderboard-table th:nth-child(2)::after,
+        .leaderboard-table td:nth-child(2)::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: -8px;
+            width: 8px;
+            height: 100%;
+            background: linear-gradient(to right, rgba(0, 0, 0, 0.05), transparent);
+            pointer-events: none;
+        }
+
+        .scroll-hint {
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-light);
+            font-size: 0.85rem;
+            margin-bottom: 0.75rem;
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .scroll-hint {
+                display: flex;
+            }
+        }
+    </style>
+  <link rel="stylesheet" crossorigin href="/assets/main-2iTdLJGo.css">
+</head>
+
+<body>
+    <app-navbar></app-navbar>
+
+    <main>
+        <header class="page-header">
+            <h1 class="gradient-text">Clasificaciones</h1>
+            <p>Ranking general y estadísticas de los jugadores en la temporada actual.</p>
+        </header>
+
+        <section class="section rankings">
+            <div class="container">
+                <div class="section-header"
+                    style="display: flex; flex-direction: column; align-items: flex-start; gap: 1rem; margin-bottom: 3rem;">
+                    <div>
+                        <h2 class="section-title" style="text-align: left; margin-bottom: 0.5rem;">Ranking Catalán 2026
+                        </h2>
+                        <p id="jornada-text" style="color: var(--text-light);">Cargando clasificación...</p>
+                    </div>
+
+                    <div class="category-selector" id="category-buttons"
+                        style="display: flex; gap: 0.5rem; background: #f1f5f9; padding: 0.4rem; border-radius: 9999px; border: 1px solid var(--border-color); flex-wrap: wrap;">
+                        <!-- Buttons injected by JS -->
+                    </div>
+                </div>
+
+                    <div class="scroll-hint">
+                        <span>↔️ Desliza lateralmente para ver todas las jornadas</span>
+                    </div>
+
+                    <div class="table-container"
+                        style="background: white; border-radius: 1.5rem; border: 1px solid var(--border-color); overflow-x: auto; -webkit-overflow-scrolling: touch; box-shadow: var(--shadow-sm);">
+                        <table id="ranking-table" class="leaderboard-table"
+                            style="width: 100%; border-collapse: separate; border-spacing: 0; min-width: 700px;">
+                        <thead>
+                            <tr
+                                style="background: #f8fafc; text-align: left; border-bottom: 1px solid var(--border-color);">
+                                <th
+                                    style="padding: 1.25rem 1rem; font-weight: 700; font-size: 0.85rem; color: var(--text-light); text-transform: uppercase; width: 60px; text-align: center;">
+                                    Pos</th>
+                                <th
+                                    style="padding: 1.25rem 1.5rem; font-weight: 700; font-size: 0.85rem; color: var(--text-light); text-transform: uppercase;">
+                                    Jugador</th>
+                                <th
+                                    style="padding: 1.25rem 1.5rem; font-weight: 700; font-size: 0.85rem; color: var(--text-light); text-transform: uppercase; text-align: center;">
+                                    Puntos</th>
+                                <th
+                                    style="padding: 1.25rem 1.5rem; font-weight: 700; font-size: 0.85rem; color: var(--text-light); text-transform: uppercase; text-align: center;">
+                                    J1</th>
+                                <th
+                                    style="padding: 1.25rem 1.5rem; font-weight: 700; font-size: 0.85rem; color: var(--text-light); text-transform: uppercase; text-align: center;">
+                                    J2</th>
+                                <th
+                                    style="padding: 1.25rem 1.5rem; font-weight: 700; font-size: 0.85rem; color: var(--text-light); text-transform: uppercase; text-align: center;">
+                                    J3</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ranking-body">
+                            <!-- Injected by JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <script>
+                    let rankingsData = {};
+
+                    async function loadRankings() {
+                        try {
+                            // Obtenemos el ranking de la última etapa finalizada
+                            const res = await fetch('/api/etapas/listado?estado=finalizada');
+                            const etapas = await res.json();
+                            
+                            if (etapas.length === 0) {
+                                document.getElementById('jornada-text').textContent = "Aún no hay clasificaciones disponibles.";
+                                return;
+                            }
+
+                            // La última etapa finalizada tiene el JSON en archivo_excel (según la nueva lógica)
+                            const ultimaEtapa = etapas[etapas.length - 1];
+                            const json = JSON.parse(ultimaEtapa.archivo_excel);
+                            rankingsData = json.categorias;
+
+                            // Update dynamic stage text
+                            const jornadaText = document.getElementById('jornada-text');
+                            if (jornadaText) {
+                                jornadaText.textContent = `Clasificación oficial de la temporada tras la Etapa ${json.jornada}.`;
+                            }
+
+                            const btnContainer = document.getElementById('category-buttons');
+                            btnContainer.innerHTML = '';
+
+                            const categories = Object.keys(rankingsData);
+                            // Sort categories strategically: Absoluta first, then Caballeros/Rookie/Senior...
+                            const catPriority = ['Absoluta', 'Caballeros', 'Rookie', 'Senior 45 +', 'Senior 55 +', 'Damas', 'Junior'];
+                            categories.sort((a, b) => {
+                                let idxA = catPriority.indexOf(a);
+                                let idxB = catPriority.indexOf(b);
+                                if (idxA === -1) idxA = 99;
+                                if (idxB === -1) idxB = 99;
+                                return idxA - idxB;
+                            });
+
+                            categories.forEach((cat) => {
+                                const btn = document.createElement('button');
+                                const safeId = cat.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase();
+                                btn.id = 'btn-' + safeId;
+                                btn.className = 'btn-cat';
+                                btn.textContent = cat;
+                                btn.onclick = () => updateRanking(cat);
+                                btn.style.cssText = `border: none; background: transparent; color: var(--text-main); padding: 0.5rem 1.5rem; border-radius: 9999px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;`;
+                                btnContainer.appendChild(btn);
+                            });
+
+                            const initialCat = categories.includes('Absoluta') ? 'Absoluta' : categories[0];
+                            if (initialCat) {
+                                updateRanking(initialCat);
+                            }
+                        } catch (e) {
+                            console.error("Error loading rankings:", e);
+                        }
+                    }
+
+                    function updateRanking(category) {
+                        const body = document.getElementById('ranking-body');
+                        const data = rankingsData[category] || [];
+
+                        document.querySelectorAll('.btn-cat').forEach(btn => {
+                            btn.style.background = 'transparent';
+                            btn.style.color = 'var(--text-main)';
+                        });
+
+                        const safeId = category.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase();
+                        const activeBtn = document.getElementById('btn-' + safeId);
+                        if (activeBtn) {
+                            activeBtn.style.background = 'var(--primary-color)';
+                            activeBtn.style.color = 'white';
+                        }
+
+                        body.innerHTML = '';
+                        // Filter out players with 0 points (and unlicensed per user rules)
+                        const filteredData = data.filter(player => player.total > 0 && !player.isUnlicensed);
+
+                        filteredData.forEach((player) => {
+                            const tr = document.createElement('tr');
+                            tr.style.borderBottom = '1px solid #f1f5f9';
+                            tr.style.transition = 'background 0.2s ease';
+                            tr.onmouseover = () => tr.style.background = '#f8fafc';
+                            tr.onmouseout = () => tr.style.background = 'transparent';
+
+                            const posColor = player.pos === 1 ? '#f59e0b' : player.pos === 2 ? '#94a3b8' : player.pos === 3 ? '#b45309' : 'var(--text-main)';
+                            const posWeight = player.pos <= 3 ? '800' : '500';
+
+                            tr.innerHTML = `
+                                <td style="padding: 1.25rem 1.5rem; font-weight: ${posWeight}; color: ${posColor};">#${player.pos}</td>
+                                <td style="padding: 1.25rem 1.5rem; font-weight: 600; color: var(--text-main);">${player.name}</td>
+                                <td style="padding: 1.25rem 1.5rem; text-align: center; font-weight: 700; color: var(--primary-color);">${player.total} pts</td>
+                                <td style="padding: 1.25rem 1.5rem; text-align: center; color: var(--text-light); font-size: 0.9rem;">${player.e1}</td>
+                                <td style="padding: 1.25rem 1.5rem; text-align: center; color: var(--text-light); font-size: 0.9rem;">${player.e2}</td>
+                                <td style="padding: 1.25rem 1.5rem; text-align: center; color: var(--text-light); font-size: 0.9rem;">${player.e3}</td>
+                            `;
+                            body.appendChild(tr);
+                        });
+                    }
+
+                    // Initial load
+                    loadRankings();
+                </script>
+            </div>
+        </section>
+    </main>
+
+    <app-footer></app-footer>
+</body>
+
+</html>
