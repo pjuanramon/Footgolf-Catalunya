@@ -8,11 +8,14 @@ const { calcularPrecioLicencia } = require('../../../lib/pricing');
 
 /**
  * Función auxiliar para normalizar texto (comparación robusta)
+ * Quita tildes, espacios extra y caracteres raros.
  */
 function normalizar(t) {
     if (!t) return '';
-    return t.toLowerCase().trim()
-        .normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // Quitar tildes
+    return t.toString().toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "") // Quitar tildes
+        .replace(/[^a-z0-9]/g, "");      // Quitar TODO lo que no sea letra o número (espacios, comas, etc.)
 }
 
 module.exports = async function handler(req, res) {
@@ -41,44 +44,48 @@ module.exports = async function handler(req, res) {
 
         // 1. VALIDACIÓN ESPECIAL: Si dice que ya pagó, verificar NickName en clasificaciones
         if (yaFuePagado) {
-            console.log(`Verificando NickName en RANKINGS para pago externo: ${nickname}`);
+            console.log(`Verificando NickName para pago externo: [${nickname}]`);
             
-            // Obtenemos la última etapa finalizada
+            // Obtenemos TODAS las etapas finalizadas recientes para mayor seguridad
             const { data: etapas } = await supabase
                 .from('etapas')
-                .select('archivo_excel')
+                .select('archivo_excel, nombre')
                 .eq('estado', 'finalizada')
-                .order('id', { ascending: false })
-                .limit(1);
+                .order('id', { ascending: false });
 
             if (!etapas || etapas.length === 0) {
-                // Si no hay etapas finalizadas, no podemos validar por ranking. 
-                // En este caso, dejamos pasar o pedimos validación manual.
-                // Según el usuario: "que revise en la pagina web de clasificaciones este ahi el Nick Name".
-                // Si la web está vacía, no podemos comprobar.
-                console.log('No hay etapas finalizadas para validar ranking.');
+                console.log('No hay etapas finalizadas para validar ranking. Se permite el paso por seguridad.');
             } else {
-                const rankingJson = JSON.parse(etapas[0].archivo_excel);
-                const categorias = rankingJson.categorias || {};
-                
-                // Buscamos en todas las categorías (o al menos en Absoluta)
                 let encontrado = false;
-                const nickNorm = normalizar(nickname);
+                const targetNorm = normalizar(nickname);
 
-                for (const cat in categorias) {
-                    const jugadores = categorias[cat];
-                    if (jugadores.some(p => normalizar(p.name) === nickNorm)) {
-                        encontrado = true;
-                        break;
+                console.log(`Buscando 'fingerprint': ${targetNorm}`);
+
+                // Buscamos en todas las etapas finalizadas (por si alguien faltó en la última pero estuvo en la anterior)
+                for (const etapa of etapas) {
+                    try {
+                        const rankingJson = JSON.parse(etapa.archivo_excel);
+                        const categorias = rankingJson.categorias || {};
+                        
+                        for (const cat in categorias) {
+                            const jugadores = categorias[cat];
+                            if (jugadores.some(p => normalizar(p.name) === targetNorm)) {
+                                encontrado = true;
+                                console.log(`Encontrado en Etapa: ${etapa.nombre}, Cat: ${cat}`);
+                                break;
+                            }
+                        }
+                    } catch (e) {
+                         console.error('Error parseando JSON de etapa:', etapa.nombre);
                     }
+                    if (encontrado) break;
                 }
 
                 if (!encontrado) {
                     return res.status(400).json({ 
-                        error: `No hemos encontrado el NickName "${nickname}" en las clasificaciones oficiales de 2026. Para acogerte a esta opción, debes haber puntuado en alguna etapa previa. Si crees que es un error, contacta con la organización.` 
+                        error: `No hemos encontrado el NickName "${nickname}" en las clasificaciones oficiales de 2026. Para acogerte a esta opción, debes haber puntuado en alguna etapa previa. Si crees que es un error, asegúrate de escribirlo exactamente igual que en la tabla de clasificación.` 
                     });
                 }
-                console.log('Validación de ranking EXITOSA.');
             }
         }
 
