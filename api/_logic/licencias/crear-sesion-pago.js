@@ -19,7 +19,10 @@ module.exports = async function handler(req, res) {
         if (!supabase) return res.status(500).json({ error: 'Error de configuración: Supabase no inicializado.' });
         if (!stripe) return res.status(500).json({ error: 'Error de configuración: Stripe no inicializado.' });
 
-        const { nickname, email, nombre_completo, fecha_nacimiento, genero, telefono, club, anio_primera_licencia } = req.body;
+        const { nickname, email, nombre_completo, fecha_nacimiento, genero, telefono, club, es_primera_licencia, anio_inicio } = req.body;
+
+        const anioActual = new Date().getFullYear();
+        const anioPrimeraLicencia = es_primera_licencia === 'si' ? anioActual : parseInt(anio_inicio);
 
         // Validaciones
         if (!nickname || !nickname.trim()) {
@@ -28,11 +31,9 @@ module.exports = async function handler(req, res) {
         if (!email || !email.trim()) {
             return res.status(400).json({ error: 'El email es obligatorio.' });
         }
-        if (!anio_primera_licencia) {
+        if (!anioPrimeraLicencia) {
             return res.status(400).json({ error: 'El año de primera licencia es obligatorio.' });
         }
-
-        const anioActual = new Date().getFullYear();
 
         // Buscar si el jugador ya existe
         const { data: jugadorExistente } = await supabase
@@ -84,7 +85,7 @@ module.exports = async function handler(req, res) {
                 genero: genero || '',
                 telefono: telefono || '',
                 club: club || '',
-                anio_primera_licencia: String(anio_primera_licencia),
+                anio_primera_licencia: String(anioPrimeraLicencia),
                 anio: String(anioActual)
             },
             success_url: `${process.env.APP_URL}/src/pages/licencias.html?resultado=exito`,
