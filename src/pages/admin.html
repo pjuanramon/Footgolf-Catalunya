@@ -291,19 +291,50 @@
                 document.getElementById('modalTitle').textContent = 'Registrar Nuevo Jugador';
                 content.innerHTML = `
                     <form onsubmit="crearJugador(event)">
-                        <div style="margin-bottom:1rem">
-                            <label>Nombre Completo:</label>
-                            <input type="text" name="nombre" class="btn" style="width:100%; background:var(--admin-bg)" required>
-                        </div>
-                        <div style="margin-bottom:1rem">
-                            <label>Nickname:</label>
-                            <input type="text" name="nickname" class="btn" style="width:100%; background:var(--admin-bg)" required>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem">
+                            <div style="margin-bottom:1rem">
+                                <label>Nombre Completo:</label>
+                                <input type="text" name="nombre" class="btn" style="width:100%; background:var(--admin-bg)" required>
+                            </div>
+                            <div style="margin-bottom:1rem">
+                                <label>Nickname:</label>
+                                <input type="text" name="nickname" class="btn" style="width:100%; background:var(--admin-bg)" required>
+                            </div>
                         </div>
                         <div style="margin-bottom:1rem">
                             <label>Email:</label>
                             <input type="email" name="email" class="btn" style="width:100%; background:var(--admin-bg)" required>
                         </div>
-                        <button type="submit" class="btn btn-primary" style="width:100%">Guardar Jugador</button>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem">
+                            <div style="margin-bottom:1rem">
+                                <label>Teléfono:</label>
+                                <input type="tel" name="telefono" class="btn" style="width:100%; background:var(--admin-bg)">
+                            </div>
+                            <div style="margin-bottom:1rem">
+                                <label>F. Nacimiento:</label>
+                                <input type="date" name="fecha_nacimiento" class="btn" style="width:100%; background:var(--admin-bg)">
+                            </div>
+                        </div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem">
+                            <div style="margin-bottom:1rem">
+                                <label>Género:</label>
+                                <select name="genero" class="btn" style="width:100%; background:var(--admin-bg)">
+                                    <option value="masculino">Masculino</option>
+                                    <option value="femenino">Femenino</option>
+                                </select>
+                            </div>
+                            <div style="margin-bottom:1rem">
+                                <label>Club:</label>
+                                <select name="club" class="btn" style="width:100%; background:var(--admin-bg)">
+                                    <option value="Independiente">Independiente</option>
+                                    <option value="JABALI TEAM FOOTGOLF">JABALI TEAM FOOTGOLF</option>
+                                    <option value="Apex FootGolf">Apex FootGolf</option>
+                                    <option value="BARCELONA FOOTGOLF">BARCELONA FOOTGOLF</option>
+                                    <option value="AC Maktub FG">AC Maktub FG</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width:100%; margin-top:1rem">Guardar Jugador</button>
                     </form>
                 `;
             } else if (type === 'nueva-inscripcion') {
@@ -337,7 +368,11 @@
             const res = await api('admin/crear-jugador', 'POST', {
                 nombre_completo: f.nombre.value,
                 nickname: f.nickname.value,
-                email: f.email.value
+                email: f.email.value,
+                telefono: f.telefono ? f.telefono.value : null,
+                fecha_nacimiento: f.fecha_nacimiento ? f.fecha_nacimiento.value : null,
+                genero: f.genero ? f.genero.value : null,
+                club: f.club ? f.club.value : 'Independiente'
             });
             if (res.ok) {
                 closeModal();
