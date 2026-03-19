@@ -149,12 +149,13 @@
             <table>
                 <thead>
                     <tr>
-                        <th>Jugador / Nickname</th>
-                        <th>Email</th>
-                        <th>Licencia</th>
+                        <th>Nickname</th>
+                        <th>Nombre Completo</th>
+                        <th>Email / Telefono</th>
+                        <th>Edad / Género</th>
+                        <th>Club</th>
+                        <th>Licencia 2026</th>
                         <th>Categorías</th>
-                        <th>Desde</th>
-                        <th>Acción</th>
                     </tr>
                 </thead>
                 <tbody id="jugadoresTable">
@@ -247,12 +248,13 @@
             const jTable = document.getElementById('jugadoresTable');
             jTable.innerHTML = jugadores.map(j => `
                 <tr>
-                    <td><strong>${j.nickname}</strong><br><span style="font-size:0.75rem; color:#94a3b8">${j.nombre_completo || '-'}</span></td>
-                    <td style="font-size:0.8rem">${j.email}</td>
-                    <td><span class="badge ${j.tiene_licencia ? 'badge-success' : 'badge-error'}">${j.tiene_licencia ? 'PAGADA' : 'PENDIENTE'}</span></td>
+                    <td style="font-weight:800; color:var(--primary-color)">${j.nickname}</td>
+                    <td>${j.nombre_completo || '-'}</td>
+                    <td style="font-size:0.8rem">${j.email}<br><span style="opacity:0.6">${j.telefono || '-'}</span></td>
+                    <td style="font-size:0.8rem">${j.fecha_nacimiento || '-'}<br><span style="opacity:0.6">${j.genero || '-'}</span></td>
+                    <td style="font-size:0.8rem">${j.club || 'Independiente'}</td>
+                    <td><span class="badge ${j.tiene_licencia ? 'badge-success' : 'badge-error'}">${j.tiene_licencia ? 'SÍ' : 'NO'}</span></td>
                     <td><span style="font-size:0.8rem">${(j.categorias_calculadas || []).join(', ') || '-'}</span></td>
-                    <td style="font-size:0.85rem; font-weight:600; color:var(--primary-color)">${j.anio_licencia || 2026}</td>
-                    <td><button class="btn btn-sm" style="opacity:0.5; pointer-events:none">Editar</button></td>
                 </tr>
             `).join('');
 
