@@ -20,12 +20,30 @@ async function getRawBody(req) {
 
 module.exports = async function handler(req, res) {
     try {
-        const { pathname } = parse(req.url);
+        // 1. Parsear URL y Query Params
+        const parsedUrl = parse(req.url, true);
+        const { pathname, query } = parsedUrl;
         const path = pathname.replace('/api/', '');
+        
+        // Adjuntar query a la request para compatibilidad con sub-handlers
+        req.query = query;
 
-        // 1. Obtener Raw Body y adjuntarlo a la request para que los sub-handlers lo usen
+        // 2. Obtener Raw Body
         const rawBody = await getRawBody(req);
         req.rawBody = rawBody;
+
+        // 3. Intentar parsear JSON Body si no es un webhook
+        if (rawBody.length > 0) {
+            try {
+                // Solo si el content-type dice ser JSON
+                if (req.headers['content-type'] && req.headers['content-type'].includes('application/json')) {
+                    req.body = JSON.parse(rawBody.toString());
+                }
+            } catch (e) {
+                console.warn('Fallo al parsear JSON body:', e.message);
+                // No detenemos el proceso, algunos handlers podrían no necesitarlo o manejarlo distinto
+            }
+        }
 
         // --- ENRUTADOR DINÁMICO ---
         

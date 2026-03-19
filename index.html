@@ -116,30 +116,60 @@
                         style="padding: 0.5rem 1rem; font-size: 0.9rem; color: white; border-color: rgba(255,255,255,0.3);">Ver
                         Calendario Completo &rarr;</a>
                 </div>
-                <div class="calendar-grid">
-                    <div class="event-card">
-                        <span class="date"><span style="font-size: 1.5rem; display: block;">15</span>Mar</span>
-                        <div class="event-info">
-                            <h4>Etapa 3: La Roca</h4>
-                            <p>Individual</p>
-                        </div>
-                    </div>
-                    <div class="event-card">
-                        <span class="date"><span style="font-size: 1.5rem; display: block;">12</span>Abr</span>
-                        <div class="event-info">
-                            <h4>Etapa 4: La Roca</h4>
-                            <p>Individual</p>
-                        </div>
-                    </div>
-                    <div class="event-card">
-                        <span class="date" style="background: var(--secondary-color);"><span
-                                style="font-size: 1.5rem; display: block;">10</span>May</span>
-                        <div class="event-info">
-                            <h4>Camp. Equipos J1</h4>
-                            <p>La Roca</p>
-                        </div>
-                    </div>
+                <div class="calendar-grid" id="upcoming-events">
+                    <!-- Cargando dinámicamente... -->
+                    <p style="text-align: center; grid-column: 1/-1; color: #94a3b8;">Cargando próximos torneos...</p>
                 </div>
+
+                <script>
+                    async function loadUpcomingEvents() {
+                        const container = document.getElementById('upcoming-events');
+                        try {
+                            const res = await fetch('/api/etapas/listado');
+                            const stages = await res.json();
+                            
+                            const hoy = new Date();
+                            hoy.setHours(0, 0, 0, 0);
+
+                            // Filtrar por fecha futura y ordenar
+                            const proximas = stages
+                                .filter(s => new Date(s.fecha) >= hoy)
+                                .sort((a, b) => new Date(a.fecha) - new Date(b.fecha))
+                                .slice(0, 3);
+
+                            if (proximas.length === 0) {
+                                container.innerHTML = '<p style="text-align: center; grid-column: 1/-1; color: #94a3b8;">No hay torneos próximos programados.</p>';
+                                return;
+                            }
+
+                            container.innerHTML = proximas.map(s => {
+                                const d = new Date(s.fecha);
+                                const dia = d.getDate();
+                                const mes = d.toLocaleString('es-ES', { month: 'short' }).replace('.', '').toUpperCase();
+                                
+                                // Color secundario para el Campeonato de Equipos (si el nombre contiene "Equipos")
+                                const dateStyle = s.nombre.toLowerCase().includes('equipos') 
+                                    ? 'style="background: var(--secondary-color);"' 
+                                    : '';
+
+                                return `
+                                    <div class="event-card">
+                                        <span class="date" ${dateStyle}><span style="font-size: 1.5rem; display: block;">${dia}</span>${mes}</span>
+                                        <div class="event-info">
+                                            <h4>${s.nombre}: ${s.ubicacion}</h4>
+                                            <p>${s.nombre.toLowerCase().includes('equipos') ? 'Por Equipos' : 'Individual'}</p>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('');
+
+                        } catch (err) {
+                            console.error('Error cargando torneos:', err);
+                            container.innerHTML = '<p style="text-align: center; grid-column: 1/-1; color: #94a3b8;">No se pudo cargar el calendario.</p>';
+                        }
+                    }
+                    loadUpcomingEvents();
+                </script>
             </div>
         </section>
         <!-- Redes Sociales -->
