@@ -126,54 +126,108 @@
         const emailInput = document.getElementById('email-input');
         const nicknameInput = document.getElementById('nickname-input');
         const stagesList = document.getElementById('stages-list');
+        let currentStages = [];
+        let playerIsJuanRa = false;
 
         async function loadStages() {
             try {
                 const res = await fetch('/api/etapas/listado?estado=abierta');
-                const stages = await res.json();
-
-                if (stages.length === 0) {
-                    stagesList.innerHTML = '<p style="text-align: center; color: var(--text-light);">No hay etapas abiertas para inscripción en este momento.</p>';
-                    return;
-                }
-
-                stagesList.innerHTML = stages.map(etapa => {
-                    const esEquipo = etapa.tipo === 'equipos';
-                    const precio = esEquipo ? etapa.precio_equipo : 22;
-                    const colorStyle = esEquipo ? 'style="background: var(--secondary-color);"' : '';
-
-                    return `
-                        <div class="event-card active dark-section" style="margin-bottom: 1.5rem; background: var(--bg-dark); color: white; border: 1px solid rgba(255,255,255,0.1); ${esEquipo ? 'border-color: var(--secondary-color);' : ''}">
-                            <div class="date" ${colorStyle} style="min-width: 100px; padding: 1.5rem;">
-                                <span style="font-size: 2rem; line-height: 1; display: block;">${new Date(etapa.fecha).getDate()}</span>
-                                <span style="font-size: 0.9rem; text-transform: uppercase; opacity: 0.9;">${new Date(etapa.fecha).toLocaleString('es-ES', { month: 'short' }).replace('.', '')}</span>
-                            </div>
-                            <div class="event-info" style="flex-grow: 1; padding: 1.5rem; display: flex; flex-direction: column; justify-content: center;">
-                                <h3 style="margin: 0; font-size: 1.5rem; ${esEquipo ? 'color: var(--secondary-color);' : 'color: white;'}">${etapa.nombre}</h3>
-                                <div style="margin-top: 0.75rem;">
-                                    <span style="background: rgba(255,255,255,0.1); padding: 0.4rem 1rem; border-radius: 99px; font-size: 0.9rem; color: #cbd5e1; border: 1px solid rgba(255,255,255,0.1); display: inline-flex; align-items: center; gap: 0.5rem;">
-                                        📍 ${etapa.ubicacion || 'Por determinar'}
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="stage-action" style="padding: 1.25rem; display: flex; flex-direction: column; align-items: flex-end; justify-content: center;">
-                                ${esEquipo ? `
-                                    <div style="margin-bottom: 0.5rem;">
-                                        <input type="text" id="team-${etapa.id}" placeholder="Nombre del Equipo *" 
-                                               style="padding: 0.5rem; border-radius: 0.5rem; border: 1px solid var(--secondary-color); width: 200px; background: rgba(255,255,255,0.1); color: white;">
-                                    </div>
-                                ` : ''}
-                                <button onclick="inscribirse(${etapa.id}, ${esEquipo})" class="btn btn-primary" ${colorStyle}>
-                                    Pagar Inscripción (${precio}€) →
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
+                currentStages = await res.json();
+                renderStages();
             } catch (err) {
                 stagesList.innerHTML = '<p style="text-align: center; color: var(--error-color);">Error al cargar las etapas.</p>';
             }
         }
+
+        function renderStages() {
+            if (currentStages.length === 0) {
+                stagesList.innerHTML = '<p style="text-align: center; color: var(--text-light);">No hay etapas abiertas para inscripción en este momento.</p>';
+                return;
+            }
+
+            stagesList.innerHTML = currentStages.map(etapa => {
+                const esEquipo = etapa.tipo === 'equipos';
+                let precio = esEquipo ? etapa.precio_equipo : 22;
+                
+                // Aplicar descuento visual si es JuanRa
+                if (!esEquipo && playerIsJuanRa) precio = 5;
+
+                const colorStyle = esEquipo ? 'style="background: var(--secondary-color);"' : '';
+
+                return `
+                    <div class="event-card active dark-section" style="margin-bottom: 1.5rem; background: var(--bg-dark); color: white; border: 1px solid rgba(255,255,255,0.1); ${esEquipo ? 'border-color: var(--secondary-color);' : ''}">
+                        <div class="date" ${colorStyle} style="min-width: 100px; padding: 1.5rem;">
+                            <span style="font-size: 2rem; line-height: 1; display: block;">${new Date(etapa.fecha).getDate()}</span>
+                            <span style="font-size: 0.9rem; text-transform: uppercase; opacity: 0.9;">${new Date(etapa.fecha).toLocaleString('es-ES', { month: 'short' }).replace('.', '')}</span>
+                        </div>
+                        <div class="event-info" style="flex-grow: 1; padding: 1.5rem; display: flex; flex-direction: column; justify-content: center;">
+                            <h3 style="margin: 0; font-size: 1.5rem; ${esEquipo ? 'color: var(--secondary-color);' : 'color: white;'}">${etapa.nombre}</h3>
+                            <div style="margin-top: 0.75rem;">
+                                <span style="background: rgba(255,255,255,0.1); padding: 0.4rem 1rem; border-radius: 99px; font-size: 0.9rem; color: #cbd5e1; border: 1px solid rgba(255,255,255,0.1); display: inline-flex; align-items: center; gap: 0.5rem;">
+                                    📍 ${etapa.ubicacion || 'Por determinar'}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="stage-action" style="padding: 1.25rem; display: flex; flex-direction: column; align-items: flex-end; justify-content: center;">
+                            ${esEquipo ? `
+                                <div style="margin-bottom: 0.5rem;">
+                                    <input type="text" id="team-${etapa.id}" placeholder="Nombre del Equipo *" 
+                                           style="padding: 0.5rem; border-radius: 0.5rem; border: 1px solid var(--secondary-color); width: 200px; background: rgba(255,255,255,0.1); color: white;">
+                                </div>
+                            ` : ''}
+                            <button onclick="inscribirse(${etapa.id}, ${esEquipo})" class="btn btn-primary" ${colorStyle}>
+                                Pagar Inscripción (${precio}€) →
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Búsqueda automática por email
+        let debounceTimer;
+        emailInput.addEventListener('input', () => {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(async () => {
+                const email = emailInput.value.trim();
+                if (email.length < 5 || !email.includes('@')) return;
+
+                try {
+                    const res = await fetch(`/api/jugadores/buscar?email=${encodeURIComponent(email)}`);
+                    if (res.ok) {
+                        const data = await res.json();
+                        nicknameInput.value = data.nickname;
+                        playerIsJuanRa = data.isJuanRa;
+                        
+                        // Mostrar mensaje de éxito
+                        const msg = document.createElement('div');
+                        msg.style.cssText = 'grid-column: span 2; font-size: 0.8rem; color: #4ade80; margin-top: -0.5rem; margin-bottom: 0.5rem;';
+                        msg.textContent = `✅ Jugador encontrado: ${data.nickname}. ¡Bienvenido de nuevo!`;
+                        
+                        // Limpiar mensajes anteriores
+                        const prevMsg = emailInput.parentElement.querySelector('.player-msg');
+                        if (prevMsg) prevMsg.remove();
+                        msg.classList.add('player-msg');
+                        emailInput.parentElement.insertAdjacentElement('afterend', msg);
+
+                    } else {
+                        // Jugador Nuevo
+                        playerIsJuanRa = false;
+                        const msg = document.createElement('div');
+                        msg.style.cssText = 'grid-column: span 2; font-size: 0.8rem; color: #fbbf24; margin-top: -0.5rem; margin-bottom: 0.5rem;';
+                        msg.innerHTML = `👋 ¡Jugador nuevo! Asegúrate de poner tu nickname igual que en Footgolf World. <a href="/src/pages/licencias.html" style="color:white; text-decoration:underline">¿Quieres sacarte la licencia?</a>`;
+                        
+                        const prevMsg = emailInput.parentElement.querySelector('.player-msg');
+                        if (prevMsg) prevMsg.remove();
+                        msg.classList.add('player-msg');
+                        emailInput.parentElement.insertAdjacentElement('afterend', msg);
+                    }
+                    renderStages(); // Actualizar precios visuales
+                } catch (e) {
+                    console.error('Error buscando jugador:', e);
+                }
+            }, 800);
+        });
 
         async function inscribirse(etapaId, esEquipo) {
             const emailValue = emailInput.value.trim();

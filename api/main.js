@@ -104,6 +104,9 @@ module.exports = async function handler(req, res) {
             case 'debug/env-check':
                 return require('./_logic/debug/env-check')(req, res);
 
+            case 'jugadores/buscar':
+                return require('./_logic/jugadores/buscar')(req, res);
+
             default:
                 return res.status(404).json({ 
                     error: `Ruta ${path} no encontrada en la API unificada.`,
