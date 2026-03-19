@@ -149,39 +149,76 @@
                 const esEquipo = etapa.tipo === 'equipos';
                 let precio = esEquipo ? etapa.precio_equipo : 22;
                 
-                // Aplicar descuento visual si es JuanRa
                 if (!esEquipo && playerIsJuanRa) precio = 5;
 
                 const colorStyle = esEquipo ? 'style="background: var(--secondary-color);"' : '';
 
                 return `
-                    <div class="event-card active dark-section" style="margin-bottom: 1.5rem; background: var(--bg-dark); color: white; border: 1px solid rgba(255,255,255,0.1); ${esEquipo ? 'border-color: var(--secondary-color);' : ''}">
-                        <div class="date" ${colorStyle} style="min-width: 100px; padding: 1.5rem;">
-                            <span style="font-size: 2rem; line-height: 1; display: block;">${new Date(etapa.fecha).getDate()}</span>
-                            <span style="font-size: 0.9rem; text-transform: uppercase; opacity: 0.9;">${new Date(etapa.fecha).toLocaleString('es-ES', { month: 'short' }).replace('.', '')}</span>
-                        </div>
-                        <div class="event-info" style="flex-grow: 1; padding: 1.5rem; display: flex; flex-direction: column; justify-content: center;">
-                            <h3 style="margin: 0; font-size: 1.5rem; ${esEquipo ? 'color: var(--secondary-color);' : 'color: white;'}">${etapa.nombre}</h3>
-                            <div style="margin-top: 0.75rem;">
-                                <span style="background: rgba(255,255,255,0.1); padding: 0.4rem 1rem; border-radius: 99px; font-size: 0.9rem; color: #cbd5e1; border: 1px solid rgba(255,255,255,0.1); display: inline-flex; align-items: center; gap: 0.5rem;">
-                                    📍 ${etapa.ubicacion || 'Por determinar'}
-                                </span>
+                    <div class="event-card active dark-section" style="margin-bottom: 2rem; background: var(--bg-dark); color: white; border: 1px solid rgba(255,255,255,0.1); display: block; border-radius: 1.5rem; overflow: hidden; ${esEquipo ? 'border-color: var(--secondary-color);' : ''}">
+                        <div style="display: flex; flex-wrap: wrap;">
+                            <div class="date" ${colorStyle} style="min-width: 100px; padding: 1.5rem; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                                <span style="font-size: 2.2rem; line-height: 1; display: block; font-weight: 800;">${new Date(etapa.fecha).getDate()}</span>
+                                <span style="font-size: 0.9rem; text-transform: uppercase; font-weight: 600;">${new Date(etapa.fecha).toLocaleString('es-ES', { month: 'short' }).replace('.', '')}</span>
+                            </div>
+                            <div class="event-info" style="flex-grow: 1; padding: 1.5rem; display: flex; flex-direction: column; justify-content: center;">
+                                <h3 style="margin: 0; font-size: 1.5rem; ${esEquipo ? 'color: var(--secondary-color);' : 'color: white;'}">${etapa.nombre}</h3>
+                                <div style="margin-top: 0.5rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+                                    <span style="font-size: 0.85rem; color: #cbd5e1;">📍 ${etapa.ubicacion || 'Por determinar'}</span>
+                                    <span id="count-${etapa.id}" style="font-size: 0.85rem; color: var(--secondary-color); font-weight: 600;">Cargando inscritos...</span>
+                                </div>
+                            </div>
+                            <div class="stage-action" style="padding: 1.5rem; display: flex; flex-direction: column; align-items: flex-end; justify-content: center; gap: 0.75rem;">
+                                ${esEquipo ? `
+                                    <input type="text" id="team-${etapa.id}" placeholder="Nombre del Equipo *" 
+                                           style="padding: 0.6rem; border-radius: 0.5rem; border: 1px solid var(--secondary-color); width: 220px; background: rgba(255,255,255,0.05); color: white; margin-bottom: 0.2rem;">
+                                ` : ''}
+                                <button onclick="inscribirse(${etapa.id}, ${esEquipo})" class="btn btn-primary" ${colorStyle} style="padding: 0.8rem 1.5rem;">
+                                    Inscribirme (${precio}€) →
+                                </button>
                             </div>
                         </div>
-                        <div class="stage-action" style="padding: 1.25rem; display: flex; flex-direction: column; align-items: flex-end; justify-content: center;">
-                            ${esEquipo ? `
-                                <div style="margin-bottom: 0.5rem;">
-                                    <input type="text" id="team-${etapa.id}" placeholder="Nombre del Equipo *" 
-                                           style="padding: 0.5rem; border-radius: 0.5rem; border: 1px solid var(--secondary-color); width: 200px; background: rgba(255,255,255,0.1); color: white;">
-                                </div>
-                            ` : ''}
-                            <button onclick="inscribirse(${etapa.id}, ${esEquipo})" class="btn btn-primary" ${colorStyle}>
-                                Pagar Inscripción (${precio}€) →
-                            </button>
+                        
+                        <!-- Listado de inscritos -->
+                        <div id="list-${etapa.id}" style="background: rgba(255,255,255,0.02); padding: 1rem 1.5rem; border-top: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem;">
+                            <span style="color: var(--text-light); opacity: 0.6;">Buscando participantes registrados...</span>
                         </div>
                     </div>
                 `;
             }).join('');
+
+            // Cargar inscritos para cada etapa
+            currentStages.forEach(etapa => loadInscritos(etapa.id));
+        }
+
+        async function loadInscritos(etapaId) {
+            try {
+                const res = await fetch(`/api/etapas/inscritos?etapa_id=${etapaId}`);
+                const data = await res.json();
+                
+                const countEl = document.getElementById(`count-${etapaId}`);
+                const listEl = document.getElementById(`list-${etapaId}`);
+                
+                if (data.length === 0) {
+                    countEl.textContent = '🚀 ¡Sé el primero en inscribirte!';
+                    listEl.style.display = 'none';
+                    return;
+                }
+
+                countEl.innerHTML = `✅ ${data.length} inscritos`;
+                
+                const names = data.map(i => {
+                    return `<span style="display: inline-block; background: rgba(255,255,255,0.05); padding: 0.2rem 0.6rem; border-radius: 99px; margin-right: 0.5rem; margin-bottom: 0.4rem; border: 1px solid rgba(255,255,255,0.1);">
+                        ${i.nickname}${i.equipo ? ` <small style="opacity:0.6">(${i.equipo})</small>` : ''}
+                    </span>`;
+                }).join('');
+
+                listEl.innerHTML = `
+                    <div style="margin-bottom: 0.5rem; color: var(--text-light); font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">Inscritos Confirmados:</div>
+                    <div style="display: flex; flex-wrap: wrap;">${names}</div>
+                `;
+            } catch (e) {
+                console.error('Error cargando inscritos:', e);
+            }
         }
 
         // Búsqueda automática por email

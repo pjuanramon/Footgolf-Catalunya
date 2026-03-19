@@ -79,6 +79,9 @@ module.exports = async function handler(req, res) {
 
             case 'etapas/listado':
                 return require('./_logic/etapas/listado')(req, res);
+
+            case 'etapas/inscritos':
+                return require('./_logic/etapas/inscritos')(req, res);
             
             case 'licencias/crear-sesion-pago':
                 return require('./_logic/licencias/crear-sesion-pago')(req, res);
