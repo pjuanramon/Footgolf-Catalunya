@@ -6,6 +6,15 @@ const { supabase } = require('../../../lib/supabase');
 const { stripe } = require('../../../lib/stripe');
 const { calcularPrecioLicencia } = require('../../../lib/pricing');
 
+/**
+ * Función auxiliar para normalizar texto (comparación robusta)
+ */
+function normalizar(t) {
+    if (!t) return '';
+    return t.toLowerCase().trim()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // Quitar tildes
+}
+
 module.exports = async function handler(req, res) {
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Método no permitido' });
@@ -30,6 +39,49 @@ module.exports = async function handler(req, res) {
             return res.status(400).json({ error: 'Nickname y Email son obligatorios.' });
         }
 
+        // 1. VALIDACIÓN ESPECIAL: Si dice que ya pagó, verificar NickName en clasificaciones
+        if (yaFuePagado) {
+            console.log(`Verificando NickName en RANKINGS para pago externo: ${nickname}`);
+            
+            // Obtenemos la última etapa finalizada
+            const { data: etapas } = await supabase
+                .from('etapas')
+                .select('archivo_excel')
+                .eq('estado', 'finalizada')
+                .order('id', { ascending: false })
+                .limit(1);
+
+            if (!etapas || etapas.length === 0) {
+                // Si no hay etapas finalizadas, no podemos validar por ranking. 
+                // En este caso, dejamos pasar o pedimos validación manual.
+                // Según el usuario: "que revise en la pagina web de clasificaciones este ahi el Nick Name".
+                // Si la web está vacía, no podemos comprobar.
+                console.log('No hay etapas finalizadas para validar ranking.');
+            } else {
+                const rankingJson = JSON.parse(etapas[0].archivo_excel);
+                const categorias = rankingJson.categorias || {};
+                
+                // Buscamos en todas las categorías (o al menos en Absoluta)
+                let encontrado = false;
+                const nickNorm = normalizar(nickname);
+
+                for (const cat in categorias) {
+                    const jugadores = categorias[cat];
+                    if (jugadores.some(p => normalizar(p.name) === nickNorm)) {
+                        encontrado = true;
+                        break;
+                    }
+                }
+
+                if (!encontrado) {
+                    return res.status(400).json({ 
+                        error: `No hemos encontrado el NickName "${nickname}" en las clasificaciones oficiales de 2026. Para acogerte a esta opción, debes haber puntuado en alguna etapa previa. Si crees que es un error, contacta con la organización.` 
+                    });
+                }
+                console.log('Validación de ranking EXITOSA.');
+            }
+        }
+
         // Buscar si el jugador ya existe
         const itemEmail = email.trim().toLowerCase();
         const { data: jugadorExistente } = await supabase
@@ -37,25 +89,6 @@ module.exports = async function handler(req, res) {
             .select('*')
             .eq('email', itemEmail)
             .single();
-
-        // 1. VALIDACIÓN ESPECIAL: Si dice que ya pagó, verificar NickName en clasificaciones
-        if (yaFuePagado) {
-            console.log(`Verificando NickName para pago externo: ${nickname}`);
-            // Buscamos si el nickname aparece en alguna puntuación de las primeras etapas (1, 2, 3)
-            // Las etapas suelen tener nombres que contienen "Etapa 1", "Etapa 2", etc.
-            // O podemos buscar simplemente cualquier puntuación en el año 2026.
-            const { data: participacion, error: partError } = await supabase
-                .from('puntuaciones_etapa')
-                .select('id')
-                .ilike('jugador_nickname', `%${nickname.trim()}%`)
-                .limit(1);
-
-            if (partError || !participacion || participacion.length === 0) {
-                return res.status(400).json({ 
-                    error: 'Validación fallida: Tu NickName no aparece en las clasificaciones de este año. Si ya pagaste tu licencia físicamente pero no has jugado aún, contacta con la organización.' 
-                });
-            }
-        }
 
         // Verificar si ya tiene licencia pagada (si no marcó ya_pagado)
         if (jugadorExistente && !yaFuePagado) {
