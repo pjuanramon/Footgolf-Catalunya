@@ -24,12 +24,30 @@ A script to:
 - Read `equipo_nombre` from metadata.
 - Insert it into the `inscripciones` table.
 
+### [Admin Dashboard]
+Dedicated interface for managing the 2026 season.
+
+### [NEW] [admin.html](file:///c:/Users/pjuan/OneDrive/Proyectos/Footgolf_Cat_Web/src/pages/admin.html)
+Dashboard UI for listing registrations and managing stage states. Protected by `ADMIN_SECRET`.
+
+### [API] [Admin Endpoints]
+*   `GET /api/admin/listado`: Fetch all registrations/players.
+*   `POST /api/admin/etapa`: Update stage status (open/close).
+
+---
+
 ## Verification Plan
 
+### Automated Tests
+*   `npm run test`: Logic verification (levenshtein, pricing).
+*   API integration tests via `curl` or Postman.
+
 ### Manual Verification
-1.  Run the SQL migration in Supabase.
-2.  Run `sync-calendar-v5.js`.
-3.  Perform a test team inscription.
-4.  Verify in Supabase:
+1.  **Stripe -> Supabase**: Perform a test payment in `licencias.html` and verify player/license creation in Supabase.
+2.  **Admin UI**: Login with `ADMIN_SECRET` and verify stage management.
+3.  Run the SQL migration in Supabase.
+4.  Run `sync-calendar-v5.js`.
+5.  Perform a test team inscription.
+6.  Verify in Supabase:
     *   Inscription record contains the `equipo_nombre`.
     *   Price was correctly charged according to the event type.

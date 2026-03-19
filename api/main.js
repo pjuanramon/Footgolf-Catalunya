@@ -45,9 +45,29 @@ module.exports = async function handler(req, res) {
             }
         }
 
+        // 4. Seguridad para rutas de administración
+        if (path.startsWith('admin/')) {
+            const adminSecret = req.headers['x-admin-secret'];
+            if (adminSecret !== process.env.ADMIN_SECRET) {
+                return res.status(401).json({ error: 'No autorizado. Se requiere x-admin-secret.' });
+            }
+        }
+
         // --- ENRUTADOR DINÁMICO ---
         
         switch (path) {
+            case 'admin/jugadores':
+                return require('./_logic/admin/jugadores')(req, res);
+            
+            case 'admin/inscripciones':
+                return require('./_logic/admin/inscripciones')(req, res);
+            
+            case 'admin/modificar-etapa':
+                return require('./_logic/admin/modificar-etapa')(req, res);
+            
+            case 'admin/inscripcion-manual':
+                return require('./_logic/admin/inscripcion-manual')(req, res);
+
             case 'etapas/listado':
                 return require('./_logic/etapas/listado')(req, res);
             
