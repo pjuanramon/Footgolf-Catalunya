@@ -242,7 +242,7 @@
             const data = Object.fromEntries(formData.entries());
 
             try {
-                const res = await fetch('/api/main?path=licencias/crear-sesion-pago', {
+                const res = await fetch('/api/licencias/crear-sesion-pago', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)

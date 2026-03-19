@@ -23,7 +23,13 @@ module.exports = async function handler(req, res) {
         // 1. Parsear URL y Query Params
         const parsedUrl = parse(req.url, true);
         const { pathname, query } = parsedUrl;
-        const path = pathname.replace('/api/', '');
+        
+        // Si se llama a /api/main?path=..., usamos query.path
+        // Si no, usamos la ruta del pathname (ej: /api/etapas/listado -> etapas/listado)
+        let path = pathname.replace('/api/', '');
+        if (path === 'main' || !path) {
+            path = query.path;
+        }
         
         // Adjuntar query a la request para compatibilidad con sub-handlers
         req.query = query;
