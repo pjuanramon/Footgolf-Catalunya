@@ -152,7 +152,8 @@
                         <th>Jugador / Nickname</th>
                         <th>Email</th>
                         <th>Licencia</th>
-                        <th>Cat. Calculada</th>
+                        <th>Categorías</th>
+                        <th>Desde</th>
                         <th>Acción</th>
                     </tr>
                 </thead>
@@ -246,10 +247,11 @@
             const jTable = document.getElementById('jugadoresTable');
             jTable.innerHTML = jugadores.map(j => `
                 <tr>
-                    <td><strong>${j.nickname}</strong><br><span style="font-size:0.7rem; color:#94a3b8">${j.nombre_completo}</span></td>
+                    <td><strong>${j.nickname}</strong><br><span style="font-size:0.75rem; color:#94a3b8">${j.nombre_completo || '-'}</span></td>
                     <td style="font-size:0.8rem">${j.email}</td>
                     <td><span class="badge ${j.tiene_licencia ? 'badge-success' : 'badge-error'}">${j.tiene_licencia ? 'PAGADA' : 'PENDIENTE'}</span></td>
-                    <td><span style="font-size:0.8rem">${(j.categorias_calculadas || []).join(', ')}</span></td>
+                    <td><span style="font-size:0.8rem">${(j.categorias_calculadas || []).join(', ') || '-'}</span></td>
+                    <td style="font-size:0.85rem; font-weight:600; color:var(--primary-color)">${j.anio_licencia || 2026}</td>
                     <td><button class="btn btn-sm" style="opacity:0.5; pointer-events:none">Editar</button></td>
                 </tr>
             `).join('');

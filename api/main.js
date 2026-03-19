@@ -85,6 +85,9 @@ module.exports = async function handler(req, res) {
             
             case 'licencias/crear-sesion-pago':
                 return require('./_logic/licencias/crear-sesion-pago')(req, res);
+
+            case 'licencias/listado-2026':
+                return require('./_logic/licencias/listado-2026')(req, res);
             
             case 'licencias/webhook':
                 return require('./_logic/licencias/webhook')(req, res);
