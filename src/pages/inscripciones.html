@@ -137,25 +137,51 @@
                     return;
                 }
 
-                stagesList.innerHTML = stages.map(etapa => `
-                    <div class="stage-card">
-                        <div class="stage-info">
-                            <h3>${etapa.nombre}</h3>
-                            <p>📅 ${new Date(etapa.fecha).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}</p>
+                stagesList.innerHTML = stages.map(etapa => {
+                    const esEquipo = etapa.tipo === 'equipos';
+                    const precio = esEquipo ? etapa.precio_equipo : 22;
+                    const colorStyle = esEquipo ? 'style="background: var(--secondary-color);"' : '';
+
+                    return `
+                        <div class="stage-card" ${esEquipo ? 'style="border-color: var(--secondary-color);"' : ''}>
+                            <div class="stage-info">
+                                <h3 ${esEquipo ? 'style="color: var(--secondary-color);"' : ''}>${etapa.nombre}</h3>
+                                <p>📅 ${new Date(etapa.fecha).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}</p>
+                                <p>📍 ${etapa.ubicacion || 'Por determinar'}</p>
+                            </div>
+                            <div class="stage-action">
+                                ${esEquipo ? `
+                                    <div style="margin-bottom: 0.5rem;">
+                                        <input type="text" id="team-${etapa.id}" placeholder="Nombre del Equipo *" 
+                                               style="padding: 0.5rem; border-radius: 0.5rem; border: 1px solid var(--secondary-color); width: 200px;">
+                                    </div>
+                                ` : ''}
+                                <button onclick="inscribirse(${etapa.id}, ${esEquipo})" class="btn btn-primary" ${colorStyle}>
+                                    Pagar Inscripción (${precio}€) →
+                                </button>
+                            </div>
                         </div>
-                        <div class="stage-action">
-                            <button onclick="inscribirse(${etapa.id})" class="btn btn-primary" style="background: var(--secondary-color);">Inscribirse (22€) →</button>
-                        </div>
-                    </div>
-                `).join('');
+                    `;
+                }).join('');
             } catch (err) {
                 stagesList.innerHTML = '<p style="text-align: center; color: var(--error-color);">Error al cargar las etapas.</p>';
             }
         }
 
-        async function inscribirse(etapaId) {
+        async function inscribirse(etapaId, esEquipo) {
             const emailValue = emailInput.value.trim();
             const nicknameValue = nicknameInput.value.trim();
+            let equipoNombre = '';
+
+            if (esEquipo) {
+                const teamInput = document.getElementById(`team-${etapaId}`);
+                equipoNombre = teamInput.value.trim();
+                if (!equipoNombre) {
+                    alert('Por favor, introduce el nombre de tu equipo.');
+                    teamInput.focus();
+                    return;
+                }
+            }
 
             if (!emailValue || !nicknameValue) {
                 alert('Por favor, introduce tu Email y Nickname.');
@@ -171,7 +197,8 @@
                     body: JSON.stringify({
                         etapa_id: etapaId,
                         email: emailValue,
-                        nickname: nicknameValue
+                        nickname: nicknameValue,
+                        equipo_nombre: equipoNombre
                     })
                 });
 

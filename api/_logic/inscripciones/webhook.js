@@ -62,7 +62,8 @@ module.exports = async function handler(req, res) {
                 jugador_id: meta.jugador_id,
                 etapa_id: parseInt(meta.etapa_id),
                 stripe_payment_id: session.payment_intent,
-                estado: 'pagada'
+                estado: 'pagada',
+                equipo_nombre: meta.equipo_nombre || null
             });
 
         if (inscError) {

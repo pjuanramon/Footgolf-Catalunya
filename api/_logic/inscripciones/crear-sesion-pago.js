@@ -92,7 +92,9 @@ module.exports = async function handler(req, res) {
             : null;
 
         // Crear sesión de Stripe Checkout
-        const precio = etapa.precio_inscripcion || PRECIO_INSCRIPCION;
+        const { equipo_nombre } = req.body;
+        const esEquipo = etapa.tipo === 'equipos';
+        const precio = esEquipo ? (etapa.precio_equipo || 110) : (etapa.precio_inscripcion || PRECIO_INSCRIPCION);
 
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
@@ -101,8 +103,8 @@ module.exports = async function handler(req, res) {
                 price_data: {
                     currency: 'eur',
                     product_data: {
-                        name: `Inscripción ${etapa.nombre}`,
-                        description: `Inscripción para ${jugador.nickname} — ${etapa.nombre}`
+                        name: `Inscripción ${etapa.nombre}${esEquipo ? ` - Equipo: ${equipo_nombre}` : ''}`,
+                        description: `Inscripción para ${jugador.nickname}${esEquipo ? ` (Equipo: ${equipo_nombre})` : ''} — ${etapa.nombre}`
                     },
                     unit_amount: Math.round(precio * 100)
                 },
@@ -114,7 +116,8 @@ module.exports = async function handler(req, res) {
                 etapa_id: String(etapa_id),
                 nickname: jugador.nickname,
                 email: jugador.email,
-                tiene_licencia: String(jugador.tiene_licencia)
+                tiene_licencia: String(jugador.tiene_licencia),
+                equipo_nombre: equipo_nombre || ''
             },
             success_url: `${process.env.APP_URL}/src/pages/inscripciones.html?resultado=exito&etapa=${etapa_id}`,
             cancel_url: `${process.env.APP_URL}/src/pages/inscripciones.html?resultado=cancelado`
