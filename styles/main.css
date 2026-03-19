@@ -387,9 +387,10 @@ ul {
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.event-card:hover {
+.event-card:hover, .event-card.active {
     background: rgba(255, 255, 255, 0.1);
     transform: scale(1.02);
+    border-color: rgba(255, 255, 255, 0.3);
 }
 
 .event-card .date {

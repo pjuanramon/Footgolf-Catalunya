@@ -143,17 +143,17 @@
                     const colorStyle = esEquipo ? 'style="background: var(--secondary-color);"' : '';
 
                     return `
-                        <div class="stage-card" ${esEquipo ? 'style="border-color: var(--secondary-color);"' : ''}>
-                            <div class="stage-info">
+                        <div class="event-card active dark-section" style="margin-bottom: 1.5rem; ${esEquipo ? 'border-color: var(--secondary-color);' : ''}">
+                            <div class="date" ${colorStyle}><span style="font-size: 1.5rem; display: block;">${new Date(etapa.fecha).getDate()}</span>${new Date(etapa.fecha).toLocaleString('es-ES', { month: 'short' }).replace('.', '').toUpperCase()}</div>
+                            <div class="event-info" style="flex-grow: 1;">
                                 <h3 ${esEquipo ? 'style="color: var(--secondary-color);"' : ''}>${etapa.nombre}</h3>
-                                <p>📅 ${new Date(etapa.fecha).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}</p>
                                 <p>📍 ${etapa.ubicacion || 'Por determinar'}</p>
                             </div>
-                            <div class="stage-action">
+                            <div class="stage-action" style="padding: 1.25rem; display: flex; flex-direction: column; align-items: flex-end; justify-content: center;">
                                 ${esEquipo ? `
                                     <div style="margin-bottom: 0.5rem;">
                                         <input type="text" id="team-${etapa.id}" placeholder="Nombre del Equipo *" 
-                                               style="padding: 0.5rem; border-radius: 0.5rem; border: 1px solid var(--secondary-color); width: 200px;">
+                                               style="padding: 0.5rem; border-radius: 0.5rem; border: 1px solid var(--secondary-color); width: 200px; background: rgba(255,255,255,0.1); color: white;">
                                     </div>
                                 ` : ''}
                                 <button onclick="inscribirse(${etapa.id}, ${esEquipo})" class="btn btn-primary" ${colorStyle}>
