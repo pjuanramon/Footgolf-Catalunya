@@ -156,6 +156,7 @@
                         <th>Club</th>
                         <th>Licencia 2026</th>
                         <th>Categorías</th>
+                        <th>Acción</th>
                     </tr>
                 </thead>
                 <tbody id="jugadoresTable">
@@ -253,8 +254,11 @@
                     <td style="font-size:0.8rem">${j.email}<br><span style="opacity:0.6">${j.telefono || '-'}</span></td>
                     <td style="font-size:0.8rem">${j.fecha_nacimiento || '-'}<br><span style="opacity:0.6">${j.genero || '-'}</span></td>
                     <td style="font-size:0.8rem">${j.club || 'Independiente'}</td>
-                    <td><span class="badge ${j.tiene_licencia ? 'badge-success' : 'badge-error'}">${j.tiene_licencia ? 'SÍ' : 'NO'}</span></td>
+                    <td><span class="badge ${j.tiene_licencia ? 'badge-success' : 'badge-error'}">${j.tiene_licencia ? 'SÍ' : 'NO'}</span><br><span style="font-size:0.7rem; opacity:0.6">${j.anio_licencia || '-'}</span></td>
                     <td><span style="font-size:0.8rem">${(j.categorias_calculadas || []).join(', ') || '-'}</span></td>
+                    <td>
+                        <button onclick="editarJugador('${j.id}')" class="btn btn-sm" style="background:rgba(255,255,255,0.05)">Editar</button>
+                    </td>
                 </tr>
             `).join('');
 
@@ -341,6 +345,70 @@
                         <button type="submit" class="btn btn-primary" style="width:100%; margin-top:1rem">Guardar Jugador</button>
                     </form>
                 `;
+            } else if (type === 'editar-jugador') {
+                const j = extra;
+                document.getElementById('modalTitle').textContent = `Editar: ${j.nickname}`;
+                content.innerHTML = `
+                    <form onsubmit="modificarJugador(event, '${j.id}')">
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem">
+                            <div style="margin-bottom:1rem">
+                                <label>Nombre Completo:</label>
+                                <input type="text" name="nombre" value="${j.nombre_completo || ''}" class="btn" style="width:100%; background:var(--admin-bg)" required>
+                            </div>
+                            <div style="margin-bottom:1rem">
+                                <label>Nickname:</label>
+                                <input type="text" name="nickname" value="${j.nickname || ''}" class="btn" style="width:100%; background:var(--admin-bg)" required>
+                            </div>
+                        </div>
+                        <div style="margin-bottom:1rem">
+                            <label>Email:</label>
+                            <input type="email" name="email" value="${j.email || ''}" class="btn" style="width:100%; background:var(--admin-bg)" required>
+                        </div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem">
+                            <div style="margin-bottom:1rem">
+                                <label>Teléfono:</label>
+                                <input type="tel" name="telefono" value="${j.telefono || ''}" class="btn" style="width:100%; background:var(--admin-bg)">
+                            </div>
+                            <div style="margin-bottom:1rem">
+                                <label>F. Nacimiento:</label>
+                                <input type="date" name="fecha_nacimiento" value="${j.fecha_nacimiento || ''}" class="btn" style="width:100%; background:var(--admin-bg)">
+                            </div>
+                        </div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem">
+                            <div style="margin-bottom:1rem">
+                                <label>Género:</label>
+                                <select name="genero" class="btn" style="width:100%; background:var(--admin-bg)">
+                                    <option value="masculino" ${j.genero === 'masculino' ? 'selected' : ''}>Masculino</option>
+                                    <option value="femenino" ${j.genero === 'femenino' ? 'selected' : ''}>Femenino</option>
+                                </select>
+                            </div>
+                            <div style="margin-bottom:1rem">
+                                <label>Club:</label>
+                                <select name="club" class="btn" style="width:100%; background:var(--admin-bg)">
+                                    <option value="Independiente" ${j.club === 'Independiente' ? 'selected' : ''}>Independiente</option>
+                                    <option value="JABALI TEAM FOOTGOLF" ${j.club === 'JABALI TEAM FOOTGOLF' ? 'selected' : ''}>JABALI TEAM FOOTGOLF</option>
+                                    <option value="Apex FootGolf" ${j.club === 'Apex FootGolf' ? 'selected' : ''}>Apex FootGolf</option>
+                                    <option value="BARCELONA FOOTGOLF" ${j.club === 'BARCELONA FOOTGOLF' ? 'selected' : ''}>BARCELONA FOOTGOLF</option>
+                                    <option value="AC Maktub FG" ${j.club === 'AC Maktub FG' ? 'selected' : ''}>AC Maktub FG</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; padding:1rem; background:rgba(255,255,255,0.03); border-radius:1rem">
+                            <div>
+                                <label>Licencia Pagada:</label>
+                                <select name="tiene_licencia" class="btn" style="width:100%; background:var(--admin-bg)">
+                                    <option value="true" ${j.tiene_licencia ? 'selected' : ''}>SÍ</option>
+                                    <option value="false" ${!j.tiene_licencia ? 'selected' : ''}>NO</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label>Año 1ª Licencia:</label>
+                                <input type="number" name="anio_licencia" value="${j.anio_licencia || 2026}" class="btn" style="width:100%; background:var(--admin-bg)">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width:100%; margin-top:1.5rem">Guardar Cambios</button>
+                    </form>
+                `;
             } else if (type === 'nueva-inscripcion') {
                 const {etapa_id, nombre} = extra;
                 const jugadores = await api('admin/jugadores');
@@ -377,6 +445,33 @@
                 fecha_nacimiento: f.fecha_nacimiento ? f.fecha_nacimiento.value : null,
                 genero: f.genero ? f.genero.value : null,
                 club: f.club ? f.club.value : 'Independiente'
+            });
+            if (res.ok) {
+                closeModal();
+                renderData();
+            }
+        }
+ 
+        async function editarJugador(id) {
+            const jugadores = await api('admin/jugadores');
+            const j = jugadores.find(it => it.id === id);
+            if (j) openModal('editar-jugador', j);
+        }
+
+        async function modificarJugador(e, id) {
+            e.preventDefault();
+            const f = e.target;
+            const res = await api('admin/modificar-jugador', 'POST', {
+                id,
+                nombre_completo: f.nombre.value,
+                nickname: f.nickname.value,
+                email: f.email.value,
+                telefono: f.telefono ? f.telefono.value : null,
+                fecha_nacimiento: f.fecha_nacimiento ? f.fecha_nacimiento.value : null,
+                genero: f.genero ? f.genero.value : null,
+                club: f.club ? f.club.value : 'Independiente',
+                tiene_licencia: f.tiene_licencia.value === 'true',
+                anio_licencia: parseInt(f.anio_licencia.value) || null
             });
             if (res.ok) {
                 closeModal();

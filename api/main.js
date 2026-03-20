@@ -24,11 +24,12 @@ module.exports = async function handler(req, res) {
         const parsedUrl = parse(req.url, true);
         const { pathname, query } = parsedUrl;
         
-        // Si se llama a /api/main?path=..., usamos query.path
-        // Si no, usamos la ruta del pathname (ej: /api/etapas/listado -> etapas/listado)
-        let path = pathname.replace('/api/', '');
-        if (path === 'main' || !path) {
-            path = query.path;
+        // Normalizar path: quitar /api/ y slashes iniciales/finales
+        let path = pathname.replace(/^\/api/, ''); // Quitar /api si está presente
+        path = path.replace(/^\/+|\/+$/g, '');   // Quitar slashes iniciales y finales
+        
+        if (!path || path === 'main') {
+            path = query.path || '';
         }
         
         // Adjuntar query a la request para compatibilidad con sub-handlers
@@ -73,6 +74,9 @@ module.exports = async function handler(req, res) {
             
             case 'admin/modificar-etapa':
                 return require('./_logic/admin/modificar-etapa')(req, res);
+            
+            case 'admin/modificar-jugador':
+                return require('./_logic/admin/modificar-jugador')(req, res);
             
             case 'admin/inscripcion-manual':
                 return require('./_logic/admin/inscripcion-manual')(req, res);
