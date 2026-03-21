@@ -193,7 +193,7 @@
 
                     <div id="group-anio-primera" class="form-group" style="display: none;">
                         <label for="anio_primera_licencia">¿En qué año te sacaste tu primera licencia? *</label>
-                        <input type="number" id="anio_primera_licencia" name="anio_primera_licencia" min="2010" max="2025" value="2025">
+                        <input type="number" id="anio_primera_licencia" name="anio_primera_licencia" min="2010" max="2025" placeholder="Ej: 2024">
                         <p style="font-size: 0.8rem; color: var(--text-light); margin-top: 0.5rem;">Indica el año aproximado si no lo recuerdas con exactitud.</p>
                     </div>
 
@@ -262,25 +262,30 @@
 
         function updateUI() {
             const yaPagado = document.getElementById('ya_pagado').value === 'si';
-            const esRenovacion = document.getElementById('es_renovacion');
+            const esRenovacionSelect = document.getElementById('es_renovacion');
+            const esRenovacion = esRenovacionSelect.value === 'si';
             const groupRenovacion = document.getElementById('group-es-renovacion');
             const groupEtapa = document.getElementById('group-etapa-inicio');
             const groupAnioPrimera = document.getElementById('group-anio-primera');
+            const inputAnio = document.getElementById('anio_primera_licencia');
 
-            if (yaPagado) {
-                groupRenovacion.style.display = 'none';
+            // Siempre mostramos la pregunta de si es renovación o no,
+            // ya que necesitamos saber el año de inicio para el listado oficial.
+            groupRenovacion.style.display = 'block';
+
+            if (esRenovacion) {
+                // Si es renovación, pedimos el año de la primera licencia
+                groupAnioPrimera.style.display = 'block';
+                inputAnio.required = true;
                 groupEtapa.style.display = 'none';
-                groupAnioPrimera.style.display = 'none';
             } else {
-                groupRenovacion.style.display = 'block';
-                if (esRenovacion.value === 'no') {
-                    groupEtapa.style.display = 'block';
-                    groupAnioPrimera.style.display = 'none';
-                } else {
-                    groupEtapa.style.display = 'none';
-                    groupAnioPrimera.style.display = 'block';
-                }
+                // Si NO es renovación (es nuevo en 2026)
+                groupAnioPrimera.style.display = 'none';
+                inputAnio.required = false;
+                // Si NO ha pagado todavía, pedimos la etapa de inicio para calcular el precio prorrateado
+                groupEtapa.style.display = yaPagado ? 'none' : 'block';
             }
+
             calcPrice();
         }
 

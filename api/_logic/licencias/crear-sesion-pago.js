@@ -116,7 +116,7 @@ module.exports = async function handler(req, res) {
                 genero: genero,
                 telefono: telefono.trim(),
                 club: club || 'Independiente',
-                anio_licencia: esAntiguo ? (parseInt(anio_primera_licencia) || anioActual) : anioActual,
+                anio_licencia: esAntiguo ? (parseInt(anio_primera_licencia) || 2025) : anioActual,
                 tiene_licencia: true
             };
 
