@@ -8,6 +8,16 @@ class Navbar extends HTMLElement {
         const homeLink = '/index.html';
         const imgPath = '/images/Logo.png';
 
+        // Set favicon dynamically
+        let iconLink = document.querySelector("link[rel~='icon']");
+        if (!iconLink) {
+            iconLink = document.createElement('link');
+            iconLink.rel = 'icon';
+            iconLink.type = 'image/png';
+            document.head.appendChild(iconLink);
+        }
+        iconLink.href = '/favicon.png?v=1';
+
         this.innerHTML = `
             <nav class="navbar">
                 <a href="${homeLink}" class="nav-brand" style="display: flex; align-items: center; position: relative;">
