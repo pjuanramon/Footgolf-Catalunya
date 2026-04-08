@@ -10,6 +10,72 @@
     <script src="/js/Navbar.js" defer></script>
     <script src="/js/Footer.js" defer></script>
     <link rel="icon" type="image/png" href="/favicon.png?v=1">
+    <style>
+        :root {
+            --national-red: #dc2626;
+            --national-blue: #1e40af;
+        }
+
+        .filter-container {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .btn-filter {
+            background: white;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 0.8rem 2rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-filter:hover {
+            background: var(--bg-color);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-filter.active#btn-catalan {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 14px 0 rgba(30, 143, 58, 0.3);
+        }
+
+        .btn-filter.active#btn-national {
+            background: var(--national-red);
+            border-color: var(--national-red);
+            color: white;
+            box-shadow: 0 4px 14px 0 rgba(220, 38, 38, 0.3);
+        }
+
+        .national-card .date {
+            background: var(--national-red) !important;
+        }
+
+        .national-card.blue-stage .date {
+            background: var(--national-blue) !important;
+        }
+
+        #national-calendar {
+            display: none;
+        }
+
+        @media (max-width: 640px) {
+            .filter-container {
+                flex-direction: column;
+                padding: 0 1rem;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -23,7 +89,13 @@
 
         <section class="section">
             <div class="container">
-                <div class="calendar-grid">
+                <div class="filter-container">
+                    <button class="btn-filter active" id="btn-catalan" onclick="showCalendar('catalan')">Calendario Catalán</button>
+                    <button class="btn-filter" id="btn-national" onclick="showCalendar('national')">Calendario Nacional</button>
+                </div>
+
+                <div id="catalan-calendar">
+                    <div class="calendar-grid">
                     <!-- Event 1 -->
                     <a href="inscripciones.html" class="event-card dark-section" style="text-decoration: none; display: flex;">
                         <span class="date"><span style="font-size: 1.5rem; display: block;">24</span>Ene</span>
@@ -167,6 +239,107 @@
                         </div>
                     </a>
                 </div>
+                </div>
+                <!-- End Catalan Calendar -->
+
+                <!-- National Calendar -->
+                <div id="national-calendar">
+                    <div class="calendar-grid">
+                        <!-- Event 1 -->
+                        <div class="event-card dark-section national-card" style="display: flex;">
+                            <span class="date"><span style="font-size: 1.5rem; display: block;">13-15</span>Feb</span>
+                            <div class="event-info">
+                                <h4>1ª Etapa Nacional</h4>
+                                <p>Candeleda Golf</p>
+                                <p class="text-light" style="margin-top:0.5rem; font-size:0.8rem;">Candeleda, Ávila (CyL)</p>
+                            </div>
+                        </div>
+                        <!-- Event 2 -->
+                        <div class="event-card dark-section national-card" style="display: flex;">
+                            <span class="date"><span style="font-size: 1.5rem; display: block;">6-7</span>Mar</span>
+                            <div class="event-info">
+                                <h4>2ª Etapa Nacional</h4>
+                                <p>Gambito Golf</p>
+                                <p class="text-light" style="margin-top:0.5rem; font-size:0.8rem;">Calatayud, Zaragoza (Aragón)</p>
+                            </div>
+                        </div>
+                        <!-- Event 3 -->
+                        <div class="event-card dark-section national-card" style="display: flex;">
+                            <span class="date"><span style="font-size: 1.5rem; display: block;">17-19</span>Abr</span>
+                            <div class="event-info">
+                                <h4>3ª Etapa Nacional</h4>
+                                <p>Iberik Augas Santas</p>
+                                <p class="text-light" style="margin-top:0.5rem; font-size:0.8rem;">Pantón, Lugo (Galicia)</p>
+                            </div>
+                        </div>
+                        <!-- Event 4-5 -->
+                        <div class="event-card dark-section national-card blue-stage" style="display: flex;">
+                            <span class="date"><span style="font-size: 1.5rem; display: block;">10-12</span>Jul</span>
+                            <div class="event-info">
+                                <h4>4ª y 5ª Etapas Nacionales</h4>
+                                <p>Club Golf Altorreal</p>
+                                <p class="text-light" style="margin-top:0.5rem; font-size:0.8rem;">Molina de Segura, Murcia</p>
+                            </div>
+                        </div>
+                        <!-- Event 6 -->
+                        <div class="event-card dark-section national-card" style="display: flex;">
+                            <span class="date"><span style="font-size: 1.5rem; display: block;">7-9</span>Ago</span>
+                            <div class="event-info">
+                                <h4>6ª Etapa Nacional</h4>
+                                <p>Golf Costa Adeje</p>
+                                <p class="text-light" style="margin-top:0.5rem; font-size:0.8rem;">Adeje, Tenerife (Islas Canarias)</p>
+                            </div>
+                        </div>
+                        <!-- Event 7-8 -->
+                        <div class="event-card dark-section national-card blue-stage" style="display: flex;">
+                            <span class="date"><span style="font-size: 1.5rem; display: block;">3-6</span>Sep</span>
+                            <div class="event-info">
+                                <h4>7ª y 8ª Etapas Nacionales</h4>
+                                <p>Fair Play Golf - Open</p>
+                                <p class="text-light" style="margin-top:0.5rem; font-size:0.8rem;">Benalup, Cádiz (Andalucía)</p>
+                            </div>
+                        </div>
+                        <!-- Event 9 -->
+                        <div class="event-card dark-section national-card" style="display: flex;">
+                            <span class="date"><span style="font-size: 1.5rem; display: block;">16-18</span>Oct</span>
+                            <div class="event-info">
+                                <h4>9ª Etapa Nacional</h4>
+                                <p>Villamayor Golf</p>
+                                <p class="text-light" style="margin-top:0.5rem; font-size:0.8rem;">Salamanca (Castilla y León)</p>
+                            </div>
+                        </div>
+                        <!-- Event 10 -->
+                        <div class="event-card dark-section national-card" style="display: flex;">
+                            <span class="date"><span style="font-size: 1.5rem; display: block;">20-22</span>Nov</span>
+                            <div class="event-info">
+                                <h4>10ª Etapa Nacional</h4>
+                                <p>Islantilla Golf</p>
+                                <p class="text-light" style="margin-top:0.5rem; font-size:0.8rem;">Lepe, Huelva (Andalucía)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <script>
+                    function showCalendar(type) {
+                        const catalanBtn = document.getElementById('btn-catalan');
+                        const nationalBtn = document.getElementById('btn-national');
+                        const catalanCal = document.getElementById('catalan-calendar');
+                        const nationalCal = document.getElementById('national-calendar');
+
+                        if (type === 'catalan') {
+                            catalanBtn.classList.add('active');
+                            nationalBtn.classList.remove('active');
+                            catalanCal.style.display = 'block';
+                            nationalCal.style.display = 'none';
+                        } else {
+                            nationalBtn.classList.add('active');
+                            catalanBtn.classList.remove('active');
+                            catalanCal.style.display = 'none';
+                            nationalCal.style.display = 'block';
+                        }
+                    }
+                </script>
             </div>
         </section>
     </main>
