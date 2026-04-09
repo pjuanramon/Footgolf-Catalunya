@@ -417,18 +417,34 @@
                 content.innerHTML = `
                     <form onsubmit="inscribirManual(event, ${etapa_id})">
                         <div style="margin-bottom:1rem">
-                            <label>Seleccionar Jugador:</label>
-                            <select name="jugador_id" class="btn" style="width:100%; background:var(--admin-bg)" required>
-                                ${jugadores.map(j => `<option value="${j.id}">${j.nickname} (${j.nombre_completo})</option>`).join('')}
+                            <label>Buscar Jugador:</label>
+                            <input type="text" id="playerSearch" placeholder="Escribe para filtrar..." class="btn" style="width:100%; background:var(--admin-bg); margin-bottom:0.5rem">
+                            <select name="jugador_id" id="playerSelect" class="btn" style="width:100%; background:var(--admin-bg)" required>
+                                ${jugadores.map(j => `<option value="${j.id}">${j.nickname} (${j.nombre_completo || 'Sin nombre'})</option>`).join('')}
                             </select>
                         </div>
                         <div style="margin-bottom:1rem">
-                            <label>Nombre Equipo (Opcional):</label>
+                            <label>Nombre Equipo / Jornada (Opcional):</label>
                             <input type="text" name="equipo" placeholder="Dejar vacío si es individual" class="btn" style="width:100%; background:var(--admin-bg)">
                         </div>
                         <button type="submit" class="btn btn-primary" style="width:100%">Confirmar Inscripción</button>
                     </form>
                 `;
+
+                // Logic for real-time search
+                const search = document.getElementById('playerSearch');
+                const select = document.getElementById('playerSelect');
+                const originalOptions = Array.from(select.options);
+
+                search.addEventListener('input', (e) => {
+                    const term = e.target.value.toLowerCase();
+                    select.innerHTML = '';
+                    originalOptions.forEach(opt => {
+                        if (opt.text.toLowerCase().includes(term)) {
+                            select.appendChild(opt);
+                        }
+                    });
+                });
             }
 
             modal.style.display = 'block';

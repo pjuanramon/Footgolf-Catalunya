@@ -15,7 +15,7 @@ module.exports = async function inscripcionManual(req, res) {
                 etapa_id,
                 jugador_id,
                 equipo_nombre: equipo_nombre || null,
-                estado_pago: 'completado'
+                estado: 'pagada'
             }, { onConflict: 'etapa_id, jugador_id' })
             .select();
 
