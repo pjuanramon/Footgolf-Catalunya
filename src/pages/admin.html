@@ -270,10 +270,10 @@
                 <tr>
                     <td>${t.nombre}</td>
                     <td>${new Date(t.fecha).toLocaleDateString()}</td>
-                    <td><span class="badge" style="background:rgba(255,255,255,0.1)">${t.tipo.toUpperCase()}</span></td>
-                    <td><span class="badge ${t.estado === 'abierta' ? 'badge-success' : t.estado === 'cerrada' ? 'badge-warn' : 'badge-error'}">${t.estado.toUpperCase()}</span></td>
+                    <td><span class="badge" style="background:rgba(255,255,255,0.1)">${(t.tipo || 'Etapa').toUpperCase()}</span></td>
+                    <td><span class="badge ${t.estado === 'abierta' ? 'badge-success' : t.estado === 'cerrada' ? 'badge-warn' : 'badge-error'}">${(t.estado || 'cerrada').toUpperCase()}</span></td>
                     <td style="display:flex; gap:0.5rem">
-                        <button onclick="verInscritos(${t.id}, '${t.nombre}')" class="btn btn-sm btn-primary">Inscritos</button>
+                        <button onclick='verInscritos(${t.id}, ${JSON.stringify(t.nombre)})' class="btn btn-sm btn-primary">Inscritos</button>
                         <select onchange="updateEstado(${t.id}, this.value)" class="btn btn-sm" style="background:var(--admin-bg); color:white; border:1px solid var(--admin-border)">
                             <option value="">Cambiar...</option>
                             <option value="abierta">Abrir</option>
@@ -495,33 +495,78 @@
         }
 
         async function verInscritos(id, nombre) {
-            const inscritos = await api(`admin/inscripciones?etapa_id=${id}`);
-            const modal = document.getElementById('modal');
-            const overlay = document.getElementById('overlay');
-            const content = document.getElementById('modalContent');
-            
-            document.getElementById('modalTitle').textContent = `Inscritos: ${nombre}`;
-            content.innerHTML = `
-                <div style="display:flex; justify-content:flex-end; margin-bottom:1rem">
-                    <button onclick="openModal('nueva-inscripcion', {etapa_id:${id}, nombre:'${nombre}'})" class="btn btn-sm btn-primary">+ Añadir a Mano</button>
-                </div>
-                ${inscritos.length === 0 ? '<p>No hay inscritos todavía.</p>' : `
-                <table style="font-size:0.85rem">
-                    <thead><tr><th>Jornada</th><th>Nickname</th><th>Pago</th></tr></thead>
-                    <tbody>
-                        ${inscritos.map(i => `
-                            <tr>
-                                <td>${i.equipo_nombre || 'Individual'}</td>
-                                <td>${i.jugadores.nickname}</td>
-                                <td><span class="badge badge-success">SÍ</span></td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            `}`;
+            console.log('verInscritos called with:', { id, nombre });
+            try {
+                const inscritos = await api(`admin/inscripciones?etapa_id=${id}`);
+                console.log('API response for inscritos:', inscritos);
 
-            modal.style.display = 'block';
-            overlay.style.display = 'block';
+                if (!inscritos || !Array.isArray(inscritos)) {
+                    throw new Error('La respuesta de la API no es válida: ' + JSON.stringify(inscritos));
+                }
+
+                const modal = document.getElementById('modal');
+                const overlay = document.getElementById('overlay');
+                const content = document.getElementById('modalContent');
+                
+                document.getElementById('modalTitle').textContent = `Inscritos: ${nombre}`;
+                
+                if (inscritos.length === 0) {
+                    content.innerHTML = `
+                        <div style="display:flex; justify-content:flex-end; margin-bottom:1rem">
+                            <button onclick='openModal("nueva-inscripcion", ${JSON.stringify({etapa_id:id, nombre:nombre})})' class="btn btn-sm btn-primary">+ Añadir a Mano</button>
+                        </div>
+                        <p>No hay inscritos todavía.</p>
+                    `;
+                } else {
+                    content.innerHTML = `
+                        <div style="display:flex; justify-content:flex-end; margin-bottom:1rem">
+                            <button onclick='openModal("nueva-inscripcion", ${JSON.stringify({etapa_id:id, nombre:nombre})})' class="btn btn-sm btn-primary">+ Añadir a Mano</button>
+                        </div>
+                        <table style="font-size:0.85rem">
+                            <thead><tr><th>Nickname</th><th>Equipo/Jornada</th><th>Acción</th></tr></thead>
+                            <tbody>
+                                ${inscritos.map(i => {
+                                    const nickname = i.jugadores ? i.jugadores.nickname : 'Sin nickname';
+                                    return `
+                                    <tr>
+                                        <td style="font-weight:600">${nickname}</td>
+                                        <td>${i.equipo_nombre || 'Individual'}</td>
+                                        <td>
+                                            <button onclick='eliminarInscripcion("${i.id}", "${nickname}", ${id}, ${JSON.stringify(nombre)})' class="btn btn-sm" style="background:rgba(239, 68, 68, 0.2); color: #f87171;">Baja</button>
+                                        </td>
+                                    </tr>
+                                    `;
+                                }).join('')}
+                            </tbody>
+                        </table>
+                    `;
+                }
+
+                modal.style.display = 'block';
+                overlay.style.display = 'block';
+                console.log('Modal shown');
+            } catch (err) {
+                console.error('Error en verInscritos:', err);
+                alert('FALLO AL ABRIR INSCRITOS:\n' + err.message);
+            }
+        }
+
+        async function eliminarInscripcion(id, nickname, etapaId, etapaNombre) {
+            console.log('eliminarInscripcion called:', { id, nickname, etapaId, etapaNombre });
+            if (!confirm(`¿Estás seguro de que quieres dar de baja a ${nickname}?`)) return;
+            
+            try {
+                const res = await api('admin/eliminar-inscripcion', 'POST', { id });
+                console.log('Delete response:', res);
+                if (res && res.ok) {
+                    verInscritos(etapaId, etapaNombre);
+                } else {
+                    alert('Error al eliminar inscripción: ' + (res ? res.error : 'Sin respuesta'));
+                }
+            } catch (err) {
+                console.error('Error deleting:', err);
+                alert('FALLO AL ELIMINAR:\n' + err.message);
+            }
         }
 
         function closeModal() {

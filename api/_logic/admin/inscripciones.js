@@ -12,7 +12,7 @@ module.exports = async function getInscripciones(req, res) {
             .from('inscripciones')
             .select('*, jugadores(nickname, tiene_licencia, email)')
             .eq('etapa_id', etapa_id)
-            .order('created_at', { ascending: false });
+            .order('fecha_inscripcion', { ascending: false });
 
         if (error) throw error;
         return res.status(200).json(inscripciones);

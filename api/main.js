@@ -81,6 +81,9 @@ module.exports = async function handler(req, res) {
             case 'admin/inscripcion-manual':
                 return require('./_logic/admin/inscripcion-manual')(req, res);
 
+            case 'admin/eliminar-inscripcion':
+                return require('./_logic/admin/eliminar-inscripcion')(req, res);
+
             case 'etapas/listado':
                 return require('./_logic/etapas/listado')(req, res);
 
