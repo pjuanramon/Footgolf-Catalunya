@@ -415,17 +415,13 @@
                 const jugadores = await api('admin/jugadores');
                 document.getElementById('modalTitle').textContent = `Inscribir en ${nombre}`;
                 content.innerHTML = `
-                    <form onsubmit="inscribirManual(event, ${etapa_id})">
+                    <form onsubmit="inscribirManualPorNombre(event, ${etapa_id})">
                         <div style="margin-bottom:1rem">
-                            <label>Buscar Jugador:</label>
-                            <input type="text" id="playerSearch" placeholder="Escribe para filtrar..." class="btn" style="width:100%; background:var(--admin-bg); margin-bottom:0.5rem">
-                            <select name="jugador_id" id="playerSelect" class="btn" style="width:100%; background:var(--admin-bg)" required>
-                                ${jugadores.map(j => {
-                                    const primary = j.nombre_completo || j.nickname;
-                                    const secondary = j.nombre_completo ? j.nickname : '';
-                                    return `<option value="${j.id}">${primary} ${secondary ? `(${secondary})` : ''}</option>`;
-                                }).join('')}
-                            </select>
+                            <label>Nombre del Jugador (Nickname o nombre):</label>
+                            <input type="text" id="playerNameInput" list="jugadoresList" placeholder="Escribe el nombre..." class="btn" style="width:100%; background:var(--admin-bg)" required autocomplete="off">
+                            <datalist id="jugadoresList">
+                                ${jugadores.map(j => `<option value="${j.nickname}">${j.nombre_completo || ''}</option>`).join('')}
+                            </datalist>
                         </div>
                         <div style="margin-bottom:1rem">
                             <label>Nombre Equipo / Jornada (Opcional):</label>
@@ -434,21 +430,6 @@
                         <button type="submit" class="btn btn-primary" style="width:100%">Confirmar Inscripción</button>
                     </form>
                 `;
-
-                // Logic for real-time search
-                const search = document.getElementById('playerSearch');
-                const select = document.getElementById('playerSelect');
-                const originalOptions = Array.from(select.options);
-
-                search.addEventListener('input', (e) => {
-                    const term = e.target.value.toLowerCase();
-                    select.innerHTML = '';
-                    originalOptions.forEach(opt => {
-                        if (opt.text.toLowerCase().includes(term)) {
-                            select.appendChild(opt);
-                        }
-                    });
-                });
             }
 
             modal.style.display = 'block';
@@ -500,13 +481,23 @@
             }
         }
 
-        async function inscribirManual(e, etapa_id) {
+        async function inscribirManualPorNombre(e, etapa_id) {
             e.preventDefault();
-            const f = e.target;
+            const val = document.getElementById('playerNameInput').value;
+            const equipo = e.target.equipo.value;
+            
+            const jugadores = await api('admin/jugadores');
+            const j = jugadores.find(it => it.nickname === val || it.nombre_completo === val);
+            
+            if (!j) {
+                alert('El jugador "' + val + '" no existe. Por favor, créalo primero en la pestaña de Jugadores.');
+                return;
+            }
+
             const res = await api('admin/inscripcion-manual', 'POST', {
                 etapa_id,
-                jugador_id: f.jugador_id.value,
-                equipo_nombre: f.equipo.value
+                jugador_id: j.id,
+                equipo_nombre: equipo
             });
             if (res.ok) {
                 closeModal();
