@@ -243,22 +243,69 @@
             document.getElementById(`tabContent-${tab}`).style.display = 'block';
             document.getElementById(`tab-${tab}`).classList.add('active');
         }
+        // Helpers para matching inteligente
+        function normalizeString(s) {
+            if (!s) return '';
+            return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+        }
+
+        function getLevenshtein(a, b) {
+            const matrix = Array.from({ length: b.length + 1 }, (_, i) => [i]);
+            for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
+            for (let i = 1; i <= b.length; i++) {
+                for (let j = 1; j <= a.length; j++) {
+                    matrix[i][j] = b[i - 1] === a[j - 1] ? matrix[i - 1][j - 1] : Math.min(matrix[i - 1][j - 1] + 1, matrix[i][j - 1] + 1, matrix[i - 1][j] + 1);
+                }
+            }
+            return matrix[b.length][a.length];
+        }
+
+        function findBestMatch(player, officialNames) {
+            const pNick = normalizeString(player.nickname);
+            const pName = normalizeString(player.nombre_completo);
+            let best = null;
+            let bestDist = 999;
+
+            for (const offName of officialNames) {
+                const normOff = normalizeString(offName);
+                if (normOff === pNick || normOff === pName) return { name: offName, type: 'exact' };
+                
+                const dist = Math.min(getLevenshtein(pNick, normOff), getLevenshtein(pName, normOff));
+                if (dist < bestDist) {
+                    bestDist = dist;
+                    best = offName;
+                }
+            }
+            return bestDist <= 3 ? { name: best, type: 'fuzzy' } : null;
+        }
 
         async function renderData() {
-            // Cargar Jugadores
-            const jugadores = await api('admin/jugadores');
+            // Cargar datos en paralelo
+            const [jugadores, rankingNames] = await Promise.all([
+                api('admin/jugadores'),
+                api('admin/clasificacion-nombres')
+            ]);
             const jTable = document.getElementById('jugadoresTable');
-            jTable.innerHTML = jugadores.map(j => `
+            jTable.innerHTML = jugadores.map(j => {
+                const match = j.tiene_licencia ? findBestMatch(j, rankingNames) : null;
+                const statusColor = match ? (match.type === 'exact' ? '#10b981' : '#f59e0b') : '#ef4444';
+                const matchText = match ? `Nick Clasif: <b>${match.name}</b>` : (j.tiene_licencia ? '⚠️ No encontrado en Ranking' : '');
+
+                return `
                 <tr>
-                    <td style="font-weight:800; color:var(--primary-color)">${j.nombre_completo || j.nickname}</td>
-                    <td style="font-size:0.8rem; opacity:0.7">${j.nickname}</td>
+                    <td>
+                        <div style="font-weight:800; color:var(--primary-color)">${j.nickname}</div>
+                        ${matchText ? `<div style="font-size:0.75rem; color:${statusColor}; margin-top:0.2rem">${matchText}</div>` : ''}
+                    </td>
+                    <td style="font-size:0.9rem">${j.nombre_completo || '-'}</td>
                     <td style="font-size:0.8rem">${j.email}<br><span style="opacity:0.6">${j.telefono || '-'}</span></td>
                     <td style="font-size:0.8rem">${j.fecha_nacimiento || '-'}<br><span style="opacity:0.6">${j.genero || '-'}</span></td>
                     <td style="font-size:0.8rem">${j.club || 'Independiente'}</td>
                     <td><span class="badge ${j.tiene_licencia ? 'badge-success' : 'badge-error'}">${j.tiene_licencia ? 'SÍ' : 'NO'}</span><br><span style="font-size:0.7rem; opacity:0.6">${j.anio_licencia || '-'}</span></td>
                     <td><span style="font-size:0.8rem">${(j.categorias_calculadas || []).join(', ') || '-'}</span></td>
-                    <td>
-                        <button onclick="editarJugador('${j.id}')" class="btn btn-sm" style="background:rgba(255,255,255,0.05)">Editar</button>
+                    <td style="display:flex; gap:0.3rem">
+                        <button onclick='openModal("editar-jugador", ${JSON.stringify(j)})' class="btn btn-sm" style="background:rgba(255,255,255,0.05)">Editar</button>
+                        <button onclick='normalizarNombre(${JSON.stringify(j)})' class="btn btn-sm" style="background:rgba(59, 130, 246, 0.2); color: #60a5fa;">Norm.</button>
                     </td>
                 </tr>
             `).join('');
@@ -283,6 +330,44 @@
                     </td>
                 </tr>
             `).join('');
+        }
+
+        async function normalizarNombre(player) {
+
+            try {
+                // Si encontramos un match inteligente, usamos ese nombre. 
+                // Si no, o si el usuario quiere otro, este botón sirve para forzar.
+                // Buscaremos el match de nuevo para el alert
+                const rankingNames = await api('admin/clasificacion-nombres');
+                const match = findBestMatch(player, rankingNames);
+                const suggestedNick = match ? match.name : player.nombre_completo;
+
+                if (!suggestedNick) {
+                    alert('Este jugador no tiene Nombre Completo ni match en Clasificación.');
+                    return;
+                }
+
+                if (!confirm(`¿Quieres cambiar el nickname oficial de "${player.nickname}" a "${suggestedNick}"?\n\nEsto asegurará que coincida exactamente con su licencia y los rankings oficiales.`)) return;
+
+                const res = await api('admin/actualizar-jugador', 'POST', {
+                    id: player.id,
+                    nickname: suggestedNick,
+                    nombre_completo: player.nombre_completo,
+                    email: player.email,
+                    telefono: player.telefono,
+                    genero: player.genero,
+                    fecha_nacimiento: player.fecha_nacimiento,
+                    club: player.club,
+                    tiene_licencia: player.tiene_licencia
+                });
+                if (res.ok) {
+                    renderData();
+                } else {
+                    alert('Error al normalizar: ' + (res.error || 'Nombre ya en uso o fallo de red'));
+                }
+            } catch (err) {
+                alert('Error: ' + err.message);
+            }
         }
 
         async function updateEstado(id, estado) {
@@ -497,7 +582,8 @@
             const res = await api('admin/inscripcion-manual', 'POST', {
                 etapa_id,
                 jugador_id: j.id,
-                equipo_nombre: equipo
+                equipo_nombre: equipo,
+                nombre_manual: val // Guardamos exactamente lo que el admin escribió
             });
             if (res.ok) {
                 closeModal();
@@ -537,15 +623,17 @@
                             <thead><tr><th>Nickname</th><th>Equipo/Jornada</th><th>Acción</th></tr></thead>
                             <tbody>
                                 ${inscritos.map(i => {
-                                    const nombre = i.jugadores ? (i.jugadores.nombre_completo || i.jugadores.nickname) : 'Sin nombre';
-                                    // Solo mostrar alias si es distinto al nombre principal
-                                    const alias = (i.jugadores && i.jugadores.nombre_completo && i.jugadores.nickname !== i.jugadores.nombre_completo) ? i.jugadores.nickname : '';
+                                    const holdsLicense = i.jugadores && i.jugadores.tiene_licencia;
+                                    const nombreMostrar = holdsLicense 
+                                        ? i.jugadores.nickname // Si tiene licencia, usamos su nick de la BD (normalizado)
+                                        : (i.nombre_manual || i.jugadores.nombre_completo || i.jugadores.nickname); // Si no, lo que pongamos manual
+                                    
                                     return `
                                     <tr>
-                                        <td style="font-weight:600">${nombre} ${alias ? `<br><span style="font-size:0.7rem; opacity:0.6">${alias}</span>` : ''}</td>
+                                        <td style="font-weight:600">${nombreMostrar}</td>
                                         <td>${i.equipo_nombre || 'Individual'}</td>
                                         <td>
-                                            <button onclick='eliminarInscripcion("${i.id}", "${nombre.replace(/'/g, "\\'")}", ${id}, ${JSON.stringify(nombre)})' class="btn btn-sm" style="background:rgba(239, 68, 68, 0.2); color: #f87171;">Baja</button>
+                                            <button onclick='eliminarInscripcion("${i.id}", "${nombreMostrar.replace(/'/g, "\\'")}", ${id}, ${JSON.stringify(nombreMostrar)})' class="btn btn-sm" style="background:rgba(239, 68, 68, 0.2); color: #f87171;">Baja</button>
                                         </td>
                                     </tr>
                                     `;

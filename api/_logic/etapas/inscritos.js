@@ -11,16 +11,18 @@ module.exports = async function listarInscritos(req, res) {
 
         const { data, error } = await supabase
             .from('inscripciones')
-            .select('jugador:jugadores(nickname, nombre_completo), equipo_nombre')
+            .select('jugador:jugadores(nickname, nombre_completo, tiene_licencia), equipo_nombre, nombre_manual')
             .eq('etapa_id', etapa_id)
             .eq('estado', 'pagada');
 
         if (error) throw error;
 
-        // Formatear para devolver nicknames y nombres completos
+        // Formatear para devolver nicknames, nombres completos y nombres manuales
         const inscritos = data.map(i => ({
             nickname: i.jugador.nickname,
             nombre_completo: i.jugador.nombre_completo,
+            tiene_licencia: i.jugador.tiene_licencia,
+            nombre_manual: i.nombre_manual,
             equipo: i.equipo_nombre
         }));
 

@@ -6,7 +6,7 @@ const { supabase } = require('../../../lib/supabase');
  */
 module.exports = async function inscripcionManual(req, res) {
     try {
-        const { etapa_id, jugador_id, equipo_nombre } = req.body;
+        const { etapa_id, jugador_id, equipo_nombre, nombre_manual } = req.body;
         if (!etapa_id || !jugador_id) return res.status(400).json({ error: 'Faltan parámetros' });
 
         const { data, error } = await supabase
@@ -15,6 +15,7 @@ module.exports = async function inscripcionManual(req, res) {
                 etapa_id,
                 jugador_id,
                 equipo_nombre: equipo_nombre || null,
+                nombre_manual: nombre_manual || null,
                 estado: 'pagada'
             }, { onConflict: 'etapa_id, jugador_id' })
             .select();
