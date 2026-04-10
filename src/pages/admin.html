@@ -127,7 +127,7 @@
         <div class="login-card">
             <h2 style="margin-bottom: 1rem;">Acceso Admin</h2>
             <input type="password" id="secretInput" placeholder="Clave Administrador" class="btn" style="background: var(--admin-bg); color: white; width: 100%; margin-bottom: 1rem;">
-            <button onclick="login()" class="btn btn-primary" style="width: 100%;">Entrar →</button>
+            <button onclick="handleLogin()" class="btn btn-primary" style="width: 100%;">Entrar →</button>
         </div>
     </div>
 
@@ -187,10 +187,10 @@
         </div>
     </div>
 
-    <!-- Modal Inscritos -->
+    <!-- Modal -->
     <div id="overlay" class="overlay" onclick="closeModal()"></div>
     <div id="modal" class="modal">
-        <h3 id="modalTitle" style="margin-bottom: 1.5rem;">Lista de Inscritos</h3>
+        <h3 id="modalTitle" style="margin-bottom: 1.5rem;">Título</h3>
         <div id="modalContent" style="max-height: 400px; overflow-y: auto;">
             <!-- Injected -->
         </div>
@@ -198,52 +198,15 @@
     </div>
 
     <script>
-        let adminSecret = localStorage.getItem('adminSecret');
-        if (adminSecret) login(adminSecret);
+        // --- Estado Global para evitar problemas de escape en HTML ---
+        let state = {
+            jugadores: [],
+            torneos: [],
+            rankingNames: [],
+            adminSecret: localStorage.getItem('adminSecret')
+        };
 
-        async function api(path, method = 'GET', body = null) {
-            const headers = {
-                'x-admin-secret': adminSecret,
-                'Content-Type': 'application/json'
-            };
-            const options = { method, headers };
-            if (body) options.body = JSON.stringify(body);
-
-            const res = await fetch(`/api/${path}`, options);
-            if (res.status === 401) {
-                logout();
-                return null;
-            }
-            return res.json();
-        }
-
-        async function login(explicitSecret = null) {
-            const input = document.getElementById('secretInput').value;
-            adminSecret = explicitSecret || input;
-            
-            // Probar acceso con una ruta simple
-            const data = await api('admin/jugadores');
-            if (data) {
-                localStorage.setItem('adminSecret', adminSecret);
-                document.getElementById('loginOverlay').style.display = 'none';
-                renderData();
-            } else if (!explicitSecret) {
-                alert('Clave incorrecta');
-            }
-        }
-
-        function logout() {
-            localStorage.removeItem('adminSecret');
-            location.reload();
-        }
-
-        function showTab(tab) {
-            document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(`tabContent-${tab}`).style.display = 'block';
-            document.getElementById(`tab-${tab}`).classList.add('active');
-        }
-        // Helpers para matching inteligente
+        // Helpers
         function normalizeString(s) {
             if (!s) return '';
             return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
@@ -279,17 +242,70 @@
             return bestDist <= 3 ? { name: best, type: 'fuzzy' } : null;
         }
 
+        async function api(path, method = 'GET', body = null) {
+            const headers = {
+                'x-admin-secret': state.adminSecret,
+                'Content-Type': 'application/json'
+            };
+            const options = { method, headers };
+            if (body) options.body = JSON.stringify(body);
+
+            try {
+                const res = await fetch(`/api/${path}`, options);
+                if (res.status === 401) {
+                    logout();
+                    return null;
+                }
+                return await res.json();
+            } catch (err) {
+                console.error('API Error:', err);
+                return null;
+            }
+        }
+
+        async function handleLogin(explicitSecret = null) {
+            const input = document.getElementById('secretInput').value;
+            state.adminSecret = explicitSecret || input;
+            
+            const data = await api('admin/jugadores');
+            if (data) {
+                localStorage.setItem('adminSecret', state.adminSecret);
+                document.getElementById('loginOverlay').style.display = 'none';
+                renderData();
+            } else if (!explicitSecret) {
+                alert('Clave incorrecta');
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('adminSecret');
+            location.reload();
+        }
+
+        function showTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`tabContent-${tab}`).style.display = 'block';
+            document.getElementById(`tab-${tab}`).classList.add('active');
+        }
+
         async function renderData() {
-            // Cargar datos en paralelo
-            const [jugadores, rankingNames] = await Promise.all([
+            const [jugadores, torneos, rankingNames] = await Promise.all([
                 api('admin/jugadores'),
+                api('etapas/listado'),
                 api('admin/clasificacion-nombres')
             ]);
+
+            state.jugadores = jugadores || [];
+            state.torneos = torneos || [];
+            state.rankingNames = rankingNames || [];
+
+            // Render Jugadores
             const jTable = document.getElementById('jugadoresTable');
-            jTable.innerHTML = jugadores.map(j => {
-                const match = j.tiene_licencia ? findBestMatch(j, rankingNames) : null;
+            jTable.innerHTML = state.jugadores.map((j, idx) => {
+                const match = j.tiene_licencia ? findBestMatch(j, state.rankingNames) : null;
                 const statusColor = match ? (match.type === 'exact' ? '#10b981' : '#f59e0b') : '#ef4444';
-                const matchText = match ? `Nick Clasif: <b>${match.name}</b>` : (j.tiene_licencia ? '⚠️ No encontrado en Ranking' : '');
+                const matchText = match ? `Nick Clasif: <b>${match.name}</b>` : (j.tiene_licencia ? '⚠️ No encontrado' : '');
 
                 return `
                 <tr>
@@ -301,379 +317,146 @@
                     <td style="font-size:0.8rem">${j.email}<br><span style="opacity:0.6">${j.telefono || '-'}</span></td>
                     <td style="font-size:0.8rem">${j.fecha_nacimiento || '-'}<br><span style="opacity:0.6">${j.genero || '-'}</span></td>
                     <td style="font-size:0.8rem">${j.club || 'Independiente'}</td>
-                    <td><span class="badge ${j.tiene_licencia ? 'badge-success' : 'badge-error'}">${j.tiene_licencia ? 'SÍ' : 'NO'}</span><br><span style="font-size:0.7rem; opacity:0.6">${j.anio_licencia || '-'}</span></td>
+                    <td><span class="badge ${j.tiene_licencia ? 'badge-success' : 'badge-error'}">${j.tiene_licencia ? 'SÍ' : 'NO'}</span></td>
                     <td><span style="font-size:0.8rem">${(j.categorias_calculadas || []).join(', ') || '-'}</span></td>
-                    <td style="display:flex; gap:0.3rem">
-                        <button onclick='openModal("editar-jugador", ${JSON.stringify(j)})' class="btn btn-sm" style="background:rgba(255,255,255,0.05)">Editar</button>
-                        <button onclick='normalizarNombre(${JSON.stringify(j)})' class="btn btn-sm" style="background:rgba(59, 130, 246, 0.2); color: #60a5fa;">Norm.</button>
+                    <td>
+                        <button onclick="uiEditJugador(${idx})" class="btn btn-sm">Editar</button>
+                        <button onclick="uiNormalizar(${idx})" class="btn btn-sm" style="color:#60a5fa">Norm.</button>
                     </td>
                 </tr>
-            `).join('');
+                `;
+            }).join('');
 
-            // Cargar Torneos
-            const torneos = await api('etapas/listado');
+            // Render Torneos
             const tTable = document.getElementById('torneosTable');
-            tTable.innerHTML = torneos.map(t => `
+            tTable.innerHTML = state.torneos.map((t, idx) => `
                 <tr>
                     <td>${t.nombre}</td>
                     <td>${new Date(t.fecha).toLocaleDateString()}</td>
-                    <td><span class="badge" style="background:rgba(255,255,255,0.1)">${(t.tipo || 'Etapa').toUpperCase()}</span></td>
-                    <td><span class="badge ${t.estado === 'abierta' ? 'badge-success' : t.estado === 'cerrada' ? 'badge-warn' : 'badge-error'}">${(t.estado || 'cerrada').toUpperCase()}</span></td>
-                    <td style="display:flex; gap:0.5rem">
-                        <button onclick='verInscritos(${t.id}, ${JSON.stringify(t.nombre)})' class="btn btn-sm btn-primary">Inscritos</button>
-                        <select onchange="updateEstado(${t.id}, this.value)" class="btn btn-sm" style="background:var(--admin-bg); color:white; border:1px solid var(--admin-border)">
-                            <option value="">Cambiar...</option>
-                            <option value="abierta">Abrir</option>
-                            <option value="cerrada">Cerrar</option>
-                            <option value="finalizada">Finalizar</option>
-                        </select>
+                    <td>${(t.tipo || 'Etapa').toUpperCase()}</td>
+                    <td><span class="badge ${t.estado === 'abierta' ? 'badge-success' : 'badge-error'}">${(t.estado || '').toUpperCase()}</span></td>
+                    <td>
+                        <button onclick="uiVerInscritos(${idx})" class="btn btn-sm btn-primary">Inscritos</button>
                     </td>
                 </tr>
             `).join('');
         }
 
-        async function normalizarNombre(player) {
-
-            try {
-                // Si encontramos un match inteligente, usamos ese nombre. 
-                // Si no, o si el usuario quiere otro, este botón sirve para forzar.
-                // Buscaremos el match de nuevo para el alert
-                const rankingNames = await api('admin/clasificacion-nombres');
-                const match = findBestMatch(player, rankingNames);
-                const suggestedNick = match ? match.name : player.nombre_completo;
-
-                if (!suggestedNick) {
-                    alert('Este jugador no tiene Nombre Completo ni match en Clasificación.');
-                    return;
-                }
-
-                if (!confirm(`¿Quieres cambiar el nickname oficial de "${player.nickname}" a "${suggestedNick}"?\n\nEsto asegurará que coincida exactamente con su licencia y los rankings oficiales.`)) return;
-
-                const res = await api('admin/actualizar-jugador', 'POST', {
-                    id: player.id,
-                    nickname: suggestedNick,
-                    nombre_completo: player.nombre_completo,
-                    email: player.email,
-                    telefono: player.telefono,
-                    genero: player.genero,
-                    fecha_nacimiento: player.fecha_nacimiento,
-                    club: player.club,
-                    tiene_licencia: player.tiene_licencia
-                });
-                if (res.ok) {
-                    renderData();
-                } else {
-                    alert('Error al normalizar: ' + (res.error || 'Nombre ya en uso o fallo de red'));
-                }
-            } catch (err) {
-                alert('Error: ' + err.message);
-            }
+        // Acciones UI
+        function uiEditJugador(idx) {
+            openModal('editar-jugador', state.jugadores[idx]);
         }
 
-        async function updateEstado(id, estado) {
-            if (!estado) return;
-            const res = await api('admin/modificar-etapa', 'POST', { id, estado });
-            if (res.ok) renderData();
+        async function uiNormalizar(idx) {
+            const player = state.jugadores[idx];
+            const match = findBestMatch(player, state.rankingNames);
+            const suggested = match ? match.name : player.nombre_completo;
+
+            if (!suggested || !confirm(`¿Normalizar Nickname de "${player.nickname}" a "${suggested}"?`)) return;
+
+            const res = await api('admin/actualizar-jugador', 'POST', {
+                ...player,
+                nickname: suggested
+            });
+            if (res && res.ok) renderData();
         }
 
-        async function openModal(type, extra = null) {
+        async function uiVerInscritos(idx) {
+            const t = state.torneos[idx];
+            verInscritos(t.id, t.nombre);
+        }
+
+        // Modales
+        function openModal(type, extra = null) {
             const modal = document.getElementById('modal');
             const overlay = document.getElementById('overlay');
             const content = document.getElementById('modalContent');
-            
+            document.getElementById('modalTitle').textContent = type.toUpperCase();
+
+            // Lógica de formularios simplificada
             if (type === 'nuevo-jugador') {
-                document.getElementById('modalTitle').textContent = 'Registrar Nuevo Jugador';
                 content.innerHTML = `
-                    <form onsubmit="crearJugador(event)">
-                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem">
-                            <div style="margin-bottom:1rem">
-                                <label>Nombre Completo:</label>
-                                <input type="text" name="nombre" class="btn" style="width:100%; background:var(--admin-bg)" required>
-                            </div>
-                            <div style="margin-bottom:1rem">
-                                <label>Nickname:</label>
-                                <input type="text" name="nickname" class="btn" style="width:100%; background:var(--admin-bg)" required>
-                            </div>
-                        </div>
-                        <div style="margin-bottom:1rem">
-                            <label>Email:</label>
-                            <input type="email" name="email" class="btn" style="width:100%; background:var(--admin-bg)" required>
-                        </div>
-                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem">
-                            <div style="margin-bottom:1rem">
-                                <label>Teléfono:</label>
-                                <input type="tel" name="telefono" class="btn" style="width:100%; background:var(--admin-bg)">
-                            </div>
-                            <div style="margin-bottom:1rem">
-                                <label>F. Nacimiento:</label>
-                                <input type="date" name="fecha_nacimiento" class="btn" style="width:100%; background:var(--admin-bg)">
-                            </div>
-                        </div>
-                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem">
-                            <div style="margin-bottom:1rem">
-                                <label>Género:</label>
-                                <select name="genero" class="btn" style="width:100%; background:var(--admin-bg)">
-                                    <option value="masculino">Masculino</option>
-                                    <option value="femenino">Femenino</option>
-                                </select>
-                            </div>
-                            <div style="margin-bottom:1rem">
-                                <label>Club:</label>
-                                <select name="club" class="btn" style="width:100%; background:var(--admin-bg)">
-                                    <option value="Independiente">Independiente</option>
-                                    <option value="JABALI TEAM FOOTGOLF">JABALI TEAM FOOTGOLF</option>
-                                    <option value="Apex FootGolf">Apex FootGolf</option>
-                                    <option value="BARCELONA FOOTGOLF">BARCELONA FOOTGOLF</option>
-                                    <option value="AC Maktub FG">AC Maktub FG</option>
-                                </select>
-                            </div>
-                        </div>
-                        <button type="submit" class="btn btn-primary" style="width:100%; margin-top:1rem">Guardar Jugador</button>
-                    </form>
-                `;
+                    <form onsubmit="handleCrearJugador(event)">
+                        <input type="text" name="nombre" placeholder="Nombre Completo" class="btn" style="width:100%; margin-bottom:1rem" required>
+                        <input type="text" name="nickname" placeholder="Nickname" class="btn" style="width:100%; margin-bottom:1rem" required>
+                        <input type="email" name="email" placeholder="Email" class="btn" style="width:100%; margin-bottom:1rem" required>
+                        <button type="submit" class="btn btn-primary" style="width:100%">Guardar</button>
+                    </form>`;
             } else if (type === 'editar-jugador') {
                 const j = extra;
-                document.getElementById('modalTitle').textContent = `Editar: ${j.nickname}`;
                 content.innerHTML = `
-                    <form onsubmit="modificarJugador(event, '${j.id}')">
-                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem">
-                            <div style="margin-bottom:1rem">
-                                <label>Nombre Completo:</label>
-                                <input type="text" name="nombre" value="${j.nombre_completo || ''}" class="btn" style="width:100%; background:var(--admin-bg)" required>
-                            </div>
-                            <div style="margin-bottom:1rem">
-                                <label>Nickname:</label>
-                                <input type="text" name="nickname" value="${j.nickname || ''}" class="btn" style="width:100%; background:var(--admin-bg)" required>
-                            </div>
-                        </div>
-                        <div style="margin-bottom:1rem">
-                            <label>Email:</label>
-                            <input type="email" name="email" value="${j.email || ''}" class="btn" style="width:100%; background:var(--admin-bg)" required>
-                        </div>
-                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem">
-                            <div style="margin-bottom:1rem">
-                                <label>Teléfono:</label>
-                                <input type="tel" name="telefono" value="${j.telefono || ''}" class="btn" style="width:100%; background:var(--admin-bg)">
-                            </div>
-                            <div style="margin-bottom:1rem">
-                                <label>F. Nacimiento:</label>
-                                <input type="date" name="fecha_nacimiento" value="${j.fecha_nacimiento || ''}" class="btn" style="width:100%; background:var(--admin-bg)">
-                            </div>
-                        </div>
-                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem">
-                            <div style="margin-bottom:1rem">
-                                <label>Género:</label>
-                                <select name="genero" class="btn" style="width:100%; background:var(--admin-bg)">
-                                    <option value="masculino" ${j.genero === 'masculino' ? 'selected' : ''}>Masculino</option>
-                                    <option value="femenino" ${j.genero === 'femenino' ? 'selected' : ''}>Femenino</option>
-                                </select>
-                            </div>
-                            <div style="margin-bottom:1rem">
-                                <label>Club:</label>
-                                <select name="club" class="btn" style="width:100%; background:var(--admin-bg)">
-                                    <option value="Independiente" ${j.club === 'Independiente' ? 'selected' : ''}>Independiente</option>
-                                    <option value="JABALI TEAM FOOTGOLF" ${j.club === 'JABALI TEAM FOOTGOLF' ? 'selected' : ''}>JABALI TEAM FOOTGOLF</option>
-                                    <option value="Apex FootGolf" ${j.club === 'Apex FootGolf' ? 'selected' : ''}>Apex FootGolf</option>
-                                    <option value="BARCELONA FOOTGOLF" ${j.club === 'BARCELONA FOOTGOLF' ? 'selected' : ''}>BARCELONA FOOTGOLF</option>
-                                    <option value="AC Maktub FG" ${j.club === 'AC Maktub FG' ? 'selected' : ''}>AC Maktub FG</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; padding:1rem; background:rgba(255,255,255,0.03); border-radius:1rem">
-                            <div>
-                                <label>Licencia Pagada:</label>
-                                <select name="tiene_licencia" class="btn" style="width:100%; background:var(--admin-bg)">
-                                    <option value="true" ${j.tiene_licencia ? 'selected' : ''}>SÍ</option>
-                                    <option value="false" ${!j.tiene_licencia ? 'selected' : ''}>NO</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label>Año 1ª Licencia:</label>
-                                <input type="number" name="anio_licencia" value="${j.anio_licencia || 2026}" class="btn" style="width:100%; background:var(--admin-bg)">
-                            </div>
-                        </div>
-                        <button type="submit" class="btn btn-primary" style="width:100%; margin-top:1.5rem">Guardar Cambios</button>
-                    </form>
-                `;
-            } else if (type === 'nueva-inscripcion') {
-                const {etapa_id, nombre} = extra;
-                const jugadores = await api('admin/jugadores');
-                document.getElementById('modalTitle').textContent = `Inscribir en ${nombre}`;
-                content.innerHTML = `
-                    <form onsubmit="inscribirManualPorNombre(event, ${etapa_id})">
-                        <div style="margin-bottom:1rem">
-                            <label>Nombre del Jugador (Nickname o nombre):</label>
-                            <input type="text" id="playerNameInput" list="jugadoresList" placeholder="Escribe el nombre..." class="btn" style="width:100%; background:var(--admin-bg)" required autocomplete="off">
-                            <datalist id="jugadoresList">
-                                ${jugadores.map(j => `<option value="${j.nickname}">${j.nombre_completo || ''}</option>`).join('')}
-                            </datalist>
-                        </div>
-                        <div style="margin-bottom:1rem">
-                            <label>Nombre Equipo / Jornada (Opcional):</label>
-                            <input type="text" name="equipo" placeholder="Dejar vacío si es individual" class="btn" style="width:100%; background:var(--admin-bg)">
-                        </div>
-                        <button type="submit" class="btn btn-primary" style="width:100%">Confirmar Inscripción</button>
-                    </form>
-                `;
+                    <form onsubmit="handleModificarJugador(event, '${j.id}')">
+                        <input type="text" name="nombre" value="${j.nombre_completo || ''}" class="btn" style="width:100%; margin-bottom:1rem">
+                        <input type="text" name="nickname" value="${j.nickname || ''}" class="btn" style="width:100%; margin-bottom:1rem">
+                        <select name="tiene_licencia" class="btn" style="width:100%; margin-bottom:1rem">
+                            <option value="true" ${j.tiene_licencia ? 'selected' : ''}>SÍ Tiene Licencia</option>
+                            <option value="false" ${!j.tiene_licencia ? 'selected' : ''}>NO Tiene Licencia</option>
+                        </select>
+                        <button type="submit" class="btn btn-primary" style="width:100%">Actualizar</button>
+                    </form>`;
             }
 
             modal.style.display = 'block';
             overlay.style.display = 'block';
         }
 
-        async function crearJugador(e) {
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+        }
+
+        async function handleCrearJugador(e) {
             e.preventDefault();
             const f = e.target;
             const res = await api('admin/crear-jugador', 'POST', {
                 nombre_completo: f.nombre.value,
                 nickname: f.nickname.value,
-                email: f.email.value,
-                telefono: f.telefono ? f.telefono.value : null,
-                fecha_nacimiento: f.fecha_nacimiento ? f.fecha_nacimiento.value : null,
-                genero: f.genero ? f.genero.value : null,
-                club: f.club ? f.club.value : 'Independiente'
+                email: f.email.value
             });
-            if (res.ok) {
-                closeModal();
-                renderData();
-            }
-        }
- 
-        async function editarJugador(id) {
-            const jugadores = await api('admin/jugadores');
-            const j = jugadores.find(it => it.id === id);
-            if (j) openModal('editar-jugador', j);
+            if (res && res.ok) { closeModal(); renderData(); }
         }
 
-        async function modificarJugador(e, id) {
+        async function handleModificarJugador(e, id) {
             e.preventDefault();
             const f = e.target;
-            const res = await api('admin/modificar-jugador', 'POST', {
+            const res = await api('admin/actualizar-jugador', 'POST', {
                 id,
                 nombre_completo: f.nombre.value,
                 nickname: f.nickname.value,
-                email: f.email.value,
-                telefono: f.telefono ? f.telefono.value : null,
-                fecha_nacimiento: f.fecha_nacimiento ? f.fecha_nacimiento.value : null,
-                genero: f.genero ? f.genero.value : null,
-                club: f.club ? f.club.value : 'Independiente',
-                tiene_licencia: f.tiene_licencia.value === 'true',
-                anio_licencia: parseInt(f.anio_licencia.value) || null
+                tiene_licencia: f.tiene_licencia.value === 'true'
             });
-            if (res.ok) {
-                closeModal();
-                renderData();
-            }
-        }
-
-        async function inscribirManualPorNombre(e, etapa_id) {
-            e.preventDefault();
-            const val = document.getElementById('playerNameInput').value;
-            const equipo = e.target.equipo.value;
-            
-            const jugadores = await api('admin/jugadores');
-            const j = jugadores.find(it => it.nickname === val || it.nombre_completo === val);
-            
-            if (!j) {
-                alert('El jugador "' + val + '" no existe. Por favor, créalo primero en la pestaña de Jugadores.');
-                return;
-            }
-
-            const res = await api('admin/inscripcion-manual', 'POST', {
-                etapa_id,
-                jugador_id: j.id,
-                equipo_nombre: equipo,
-                nombre_manual: val // Guardamos exactamente lo que el admin escribió
-            });
-            if (res.ok) {
-                closeModal();
-                renderData();
-            }
+            if (res && res.ok) { closeModal(); renderData(); }
         }
 
         async function verInscritos(id, nombre) {
-            console.log('verInscritos called with:', { id, nombre });
-            try {
-                const inscritos = await api(`admin/inscripciones?etapa_id=${id}`);
-                console.log('API response for inscritos:', inscritos);
+            const inscritos = await api(`admin/inscripciones?etapa_id=${id}`);
+            if (!inscritos) return;
 
-                if (!inscritos || !Array.isArray(inscritos)) {
-                    throw new Error('La respuesta de la API no es válida: ' + JSON.stringify(inscritos));
-                }
-
-                const modal = document.getElementById('modal');
-                const overlay = document.getElementById('overlay');
-                const content = document.getElementById('modalContent');
-                
-                document.getElementById('modalTitle').textContent = `Inscritos: ${nombre}`;
-                
-                if (inscritos.length === 0) {
-                    content.innerHTML = `
-                        <div style="display:flex; justify-content:flex-end; margin-bottom:1rem">
-                            <button onclick='openModal("nueva-inscripcion", ${JSON.stringify({etapa_id:id, nombre:nombre})})' class="btn btn-sm btn-primary">+ Añadir a Mano</button>
-                        </div>
-                        <p>No hay inscritos todavía.</p>
-                    `;
-                } else {
-                    content.innerHTML = `
-                        <div style="display:flex; justify-content:flex-end; margin-bottom:1rem">
-                            <button onclick='openModal("nueva-inscripcion", ${JSON.stringify({etapa_id:id, nombre:nombre})})' class="btn btn-sm btn-primary">+ Añadir a Mano</button>
-                        </div>
-                        <table style="font-size:0.85rem">
-                            <thead><tr><th>Nickname</th><th>Equipo/Jornada</th><th>Acción</th></tr></thead>
-                            <tbody>
-                                ${inscritos.map(i => {
-                                    const holdsLicense = i.jugadores && i.jugadores.tiene_licencia;
-                                    const nombreMostrar = holdsLicense 
-                                        ? i.jugadores.nickname // Si tiene licencia, usamos su nick de la BD (normalizado)
-                                        : (i.nombre_manual || i.jugadores.nombre_completo || i.jugadores.nickname); // Si no, lo que pongamos manual
-                                    
-                                    return `
-                                    <tr>
-                                        <td style="font-weight:600">${nombreMostrar}</td>
-                                        <td>${i.equipo_nombre || 'Individual'}</td>
-                                        <td>
-                                            <button onclick='eliminarInscripcion("${i.id}", "${nombreMostrar.replace(/'/g, "\\'")}", ${id}, ${JSON.stringify(nombreMostrar)})' class="btn btn-sm" style="background:rgba(239, 68, 68, 0.2); color: #f87171;">Baja</button>
-                                        </td>
-                                    </tr>
-                                    `;
-                                }).join('')}
-                            </tbody>
-                        </table>
-                    `;
-                }
-
-                modal.style.display = 'block';
-                overlay.style.display = 'block';
-                console.log('Modal shown');
-            } catch (err) {
-                console.error('Error en verInscritos:', err);
-                alert('FALLO AL ABRIR INSCRITOS:\n' + err.message);
-            }
+            document.getElementById('modalTitle').textContent = `Inscritos: ${nombre}`;
+            const content = document.getElementById('modalContent');
+            content.innerHTML = `
+                <table style="font-size:0.9rem">
+                    ${inscritos.map(i => `
+                        <tr>
+                            <td>${i.jugadores ? i.jugadores.nickname : (i.nombre_manual || '???')}</td>
+                            <td>${i.equipo_nombre || 'Individual'}</td>
+                            <td><button onclick="handleEliminar('${i.id}', ${id}, '${nombre}')" class="btn btn-sm" style="color:red">Baja</button></td>
+                        </tr>
+                    `).join('')}
+                </table>
+            `;
+            document.getElementById('modal').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
         }
 
-        async function eliminarInscripcion(id, nickname, etapaId, etapaNombre) {
-            console.log('eliminarInscripcion called:', { id, nickname, etapaId, etapaNombre });
-            if (!confirm(`¿Estás seguro de que quieres dar de baja a ${nickname}?`)) return;
-            
-            try {
-                const res = await api('admin/eliminar-inscripcion', 'POST', { id });
-                console.log('Delete response:', res);
-                if (res && res.ok) {
-                    verInscritos(etapaId, etapaNombre);
-                } else {
-                    alert('Error al eliminar inscripción: ' + (res ? res.error : 'Sin respuesta'));
-                }
-            } catch (err) {
-                console.error('Error deleting:', err);
-                alert('FALLO AL ELIMINAR:\n' + err.message);
-            }
+        async function handleEliminar(id, etapaId, etapaNombre) {
+            if (!confirm('¿Dar de baja?')) return;
+            const res = await api('admin/eliminar-inscripcion', 'POST', { id });
+            if (res && res.ok) verInscritos(etapaId, etapaNombre);
         }
 
-        function closeModal() {
-            document.getElementById('modal').style.display = 'none';
-            document.getElementById('overlay').style.display = 'none';
-        }
+        // Inicio
+        if (state.adminSecret) handleLogin(state.adminSecret);
 
     </script>
 </body>
