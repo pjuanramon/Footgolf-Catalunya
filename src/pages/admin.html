@@ -361,7 +361,10 @@
                     <td>${(t.tipo || 'Etapa').toUpperCase()}</td>
                     <td><span class="badge ${t.estado === 'abierta' ? 'badge-success' : 'badge-error'}">${(t.estado || '').toUpperCase()}</span></td>
                     <td>
-                        <button onclick="uiVerInscritos(${idx})" class="btn btn-sm btn-primary">Inscritos</button>
+                        <div style="display:flex; gap:0.5rem">
+                            <button onclick="uiVerInscritos(${idx})" class="btn btn-sm btn-primary">Inscritos</button>
+                            ${t.estado !== 'finalizada' ? `<button onclick="uiCargarResultados(${idx})" class="btn btn-sm" style="background:var(--secondary-color)">Cargar</button>` : ''}
+                        </div>
                     </td>
                 </tr>
             `).join('');
@@ -389,6 +392,12 @@
         async function uiVerInscritos(idx) {
             const t = state.torneos[idx];
             verInscritos(t.id, t.nombre);
+        }
+
+        function uiCargarResultados(idx) {
+            const t = state.torneos[idx];
+            state.activeEtapa = t;
+            openModal('cargar-resultados', t);
         }
 
         // Modales
@@ -448,8 +457,29 @@
                             <label style="font-size:0.8rem; opacity:0.7">Equipo / Jornada (Opcional):</label>
                             <input type="text" name="equipo_nombre" placeholder="Nombre equipo..." class="btn" style="width:100%">
                         </div>
-                        <button type="submit" class="btn btn-primary" style="width:100%">Confirmar Inscripción</button>
+                    <button type="submit" class="btn btn-primary" style="width:100%">Confirmar Inscripción</button>
                     </form>`;
+            } else if (type === 'cargar-resultados') {
+                const t = extra;
+                content.innerHTML = `
+                    <div id="step-upload">
+                        <p style="font-size:0.9rem; margin-bottom:1rem">Sube el Excel oficial para procesar <b>${t.nombre}</b>.</p>
+                        <input type="file" id="excelInput" accept=".xlsx,.xls" class="btn" style="width:100%; margin-bottom:1rem">
+                        <button onclick="processStepPreview()" class="btn btn-primary" style="width:100%">Analizar Archivo</button>
+                    </div>
+                    <div id="step-ties" style="display:none">
+                        <p style="background:#fef3c7; color:#92400e; padding:0.5rem; border-radius:4px; font-size:0.8rem; margin-bottom:1rem">
+                            ⚠️ Se han detectado empates en el Podium. Indica quién ganó el desempate en cada categoría.
+                        </p>
+                        <div id="tiesList"></div>
+                        <button onclick="processStepPreview(true)" class="btn btn-primary" style="width:100%; margin-top:1rem">Recalcular con Desempates</button>
+                    </div>
+                    <div id="step-preview" style="display:none">
+                        <p style="font-size:0.9rem; margin-bottom:1rem">Vista previa de puntos calculados:</p>
+                        <div id="previewTable" style="max-height:250px; overflow-y:auto; border:1px solid #ddd; margin-bottom:1rem"></div>
+                        <button onclick="processStepPublish()" class="btn btn-sm" style="width:100%; background:#10b981; color:white">Publicar Resultados</button>
+                    </div>
+                `;
             }
 
             modal.style.display = 'block';
@@ -529,6 +559,98 @@
                 verInscritos(etapaId, etapaNombre);
             } else {
                 alert('Error al inscribir: ' + (res ? res.error : 'Fallo de red'));
+            }
+        }
+
+        let currentFileBase64 = null;
+        let currentDesempates = {};
+
+        async function processStepPreview(isRetry = false) {
+            const input = document.getElementById('excelInput');
+            if (!isRetry) {
+                if (!input.files[0]) return alert('Selecciona un archivo');
+                const file = input.files[0];
+                const reader = new FileReader();
+                reader.onload = async (e) => {
+                    currentFileBase64 = e.target.result.split(',')[1];
+                    sendPreview();
+                };
+                reader.readAsDataURL(file);
+            } else {
+                sendPreview();
+            }
+        }
+
+        async function sendPreview() {
+            const res = await api('clasificacion/procesar-etapa', 'POST', {
+                etapa_id: state.activeEtapa.id,
+                excel_base64: currentFileBase64,
+                mode: 'preview',
+                desempates: currentDesempates
+            });
+
+            if (!res || !res.ok) return alert('Error al analizar archivo');
+
+            if (res.empatesDetectados && res.empatesDetectados.length > 0) {
+                document.getElementById('step-upload').style.display = 'none';
+                document.getElementById('step-preview').style.display = 'none';
+                document.getElementById('step-ties').style.display = 'block';
+                
+                const list = document.getElementById('tiesList');
+                list.innerHTML = res.empatesDetectados.map((e, idx) => `
+                    <div style="margin-bottom:1rem; border-bottom:1px dashed #ccc; padding-bottom:0.5rem">
+                        <div style="font-weight:bold; font-size:0.8rem">${e.categoria} (Score: ${e.score})</div>
+                        <div style="display:flex; gap:0.5rem; margin-top:0.4rem">
+                            ${e.jugadores.map(j => `
+                                <button onclick="resolveTie('${e.categoria}', '${j.id}')" 
+                                        class="btn btn-sm ${currentDesempates[j.id] ? 'btn-primary' : ''}" 
+                                        style="font-size:0.7rem">
+                                    ${j.nickname}
+                                </button>
+                            `).join('')}
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                document.getElementById('step-upload').style.display = 'none';
+                document.getElementById('step-ties').style.display = 'none';
+                document.getElementById('step-preview').style.display = 'block';
+                
+                const table = document.getElementById('previewTable');
+                table.innerHTML = `
+                    <table style="font-size:0.75rem; width:100%">
+                        <thead><tr><th>Jugador</th><th>Score</th><th>Absoluta</th></tr></thead>
+                        <tbody>
+                            ${res.puntosCalculados.slice(0, 10).map(p => `
+                                <tr>
+                                    <td>${p.nickname}</td>
+                                    <td>${p.score}</td>
+                                    <td>${p.puntos['Absoluta'] || 0}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+            }
+        }
+
+        function resolveTie(cat, playerId) {
+            currentDesempates[playerId] = true;
+            sendPreview();
+        }
+
+        async function processStepPublish() {
+            if (!confirm('¿Estás seguro? Esto cerrará la etapa y actualizará la clasificación pública.')) return;
+            const res = await api('clasificacion/procesar-etapa', 'POST', {
+                etapa_id: state.activeEtapa.id,
+                excel_base64: currentFileBase64,
+                mode: 'commit',
+                desempates: currentDesempates
+            });
+            if (res && res.ok) {
+                alert('Etapa publicada con éxito');
+                closeModal();
+                renderData();
             }
         }
 

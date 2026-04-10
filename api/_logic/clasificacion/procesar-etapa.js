@@ -1,14 +1,12 @@
 // ============================================================
 // POST /api/clasificacion/procesar-etapa
-// Procesa los resultados de una etapa de forma 100% automatizada
+// Procesa los resultados de una etapa con soporte para desempates y vista previa.
+// { etapa_id, excel_base64, mode: 'preview'|'commit', desempates: { cat: { score: winner_id } } }
 // ============================================================
 const { supabase } = require('../../../lib/supabase');
-const { matchPlayerToDb, normalizeName } = require('../../../lib/matching');
-const { ejecutarAutomatizacionCompleta } = require('../../../lib/stage-automation');
+const { matchPlayerToDb } = require('../../../lib/matching');
 const { calcularPuntosEtapa, calcularClasificacionGeneral } = require('../../../lib/ranking-engine');
 const XLSX = require('xlsx');
-const fs = require('fs');
-const path = require('path');
 
 module.exports.config = {
     api: { bodyParser: { sizeLimit: '10mb' } },
@@ -22,13 +20,12 @@ module.exports = async function handler(req, res) {
     if (adminSecret !== process.env.ADMIN_SECRET) return res.status(401).json({ error: 'No autorizado.' });
 
     try {
-        const { etapa_id, excel_base64 } = req.body;
+        const { etapa_id, excel_base64, mode = 'preview', desempates = {} } = req.body;
         if (!etapa_id || !excel_base64) return res.status(400).json({ error: 'Faltan parámetros (etapa_id, excel_base64).' });
 
-        // 1. Obtener datos básicos
+        // 1. Obtener datos
         const { data: etapa } = await supabase.from('etapas').select('*').eq('id', etapa_id).single();
         const { data: dbPlayers } = await supabase.from('jugadores').select('*');
-        
         if (!etapa) return res.status(404).json({ error: 'Etapa no encontrada.' });
 
         // 2. Leer Excel
@@ -37,101 +34,119 @@ module.exports = async function handler(req, res) {
         const sheet = workbook.Sheets[workbook.SheetNames[0]];
         const rows = XLSX.utils.sheet_to_json(sheet, { header: 'A', defval: '' }).slice(1);
 
-        // 3. Preparar resultados para el motor
+        // 3. Emparejar jugadores
         const resultadosBrutos = [];
         for (const row of rows) {
             const rawName = String(row['D'] || '').trim();
             if (!rawName) continue;
+            // Omitir si el software marcó que no tiene licencia (Columna F)
             if (String(row['F']).trim().toUpperCase() === 'NO') continue;
 
             const match = matchPlayerToDb(rawName, dbPlayers || []);
+            const p = match.player;
+            
+            // Aplicar ajuste de desempate si existe
+            let finalScore = Number(row['Y'] || 0);
+            if (p && desempates && desempates[p.id]) {
+                // Si este jugador ganó un desempate en alguna categoría, le restamos 0.1 al score para que el engine lo ordene primero
+                finalScore -= 0.1;
+            }
+
             resultadosBrutos.push({
                 rawName,
-                normName: normalizeName(rawName),
-                score: Number(row['Y'] || 0),
-                dbPlayer: match.player,
-                isUnlicensed: match.player ? !match.player.tiene_licencia : true
+                score: finalScore,
+                originalScore: Number(row['Y'] || 0),
+                dbPlayer: p
             });
         }
 
         // 4. Calcular Puntos de la Etapa
         const puntosEtapa = calcularPuntosEtapa(resultadosBrutos);
 
-        // 5. Guardar resultados en la BD
-        for (const r of puntosEtapa) {
-            await supabase.from('resultados_etapas').upsert({
-                etapa_id: etapa_id,
-                jugador_id: r.jugador_id,
-                puntos_absoluta: r.puntos['Absoluta'] || 0,
-                puntos_rookie: r.puntos['Rookie'] || 0,
-                puntos_senior45: r.puntos['Senior 45 +'] || 0,
-                puntos_senior55: r.puntos['Senior 55 +'] || 0,
-                puntos_femenino: r.puntos['Femenino'] || 0,
-                score: r.score
-            }, { onConflict: 'etapa_id, jugador_id' });
+        // 5. Detectar Empates en Top 3 (Solo para modo preview)
+        const empatesTop3 = [];
+        if (mode === 'preview') {
+            const categorias = ['Absoluta', 'Rookie', 'Senior 45 +', 'Senior 55 +', 'Femenino'];
+            categorias.forEach(cat => {
+                // Agrupar por score original (sin el ajuste de -0.1) para ver quién empató realmente
+                const sorted = puntosEtapa
+                    .filter(r => r.puntos[cat] !== undefined)
+                    .sort((a, b) => a.score - b.score);
+                
+                // Buscar si en los puestos 1, 2 o 3 hay Scores idénticos
+                const seenScores = {};
+                sorted.forEach((r, idx) => {
+                    if (idx < 5) { // Revisamos el top 5 por si acaso para detectar el top 3 real
+                        const score = r.score;
+                        if (!seenScores[score]) seenScores[score] = [];
+                        seenScores[score].push(r);
+                    }
+                });
+
+                Object.keys(seenScores).forEach(score => {
+                    const grupo = seenScores[score];
+                    if (grupo.length > 1) {
+                        // Verificar si este empate afecta al podium (rango < 4)
+                        // Calculamos el rank del grupo
+                        const rankOfGroup = sorted.indexOf(grupo[0]) + 1;
+                        if (rankOfGroup <= 3) {
+                            empatesTop3.push({
+                                categoria: cat,
+                                score: score,
+                                jugadores: grupo.map(g => ({ id: g.jugador_id, nickname: g.nickname }))
+                            });
+                        }
+                    }
+                });
+            });
         }
 
-        // 6. Generar Clasificación General Automatizada
-        const { data: todosLosResultados } = await supabase
-            .from('resultados_etapas')
-            .select('*, jugadores(nickname, tiene_licencia)')
-            .order('etapa_id', { ascending: true });
+        // 6. Si es COMMIT, guardar
+        if (mode === 'commit') {
+            // Guardar resultados_etapas
+            for (const r of puntosEtapa) {
+                await supabase.from('resultados_etapas').upsert({
+                    etapa_id: etapa_id,
+                    jugador_id: r.jugador_id,
+                    puntos_absoluta: r.puntos['Absoluta'] || 0,
+                    puntos_rookie: r.puntos['Rookie'] || 0,
+                    puntos_senior45: r.puntos['Senior 45 +'] || 0,
+                    puntos_senior55: r.puntos['Senior 55 +'] || 0,
+                    puntos_femenino: r.puntos['Femenino'] || 0,
+                    score: r.score
+                }, { onConflict: 'etapa_id, jugador_id' });
+            }
 
-        const general = calcularClasificacionGeneral(todosLosResultados);
+            // Recalcular General y actualizar JSON en la etapa
+            const { data: todosLosResultados } = await supabase
+                .from('resultados_etapas')
+                .select('*, jugadores(nickname)')
+                .order('etapa_id', { ascending: true });
 
-        // Formatear para el frontend (manteniendo compatibilidad con el motor antiguo)
-        const categoriasFinal = {
-            'Absoluta': [], 'Rookie': [], 'Senior 45 +': [], 'Senior 55 +': [], 'Femenino': []
-        };
-
-        Object.keys(categoriasFinal).forEach(cat => {
-            const rankingCat = general
-                .map(j => {
+            const general = calcularClasificacionGeneral(todosLosResultados);
+            
+            const categoriasFinal = { 'Absoluta': [], 'Rookie': [], 'Senior 45 +': [], 'Senior 55 +': [], 'Femenino': [] };
+            Object.keys(categoriasFinal).forEach(cat => {
+                const rankingCat = general.map(j => {
                     const catData = j.categorias[cat] || { total: 0, etapas: [] };
-                    return {
-                        name: j.nickname,
-                        total: catData.total,
-                        e1: catData.etapas[0] || 0,
-                        e2: catData.etapas[1] || 0,
-                        e3: catData.etapas[2] || 0,
-                        e4: catData.etapas[3] || 0,
-                        e5: catData.etapas[4] || 0,
-                        e6: catData.etapas[5] || 0,
-                        e7: catData.etapas[6] || 0,
-                        e8: catData.etapas[7] || 0,
-                        e9: catData.etapas[8] || 0,
-                        e10: catData.etapas[9] || 0,
-                        isUnlicensed: false // Solo puntuamos licenciados
-                    };
-                })
-                .filter(j => j.total > 0)
-                .sort((a, b) => b.total - a.total);
+                    return { name: j.nickname, total: catData.total, pos: 0 };
+                }).filter(j => j.total > 0).sort((a, b) => b.total - a.total);
+                rankingCat.forEach((p, idx) => p.pos = idx + 1);
+                categoriasFinal[cat] = rankingCat;
+            });
 
-            rankingCat.forEach((p, idx) => p.pos = idx + 1);
-            categoriasFinal[cat] = rankingCat;
-        });
+            const finalJson = { jornada: etapa_id, ultima_actualizacion: new Date().toISOString(), categorias: categoriasFinal };
+            await supabase.from('etapas').update({ archivo_excel: JSON.stringify(finalJson), estado: 'finalizada' }).eq('id', etapa_id);
 
-        const finalJson = {
-            jornada: etapa_id,
-            ultima_actualizacion: new Date().toISOString(),
-            categorias: categoriasFinal
-        };
+            return res.status(200).json({ ok: true, message: 'Etapa finalizada con éxito.' });
+        }
 
-        // 7. Guardar JSON (Simulamos persistencia en carpeta data para el frontend)
-        // En Vercel no podemos escribir en disco de forma persistente fácilmente, 
-        // pero podemos devolverlo o guardarlo en Supabase Storage.
-        // Por ahora, lo guardamos en Supabase en una columna de la etapa o similar.
-        await supabase.from('etapas').update({ archivo_excel: JSON.stringify(finalJson) }).eq('id', etapa_id);
-
-        // 8. Automatización adicional
-        const resumenAuto = await ejecutarAutomatizacionCompleta(etapa_id);
-
+        // 7. Si es PREVIEW, devolver datos para el frontend
         return res.status(200).json({
             ok: true,
-            message: 'Etapa procesada y ranking actualizado automáticamente.',
-            jornada: etapa_id,
-            resumen: resumenAuto,
-            data: finalJson // Enviamos el JSON para que el admin lo vea
+            mode: 'preview',
+            empatesDetectados: empatesTop3,
+            puntosCalculados: puntosEtapa
         });
 
     } catch (error) {
