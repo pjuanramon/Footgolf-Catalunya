@@ -209,7 +209,12 @@
         // Helpers
         function normalizeString(s) {
             if (!s) return '';
-            return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, " ").trim();
+            // Normalización extrema: minúsculas, sin acentos, sin puntuación, espacio simple
+            return s.toString().toLowerCase().normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .replace(/[^a-z0-9]/g, " ") 
+                .replace(/\s+/g, " ")
+                .trim();
         }
 
         function getLevenshtein(a, b) {
@@ -224,7 +229,10 @@
         }
 
         function findBestMatch(player, officialNames) {
-            if (!Array.isArray(officialNames)) return null;
+            if (!Array.isArray(officialNames) || officialNames.length === 0) {
+                console.warn('Matching: No hay nombres oficiales para comparar.');
+                return null;
+            }
             const pNick = normalizeString(player.nickname);
             const pName = normalizeString(player.nombre_completo);
             let best = null;
@@ -232,7 +240,10 @@
 
             for (const offName of officialNames) {
                 const normOff = normalizeString(offName);
-                if (normOff === pNick || normOff === pName) return { name: offName, type: 'exact' };
+                if (normOff === pNick || normOff === pName) {
+                    console.log(`Matching: EXACTO para ${player.nickname} -> ${offName}`);
+                    return { name: offName, type: 'exact' };
+                }
                 
                 const dist = Math.min(getLevenshtein(pNick, normOff), getLevenshtein(pName, normOff));
                 if (dist < bestDist) {
@@ -240,7 +251,14 @@
                     best = offName;
                 }
             }
-            return bestDist <= 3 ? { name: best, type: 'fuzzy' } : null;
+            
+            if (bestDist <= 3) {
+                console.log(`Matching: FUZZY para ${player.nickname} -> Sugerido: ${best} (dist: ${bestDist})`);
+                return { name: best, type: 'fuzzy' };
+            }
+            
+            console.log(`Matching: FALLO para ${player.nickname}. Sin coincidencias cercanas.`);
+            return null;
         }
 
         async function api(path, method = 'GET', body = null) {
@@ -300,6 +318,9 @@
             state.jugadores = Array.isArray(jugadores) ? jugadores : [];
             state.torneos = Array.isArray(torneos) ? torneos : [];
             state.rankingNames = Array.isArray(rankingNames) ? rankingNames : [];
+
+            console.log('DEBUG: Jugadores recibidos:', state.jugadores.length);
+            console.log('DEBUG: Ranking names recibidos:', state.rankingNames);
 
             // Render Jugadores
             const jTable = document.getElementById('jugadoresTable');
