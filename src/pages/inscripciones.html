@@ -130,6 +130,15 @@
         let currentStages = [];
         let playerIsJuanRa = false;
 
+        const OFFICIAL_TEAMS = [
+            "JABALI TEAM FOOTGOLF",
+            "Apex FootGolf",
+            "BARCELONA FOOTGOLF",
+            "AC Maktub FG",
+            "Bacho Kiro Footgolf",
+            "BUNKER BOYS FootGolf"
+        ];
+
         async function loadStages() {
             try {
                 // Añadimos un timestamp para evitar cache del navegador/Vercel
@@ -188,8 +197,11 @@
                                     </div>
                                 ` : `
                                     ${esEquipo ? `
-                                        <input type="text" id="team-${etapa.id}" placeholder="Nombre del Equipo *" 
-                                               style="padding: 0.6rem; border-radius: 0.5rem; border: 1px solid var(--secondary-color); width: 220px; background: rgba(255,255,255,0.05); color: white; margin-bottom: 0.2rem;">
+                                        <select id="team-${etapa.id}" 
+                                               style="padding: 0.6rem; border-radius: 0.5rem; border: 1px solid var(--secondary-color); width: 220px; background: #1e293b; color: white; margin-bottom: 0.2rem; cursor: pointer;">
+                                            <option value="">-- Selecciona tu Equipo --</option>
+                                            ${OFFICIAL_TEAMS.map(team => `<option value="${team}">${team}</option>`).join('')}
+                                        </select>
                                     ` : ''}
                                     <button onclick="inscribirse(${etapa.id}, ${esEquipo})" class="btn btn-primary" ${colorStyle} style="padding: 0.8rem 1.5rem;">
                                         Inscribirme (${precio}€) →
@@ -207,10 +219,10 @@
             }).join('');
 
             // Cargar inscritos para cada etapa
-            currentStages.forEach(etapa => loadInscritos(etapa.id));
+            currentStages.forEach(etapa => loadInscritos(etapa.id, etapa.tipo === 'equipos'));
         }
 
-        async function loadInscritos(etapaId) {
+        async function loadInscritos(etapaId, esEquipo) {
             try {
                 const res = await fetch(`/api/etapas/inscritos?etapa_id=${etapaId}`);
                 const data = await res.json();
@@ -219,30 +231,48 @@
                 const listEl = document.getElementById(`list-${etapaId}`);
                 
                 if (data.length === 0) {
-                    countEl.textContent = '🚀 ¡Sé el primero en inscribirte!';
+                    countEl.textContent = esEquipo ? '🚀 ¡Registra a tu equipo!' : '🚀 ¡Sé el primero en inscribirte!';
                     listEl.style.display = 'none';
                     return;
                 }
 
-                countEl.innerHTML = `✅ ${data.length} inscritos`;
-                
-                const names = data.map(i => {
-                    const display = i.tiene_licencia 
-                        ? i.nickname 
-                        : (i.nombre_manual || i.nombre_completo || i.nickname);
-                    
-                    return `<span style="display: inline-block; background: rgba(255,255,255,0.05); padding: 0.2rem 0.6rem; border-radius: 99px; margin-right: 0.5rem; margin-bottom: 0.4rem; border: 1px solid rgba(255,255,255,0.1);">
-                        ${display}${i.equipo ? ` <small style="opacity:0.6">| ${i.equipo}</small>` : ''}
-                    </span>`;
-                }).join('');
+                let elements = [];
+                let displayCount = 0;
+
+                if (esEquipo) {
+                    // Agrupar por equipos para el Campeonato por Equipos
+                    const equiposUnicos = [...new Set(data.map(i => i.equipo).filter(e => e))];
+                    displayCount = equiposUnicos.length;
+                    countEl.innerHTML = `✅ ${displayCount} equipos inscritos`;
+                    elements = equiposUnicos.map(e => `
+                        <span style="display: inline-block; background: rgba(52, 211, 153, 0.1); color: #34d399; padding: 0.3rem 0.8rem; border-radius: 99px; margin-right: 0.5rem; margin-bottom: 0.4rem; border: 1px solid rgba(52, 211, 153, 0.2); font-weight: 600;">
+                            🛡️ ${e}
+                        </span>
+                    `);
+                } else {
+                    // Mostrar jugadores individuales para etapas normales
+                    displayCount = data.length;
+                    countEl.innerHTML = `✅ ${displayCount} inscritos`;
+                    elements = data.map(i => {
+                        const display = i.tiene_licencia 
+                            ? i.nickname 
+                            : (i.nombre_manual || i.nombre_completo || i.nickname);
+                        
+                        return `<span style="display: inline-block; background: rgba(255,255,255,0.05); padding: 0.2rem 0.6rem; border-radius: 99px; margin-right: 0.5rem; margin-bottom: 0.4rem; border: 1px solid rgba(255,255,255,0.1);">
+                            ${display}
+                        </span>`;
+                    });
+                }
+
+                const summaryText = esEquipo ? `Ver Lista de Equipos (${displayCount})` : `Ver Lista de Inscritos (${displayCount})`;
 
                 listEl.innerHTML = `
                     <details style="width: 100%;">
                         <summary style="cursor: pointer; color: var(--secondary-color); font-weight: 600; font-size: 0.85rem; padding: 0.5rem 0; outline: none; list-style: none; display: flex; align-items: center; gap: 0.5rem;">
-                            <span class="toggle-icon">▶</span> Ver Lista de Inscritos (${data.length})
+                            <span class="toggle-icon">▶</span> ${summaryText}
                         </summary>
                         <div style="padding-top: 1rem; display: flex; flex-wrap: wrap;">
-                            ${names}
+                            ${elements.join('')}
                         </div>
                     </details>
                 `;
