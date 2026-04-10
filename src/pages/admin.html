@@ -538,7 +538,8 @@
                             <tbody>
                                 ${inscritos.map(i => {
                                     const nombre = i.jugadores ? (i.jugadores.nombre_completo || i.jugadores.nickname) : 'Sin nombre';
-                                    const alias = (i.jugadores && i.jugadores.nombre_completo) ? i.jugadores.nickname : '';
+                                    // Solo mostrar alias si es distinto al nombre principal
+                                    const alias = (i.jugadores && i.jugadores.nombre_completo && i.jugadores.nickname !== i.jugadores.nombre_completo) ? i.jugadores.nickname : '';
                                     return `
                                     <tr>
                                         <td style="font-weight:600">${nombre} ${alias ? `<br><span style="font-size:0.7rem; opacity:0.6">${alias}</span>` : ''}</td>
