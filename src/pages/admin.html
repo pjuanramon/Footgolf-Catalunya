@@ -250,8 +250,8 @@
             const jTable = document.getElementById('jugadoresTable');
             jTable.innerHTML = jugadores.map(j => `
                 <tr>
-                    <td style="font-weight:800; color:var(--primary-color)">${j.nickname}</td>
-                    <td>${j.nombre_completo || '-'}</td>
+                    <td style="font-weight:800; color:var(--primary-color)">${j.nombre_completo || j.nickname}</td>
+                    <td style="font-size:0.8rem; opacity:0.7">${j.nickname}</td>
                     <td style="font-size:0.8rem">${j.email}<br><span style="opacity:0.6">${j.telefono || '-'}</span></td>
                     <td style="font-size:0.8rem">${j.fecha_nacimiento || '-'}<br><span style="opacity:0.6">${j.genero || '-'}</span></td>
                     <td style="font-size:0.8rem">${j.club || 'Independiente'}</td>
@@ -420,7 +420,11 @@
                             <label>Buscar Jugador:</label>
                             <input type="text" id="playerSearch" placeholder="Escribe para filtrar..." class="btn" style="width:100%; background:var(--admin-bg); margin-bottom:0.5rem">
                             <select name="jugador_id" id="playerSelect" class="btn" style="width:100%; background:var(--admin-bg)" required>
-                                ${jugadores.map(j => `<option value="${j.id}">${j.nickname} (${j.nombre_completo || 'Sin nombre'})</option>`).join('')}
+                                ${jugadores.map(j => {
+                                    const primary = j.nombre_completo || j.nickname;
+                                    const secondary = j.nombre_completo ? j.nickname : '';
+                                    return `<option value="${j.id}">${primary} ${secondary ? `(${secondary})` : ''}</option>`;
+                                }).join('')}
                             </select>
                         </div>
                         <div style="margin-bottom:1rem">
@@ -542,13 +546,14 @@
                             <thead><tr><th>Nickname</th><th>Equipo/Jornada</th><th>Acción</th></tr></thead>
                             <tbody>
                                 ${inscritos.map(i => {
-                                    const nickname = i.jugadores ? i.jugadores.nickname : 'Sin nickname';
+                                    const nombre = i.jugadores ? (i.jugadores.nombre_completo || i.jugadores.nickname) : 'Sin nombre';
+                                    const alias = (i.jugadores && i.jugadores.nombre_completo) ? i.jugadores.nickname : '';
                                     return `
                                     <tr>
-                                        <td style="font-weight:600">${nickname}</td>
+                                        <td style="font-weight:600">${nombre} ${alias ? `<br><span style="font-size:0.7rem; opacity:0.6">${alias}</span>` : ''}</td>
                                         <td>${i.equipo_nombre || 'Individual'}</td>
                                         <td>
-                                            <button onclick='eliminarInscripcion("${i.id}", "${nickname}", ${id}, ${JSON.stringify(nombre)})' class="btn btn-sm" style="background:rgba(239, 68, 68, 0.2); color: #f87171;">Baja</button>
+                                            <button onclick='eliminarInscripcion("${i.id}", "${nombre.replace(/'/g, "\\'")}", ${id}, ${JSON.stringify(nombre)})' class="btn btn-sm" style="background:rgba(239, 68, 68, 0.2); color: #f87171;">Baja</button>
                                         </td>
                                     </tr>
                                     `;
