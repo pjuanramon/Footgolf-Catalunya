@@ -15,10 +15,15 @@ module.exports = async function handler(req, res) {
         let query = supabase
             .from('etapas')
             .select('*')
-            .order('id', { ascending: true });
+            .order('fecha', { ascending: true });
 
         if (estado) {
-            query = query.eq('estado', estado);
+            const states = estado.split(',');
+            if (states.length > 1) {
+                query = query.in('estado', states);
+            } else {
+                query = query.eq('estado', estado);
+            }
         }
 
         const { data, error } = await query;

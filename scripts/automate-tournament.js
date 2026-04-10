@@ -12,18 +12,14 @@ async function runAutomation() {
     console.log(`--- [${new Date().toISOString()}] Iniciando validación de torneo ---`);
 
     // 1. Detección del torneo
-    // Buscamos el próximo domingo (o hoy si es domingo)
     const hoy = new Date();
-    // En JS: 0=Domingo, 1=Lunes, ..., 5=Viernes, 6=Sábado
     const diasHastaDomingo = (7 - hoy.getDay()) % 7;
     const proximoDomingo = new Date(hoy);
     proximoDomingo.setDate(hoy.getDate() + (diasHastaDomingo === 0 ? 0 : diasHastaDomingo));
     
-    // Normalizar a YYYY-MM-DD para la consulta
     const fechaBusquedaStr = proximoDomingo.toISOString().split('T')[0];
     console.log(`Buscando torneo para el domingo: ${fechaBusquedaStr}`);
 
-    // Consultar etapa en Supabase
     const { data: etapa, error: etapaError } = await supabase
         .from('etapas')
         .select('*')
@@ -38,9 +34,8 @@ async function runAutomation() {
     console.log(`Torneo detectado: ${etapa.nombre} (${etapa.fecha})`);
 
     // Validar si hoy es viernes
-    // El usuario pide ejecutar el viernes previo a las 13:00.
     if (hoy.getDay() !== 5) {
-        console.log(`Hoy no es viernes (es día ${hoy.getDay()}). El flujo se ejecutará el viernes previo al torneo.`);
+        console.log(`Hoy no es viernes (es día ${hoy.getDay()}).`);
         return;
     }
 
@@ -81,108 +76,82 @@ async function runAutomation() {
         return;
     }
 
-    // 3. Generación del archivo Excel (Copia de la plantilla)
+    // 3. Generación del archivo Excel
     const templatePath = path.resolve(__dirname, '../Excel_ImportHitsTournamentRound983_Export-2026-04-02 09_41_53.xlsx');
-    if (!fs.existsSync(templatePath)) {
-        console.error('No se encuentra la plantilla Excel en:', templatePath);
-        return;
-    }
-
     const workbook = xlsx.readFile(templatePath);
     
-    // Preparar distribución de Hits (3, 4 o 5 jugadores)
     const players = [...jugadoresArr];
-    // Sorteo aleatorio de jugadores
     for (let i = players.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [players[i], players[j]] = [players[j], players[i]];
     }
 
     const distribution = calculateHitDistribution(players.length);
-    console.log('Distribución de hits:', distribution);
-
     const hitData = [];
     const footgolferData = [];
-    
     let playerIndex = 0;
     let currentStartTime = new Date(`${fechaDomingoStr}T14:00:00`);
 
     distribution.forEach((size, index) => {
         const hitNumber = index + 1;
-        
-        // Pestaña HITS
         hitData.push({
             'Número de Hit': hitNumber,
             'Hoyo': 1,
             'Fecha de Salida \r\n DD/MM/YYYY': formatDateDDMMYYYY(proximoDomingoDate),
             'Hora de Salida \r\n HH:mm': formatTimeHHmm(currentStartTime)
         });
-
-        // Pestaña FOOTGOLFERS
         const hitPlayers = players.slice(playerIndex, playerIndex + size);
-        const calificadorIndex = Math.floor(Math.random() * size);
-        
+        const caliIdx = Math.floor(Math.random() * size);
         hitPlayers.forEach((p, pIdx) => {
             footgolferData.push({
                 'Número de Hit': hitNumber,
                 'Footgolfer': p,
-                '¿Es Calificador? \r\n 1=Sí \r\n 0=No': (pIdx === calificadorIndex ? 1 : 0)
+                '¿Es Calificador? \r\n 1=Sí \r\n 0=No': (pIdx === caliIdx ? 1 : 0)
             });
         });
-
         playerIndex += size;
-        // Sumar 7 minutos para el siguiente hit
         currentStartTime.setMinutes(currentStartTime.getMinutes() + 7);
     });
 
-    // Sobrescribir datos en las pestañas del workbook
-    const hitsSheet = xlsx.utils.json_to_sheet(hitData);
-    const footgolfersSheet = xlsx.utils.json_to_sheet(footgolferData);
-
-    workbook.Sheets['HITS'] = hitsSheet;
-    workbook.Sheets['FOOTGOLFERS'] = footgolfersSheet;
+    workbook.Sheets['HITS'] = xlsx.utils.json_to_sheet(hitData);
+    workbook.Sheets['FOOTGOLFERS'] = xlsx.utils.json_to_sheet(footgolferData);
 
     const outputFileName = `Hits_Footgolf_${fechaDomingoStr}.xlsx`;
     const outputPath = path.resolve(__dirname, `../${outputFileName}`);
     xlsx.writeFile(workbook, outputPath);
-    console.log(`Archivo Excel generado: ${outputPath}`);
+    console.log(`Archivo Excel generado: ${outputFileName}`);
 
-    // 6. Envío automático
+    // 6. Envío automático (Intentando uno por uno para evitar bloqueos de Resend Mode Onboarding)
     const subject = `Hits Footgolf – Torneo ${formatDateDDMMYYYY(proximoDomingoDate)} – Registro cerrado`;
-    const content = `Se adjuntan los hits para el torneo del domingo ${formatDateDDMMYYYY(proximoDomingoDate)}.`;
+    const recipients = ['pjuanramon@hotmail.com', 'jorge.s.b@hotmail.com'];
     
-    try {
-        const { data: emailData, error: emailError } = await resend.emails.send({
-            from: 'onboarding@resend.dev',
-            to: ['pjuanramon@hotmail.com', 'jorge.s.b@hotmail.com'],
-            subject: subject,
-            html: `<p>${content}</p>`,
-            attachments: [
-                {
-                    filename: outputFileName,
-                    content: fs.readFileSync(outputPath)
-                }
-            ]
-        });
+    for (const email of recipients) {
+        console.log(`Intentando enviar a: ${email}...`);
+        try {
+            const { data, error } = await resend.emails.send({
+                from: 'onboarding@resend.dev',
+                to: [email],
+                subject: subject,
+                html: `<p>Se adjuntan los hits para el torneo del domingo.</p>`,
+                attachments: [{ filename: outputFileName, content: fs.readFileSync(outputPath) }]
+            });
 
-        if (emailError) {
-            console.error('Error al enviar email:', emailError);
-        } else {
-            console.log('Email enviado correctamente:', emailData.id);
+            if (error) {
+                console.error(`❌ Error enviando a ${email}:`, error.message || error);
+            } else {
+                console.log(`✅ Email enviado con éxito a ${email}. ID: ${data.id}`);
+            }
+        } catch (err) {
+            console.error(`❌ Excepción enviando a ${email}:`, err.message);
         }
-    } catch (err) {
-        console.error('Excepción al enviar email:', err);
     }
 }
 
-// Función para calcular la distribución de jugadores por hit (3, 4, 5)
 function calculateHitDistribution(n) {
     if (n === 0) return [];
     if (n < 3) return [n]; 
-
     let bestDist = null;
     let minThrees = Infinity;
-
     for (let z = 0; z <= 2; z++) {
         for (let y = 0; y <= Math.floor(n / 4); y++) {
             let remaining = n - (z * 3) - (y * 4);
@@ -199,29 +168,21 @@ function calculateHitDistribution(n) {
             }
         }
     }
-
     if (!bestDist) {
-        let dist = [];
-        let rem = n;
+        let dist = []; let rem = n;
         while (rem >= 5) { dist.push(5); rem -= 5; }
         if (rem > 0) dist.push(rem);
-        return dist.sort((a, b) => a - b);
+        return dist.sort((a,b) => a-b);
     }
-
     return bestDist.sort((a, b) => a - b);
 }
 
 function formatDateDDMMYYYY(date) {
-    const d = date.getDate().toString().padStart(2, '0');
-    const m = (date.getMonth() + 1).toString().padStart(2, '0');
-    const y = date.getFullYear();
-    return `${d}/${m}/${y}`;
+    return `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`;
 }
 
 function formatTimeHHmm(date) {
-    const h = date.getHours().toString().padStart(2, '0');
-    const m = date.getMinutes().toString().padStart(2, '0');
-    return `${h}:${m}`;
+    return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
 }
 
 runAutomation().catch(console.error);
