@@ -10,7 +10,7 @@ module.exports = async function getInscripciones(req, res) {
 
         const { data: inscripciones, error } = await supabase
             .from('inscripciones')
-            .select('*, jugadores(nickname, tiene_licencia, email)')
+            .select('*, jugadores(nickname, nombre_completo, tiene_licencia, email)')
             .eq('etapa_id', etapa_id)
             .order('fecha_inscripcion', { ascending: false });
 
