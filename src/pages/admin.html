@@ -224,6 +224,7 @@
         }
 
         function findBestMatch(player, officialNames) {
+            if (!Array.isArray(officialNames)) return null;
             const pNick = normalizeString(player.nickname);
             const pName = normalizeString(player.nombre_completo);
             let best = null;
@@ -296,9 +297,9 @@
                 api('admin/clasificacion-nombres')
             ]);
 
-            state.jugadores = jugadores || [];
-            state.torneos = torneos || [];
-            state.rankingNames = rankingNames || [];
+            state.jugadores = Array.isArray(jugadores) ? jugadores : [];
+            state.torneos = Array.isArray(torneos) ? torneos : [];
+            state.rankingNames = Array.isArray(rankingNames) ? rankingNames : [];
 
             // Render Jugadores
             const jTable = document.getElementById('jugadoresTable');
