@@ -209,7 +209,7 @@
         // Helpers
         function normalizeString(s) {
             if (!s) return '';
-            return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+            return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, " ").trim();
         }
 
         function getLevenshtein(a, b) {
@@ -318,7 +318,10 @@
                     <td style="font-size:0.8rem">${j.email}<br><span style="opacity:0.6">${j.telefono || '-'}</span></td>
                     <td style="font-size:0.8rem">${j.fecha_nacimiento || '-'}<br><span style="opacity:0.6">${j.genero || '-'}</span></td>
                     <td style="font-size:0.8rem">${j.club || 'Independiente'}</td>
-                    <td><span class="badge ${j.tiene_licencia ? 'badge-success' : 'badge-error'}">${j.tiene_licencia ? 'SÍ' : 'NO'}</span></td>
+                    <td>
+                        <span class="badge ${j.tiene_licencia ? 'badge-success' : 'badge-error'}">${j.tiene_licencia ? 'SÍ' : 'NO'}</span>
+                        <div style="font-size:0.75rem; opacity:0.6; margin-top:0.2rem">Desde: ${j.anio_licencia || '-'}</div>
+                    </td>
                     <td><span style="font-size:0.8rem">${(j.categorias_calculadas || []).join(', ') || '-'}</span></td>
                     <td>
                         <button onclick="uiEditJugador(${idx})" class="btn btn-sm">Editar</button>
@@ -355,7 +358,7 @@
 
             if (!suggested || !confirm(`¿Normalizar Nickname de "${player.nickname}" a "${suggested}"?`)) return;
 
-            const res = await api('admin/actualizar-jugador', 'POST', {
+            const res = await api('admin/modificar-jugador', 'POST', {
                 ...player,
                 nickname: suggested
             });
@@ -389,10 +392,19 @@
                     <form onsubmit="handleModificarJugador(event, '${j.id}')">
                         <input type="text" name="nombre" value="${j.nombre_completo || ''}" class="btn" style="width:100%; margin-bottom:1rem">
                         <input type="text" name="nickname" value="${j.nickname || ''}" class="btn" style="width:100%; margin-bottom:1rem">
-                        <select name="tiene_licencia" class="btn" style="width:100%; margin-bottom:1rem">
-                            <option value="true" ${j.tiene_licencia ? 'selected' : ''}>SÍ Tiene Licencia</option>
-                            <option value="false" ${!j.tiene_licencia ? 'selected' : ''}>NO Tiene Licencia</option>
-                        </select>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem">
+                            <div>
+                                <label style="font-size:0.8rem; opacity:0.7">Licencia:</label>
+                                <select name="tiene_licencia" class="btn" style="width:100%">
+                                    <option value="true" ${j.tiene_licencia ? 'selected' : ''}>SÍ</option>
+                                    <option value="false" ${!j.tiene_licencia ? 'selected' : ''}>NO</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="font-size:0.8rem; opacity:0.7">Año 1ª Licencia:</label>
+                                <input type="number" name="anio_licencia" value="${j.anio_licencia || 2026}" class="btn" style="width:100%">
+                            </div>
+                        </div>
                         <button type="submit" class="btn btn-primary" style="width:100%">Actualizar</button>
                     </form>`;
             }
@@ -420,11 +432,12 @@
         async function handleModificarJugador(e, id) {
             e.preventDefault();
             const f = e.target;
-            const res = await api('admin/actualizar-jugador', 'POST', {
+            const res = await api('admin/modificar-jugador', 'POST', {
                 id,
                 nombre_completo: f.nombre.value,
                 nickname: f.nickname.value,
-                tiene_licencia: f.tiene_licencia.value === 'true'
+                tiene_licencia: f.tiene_licencia.value === 'true',
+                anio_licencia: f.anio_licencia.value
             });
             if (res && res.ok) { closeModal(); renderData(); }
         }
