@@ -426,7 +426,29 @@
                                 <input type="number" name="anio_licencia" value="${j.anio_licencia || 2026}" class="btn" style="width:100%">
                             </div>
                         </div>
-                        <button type="submit" class="btn btn-primary" style="width:100%">Actualizar</button>
+                    <button type="submit" class="btn btn-primary" style="width:100%">Actualizar</button>
+                    </form>`;
+            } else if (type === 'nueva-inscripcion') {
+                const {id, nombre} = extra;
+                document.getElementById('modalTitle').textContent = `Inscripciones: ${nombre}`;
+                content.innerHTML = `
+                    <form onsubmit="handleInscribirManual(event, ${id}, '${nombre}')">
+                        <div style="margin-bottom:1rem">
+                            <label style="font-size:0.8rem; opacity:0.7">Seleccionar Jugador:</label>
+                            <select name="jugador_id" class="btn" style="width:100%" required>
+                                <option value="">-- Elige un jugador --</option>
+                                ${state.jugadores.map(j => `<option value="${j.id}">${j.nickname} (${j.nombre_completo || ''})</option>`).join('')}
+                            </select>
+                        </div>
+                        <div style="margin-bottom:1rem">
+                            <label style="font-size:0.8rem; opacity:0.7">Nombre Manual (Solo si no está en la lista):</label>
+                            <input type="text" name="nombre_manual" placeholder="Escribir nombre si es nuevo..." class="btn" style="width:100%">
+                        </div>
+                        <div style="margin-bottom:1rem">
+                            <label style="font-size:0.8rem; opacity:0.7">Equipo / Jornada (Opcional):</label>
+                            <input type="text" name="equipo_nombre" placeholder="Nombre equipo..." class="btn" style="width:100%">
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width:100%">Confirmar Inscripción</button>
                     </form>`;
             }
 
@@ -470,6 +492,9 @@
             document.getElementById('modalTitle').textContent = `Inscritos: ${nombre}`;
             const content = document.getElementById('modalContent');
             content.innerHTML = `
+                <div style="display:flex; justify-content:flex-end; margin-bottom:1rem">
+                    <button onclick="openModal('nueva-inscripcion', {id:${id}, nombre:'${nombre}'})" class="btn btn-sm btn-primary">+ Añadir a Mano</button>
+                </div>
                 <table style="font-size:0.9rem">
                     ${inscritos.map(i => `
                         <tr>
@@ -488,6 +513,23 @@
             if (!confirm('¿Dar de baja?')) return;
             const res = await api('admin/eliminar-inscripcion', 'POST', { id });
             if (res && res.ok) verInscritos(etapaId, etapaNombre);
+        }
+
+        async function handleInscribirManual(e, etapaId, etapaNombre) {
+            e.preventDefault();
+            const f = e.target;
+            const res = await api('admin/inscripcion-manual', 'POST', {
+                etapa_id: etapaId,
+                jugador_id: f.jugador_id.value || null,
+                nombre_manual: f.nombre_manual.value || null,
+                equipo_nombre: f.equipo_nombre.value || null
+            });
+            if (res && res.ok) {
+                closeModal();
+                verInscritos(etapaId, etapaNombre);
+            } else {
+                alert('Error al inscribir: ' + (res ? res.error : 'Fallo de red'));
+            }
         }
 
         // Inicio
