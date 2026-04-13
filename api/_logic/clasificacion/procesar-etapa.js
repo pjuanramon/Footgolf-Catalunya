@@ -34,21 +34,30 @@ module.exports = async function handler(req, res) {
         for (const row of rows) {
             const rawName = String(row['D'] || '').trim();
             if (!rawName) continue;
+            
+            const isSalazar = rawName.includes('Salazar');
+            if (isSalazar) logs.push(`DEBUG Salazar: Encontrado en fila: "${rawName}"`);
+
             if (String(row['F']).trim().toUpperCase() === 'NO') {
+                if (isSalazar) logs.push(`DEBUG Salazar: Saltado por columna F (Licencia)`);
                 logs.push(`Ignorado (Sin Licencia): ${rawName}`);
                 continue;
             }
             const match = matchPlayerToDb(rawName, dbPlayers || []);
             const p = match.player;
-            if (!p) logs.push(`No matcheado en BD: ${rawName}`);
-
-            let finalScore = Number(row['Y'] || 0);
+            
+            let wonTie = false;
             if (p && desempates && desempates[p.id]) {
-                finalScore -= 0.1;
-                logs.push(`Desempate aplicado a: ${p.nickname} (Score: ${finalScore})`);
+                wonTie = true;
+                logs.push(`Desempate detectado para: ${p.nickname}`);
             }
 
-            resultadosBrutos.push({ rawName, score: finalScore, originalScore: Number(row['Y'] || 0), dbPlayer: p });
+            resultadosBrutos.push({
+                rawName,
+                score: Number(row['Y'] || 0),
+                wonTie: wonTie,
+                dbPlayer: p
+            });
         }
 
         logs.push(`Jugadores matcheados: ${resultadosBrutos.filter(r => r.dbPlayer).length}`);
