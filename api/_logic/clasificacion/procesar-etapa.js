@@ -105,17 +105,21 @@ module.exports = async function handler(req, res) {
         if (mode === 'commit') {
             // Guardar resultados_etapas
             for (const r of puntosEtapa) {
-                await supabase.from('resultados_etapas').upsert({
-                    etapa_id: etapa_id,
-                    jugador_id: r.jugador_id,
-                    puntos_absoluta: r.puntos['Absoluta'] || 0,
-                    puntos_rookie: r.puntos['Rookie'] || 0,
-                    puntos_senior45: r.puntos['Senior 45 +'] || 0,
-                    puntos_senior55: r.puntos['Senior 55 +'] || 0,
-                    puntos_damas: r.puntos['Damas'] || 0,
-                    puntos_junior: r.puntos['Junior'] || 0,
-                    score: r.score
-                }, { onConflict: 'etapa_id, jugador_id' });
+                try {
+                    await supabase.from('resultados_etapas').upsert({
+                        etapa_id: etapa_id,
+                        jugador_id: r.jugador_id,
+                        puntos_absoluta: r.puntos['Absoluta'] || 0,
+                        puntos_rookie: r.puntos['Rookie'] || 0,
+                        puntos_senior45: r.puntos['Senior 45 +'] || 0,
+                        puntos_senior55: r.puntos['Senior 55 +'] || 0,
+                        puntos_damas: r.puntos['Damas'] || 0,
+                        puntos_junior: r.puntos['Junior'] || 0,
+                        score: Number(r.score)
+                    }, { onConflict: 'etapa_id, jugador_id' });
+                } catch (e) {
+                    console.error(`Error guardando resultado de ${r.nickname}:`, e);
+                }
             }
 
             // Recalcular General y actualizar JSON en la etapa
