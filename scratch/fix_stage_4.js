@@ -23,6 +23,9 @@ async function fix() {
     Object.keys(categoriasFinal).forEach(cat => {
         const rankingCat = general.map(j => {
             const catData = j.categorias[cat] || { total: 0, etapas: [] };
+            if (cat === 'Absoluta' && j.nickname === 'Jorge Santiago Buqueras') {
+                console.log('DEBUG Jorge catData:', JSON.stringify(catData, null, 2));
+            }
             return { 
                 name: j.nickname, 
                 total: catData.total, 
