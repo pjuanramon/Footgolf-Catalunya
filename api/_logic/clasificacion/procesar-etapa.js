@@ -115,7 +115,7 @@ module.exports = async function handler(req, res) {
                         puntos_senior55: r.puntos['Senior 55 +'] || 0,
                         puntos_damas: r.puntos['Damas'] || 0,
                         puntos_junior: r.puntos['Junior'] || 0,
-                        score: Number(r.score)
+                        score: Math.round(Number(r.score))
                     }, { onConflict: 'etapa_id, jugador_id' });
                 } catch (e) {
                     console.error(`Error guardando resultado de ${r.nickname}:`, e);
