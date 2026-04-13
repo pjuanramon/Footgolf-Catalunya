@@ -200,17 +200,18 @@
     <script>
         // --- Manejo de Errores Global ---
         window.onerror = function(msg, url, line) {
-            alert("ERROR CRÍTICO JS: " + msg + "\nEn: " + url + ":" + line);
+            console.error("ERROR JS:", msg, url, line);
             return false;
-           // --- Estado Global ---
+        };
+
+        // --- Estado Global ---
         let state = {
             jugadores: [],
             torneos: [],
             rankingNames: [],
+            activeEtapa: null,
             adminSecret: localStorage.getItem('adminSecret')
         };
-
-        console.log("ADMIN: Código cargado correctamente v2.");
 
         // Helpers
         function normalizeString(s) {
@@ -245,7 +246,11 @@
         }
 
         async function api(path, method = 'GET', body = null) {
-            const headers = { 'x-admin-secret': state.adminSecret, 'Content-Type': 'application/json' };
+            const secret = state.adminSecret || localStorage.getItem('adminSecret');
+            const headers = { 
+                'x-admin-secret': secret, 
+                'Content-Type': 'application/json' 
+            };
             const options = { method, headers };
             if (body) options.body = JSON.stringify(body);
             try {
@@ -255,24 +260,29 @@
                 if (!res.ok) throw new Error(data.error || 'Error en la petición');
                 return data;
             } catch (err) {
-                alert("API FAIL: " + err.message);
+                console.error("API FAIL:", err);
                 return null;
             }
         }
 
         async function handleLogin(explicitSecret = null) {
-            state.adminSecret = explicitSecret || document.getElementById('secretInput').value;
+            const secret = explicitSecret || document.getElementById('secretInput').value;
+            if (!secret) return;
+            state.adminSecret = secret;
             const data = await api('admin/jugadores');
             if (data) {
-                localStorage.setItem('adminSecret', state.adminSecret);
+                localStorage.setItem('adminSecret', secret);
                 document.getElementById('loginOverlay').style.display = 'none';
                 renderData();
             } else if (!explicitSecret) {
-                alert('Clave incorrecta');
+                alert('Clave incorrecta o error de conexión');
             }
         }
 
-        function logout() { localStorage.removeItem('adminSecret'); location.reload(); }
+        function logout() { 
+            localStorage.removeItem('adminSecret'); 
+            location.reload(); 
+        }
         
         function showTab(tab) {
             document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
@@ -293,15 +303,55 @@
             
             document.getElementById('jugadoresTable').innerHTML = state.jugadores.map((j, idx) => {
                 const match = j.tiene_licencia ? findBestMatch(j, state.rankingNames) : null;
+                const statusColor = match ? (match.type === 'exact' ? '#10b981' : '#f59e0b') : '#ef4444';
                 const matchText = match ? `Nick: <b>${match.name}</b>` : (j.tiene_licencia ? '⚠️ No encontrado' : '');
-                return `<tr><td><b>${j.nickname}</b><br><small>${matchText}</small></td><td>${j.nombre_completo || '-'}</td><td>${j.email}</td><td>${j.fecha_nacimiento || '-'}</td><td>${j.club || '-'}</td><td><span class="badge ${j.tiene_licencia ? 'badge-success' : 'badge-error'}">${j.tiene_licencia ? 'SÍ' : 'NO'}</span></td><td>${(j.categorias_calculadas || []).join(', ') || '-'}</td><td><button onclick="uiEditJugador(${idx})" class="btn btn-sm">Editar</button></td></tr>`;
+                return `
+                <tr>
+                    <td><b>${j.nickname}</b><br><small style="color:${statusColor}">${matchText}</small></td>
+                    <td>${j.nombre_completo || '-'}</td>
+                    <td>${j.email}</td>
+                    <td>${j.fecha_nacimiento || '-'}</td>
+                    <td>${j.club || '-'}</td>
+                    <td><span class="badge ${j.tiene_licencia ? 'badge-success' : 'badge-error'}">${j.tiene_licencia ? 'SÍ' : 'NO'}</span></td>
+                    <td>${(j.categorias_calculadas || []).join(', ') || '-'}</td>
+                    <td>
+                        <button onclick="uiEditJugador(${idx})" class="btn btn-sm">Editar</button>
+                    </td>
+                </tr>`;
             }).join('');
 
-            document.getElementById('torneosTable').innerHTML = state.torneos.map((t, idx) => `<tr><td>${t.nombre}</td><td>${new Date(t.fecha).toLocaleDateString()}</td><td>${t.tipo}</td><td>${t.estado}</td><td><button onclick="uiCargarResultados(${idx})" class="btn btn-sm btn-primary">Cargar</button></td></tr>`).join('');
+            document.getElementById('torneosTable').innerHTML = state.torneos.map((t, idx) => `
+                <tr>
+                    <td>${t.nombre}</td>
+                    <td>${new Date(t.fecha).toLocaleDateString()}</td>
+                    <td>${t.tipo}</td>
+                    <td><span class="badge ${t.estado === 'abierta' ? 'badge-success' : 'badge-error'}">${t.estado.toUpperCase()}</span></td>
+                    <td>
+                        <button onclick="uiVerInscritos(${idx})" class="btn btn-sm">Inscritos</button>
+                        <button onclick="uiCargarResultados(${idx})" class="btn btn-sm btn-primary">Cargar</button>
+                    </td>
+                </tr>`).join('');
         }
 
         function uiEditJugador(idx) { openModal('editar-jugador', state.jugadores[idx]); }
-        function uiCargarResultados(idx) { state.activeEtapa = state.torneos[idx]; openModal('cargar-resultados', state.activeEtapa); }
+        function uiCargarResultados(idx) { 
+            state.activeEtapa = state.torneos[idx]; 
+            openModal('cargar-resultados', state.activeEtapa); 
+        }
+
+        async function uiVerInscritos(idx) {
+            const t = state.torneos[idx];
+            const inscritos = await api(`admin/inscripciones?etapa_id=${t.id}`);
+            if (!inscritos) return;
+            document.getElementById('modalTitle').textContent = `Inscritos: ${t.nombre}`;
+            document.getElementById('modalContent').innerHTML = `
+                <table style="font-size:0.9rem">
+                    ${inscritos.map(i => `<tr><td>${i.jugadores ? i.jugadores.nickname : (i.nombre_manual || '???')}</td><td>${i.equipo_nombre || '-'}</td></tr>`).join('')}
+                </table>
+            `;
+            document.getElementById('modal').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        }
 
         function openModal(type, extra = null) {
             const content = document.getElementById('modalContent');
@@ -315,35 +365,57 @@
                     <div id="step-loading" style="display:none; padding:1rem">⌛ Procesando...</div>
                     <div id="step-ties" style="display:none">
                         <div id="tiesList"></div>
-                        <button onclick="console.log('Click en Recalcular'); processStepPreview(true)" class="btn btn-primary" style="width:100%; margin-top:1rem">Recalcular con Desempates</button>
+                        <button onclick="processStepPreview(true)" class="btn btn-primary" style="width:100%; margin-top:1rem">Recalcular con Desempates</button>
                     </div>
                     <div id="step-preview" style="display:none">
-                        <div id="previewTable"></div>
-                        <button onclick="processStepPublish()" class="btn btn-primary" style="width:100%; margin-top:1rem">Publicar</button>
+                        <div id="previewTable" style="max-height:300px; overflow:auto; border:1px solid #333"></div>
+                        <button onclick="processStepPublish()" class="btn btn-primary" style="width:100%; margin-top:1rem; background:#10b981">Publicar Resultados</button>
                     </div>
-                    <div id="debugLogs" style="background:#000; color:#4ade80; padding:10px; font-size:0.7rem; margin-top:10px; max-height:100px; overflow:auto; display:none"></div>
+                    <div id="debugLogs" style="background:#000; color:#4ade80; padding:10px; font-size:0.75rem; margin-top:10px; max-height:100px; overflow:auto; display:none; font-family:monospace"></div>
+                `;
+            } else if (type === 'editar-jugador') {
+                const j = extra;
+                content.innerHTML = `
+                    <form onsubmit="handleModificarJugador(event, '${j.id}')">
+                        <input type="text" name="nickname" value="${j.nickname}" class="btn" style="width:100%; margin-bottom:1rem">
+                        <select name="tiene_licencia" class="btn" style="width:100%; margin-bottom:1rem">
+                            <option value="true" ${j.tiene_licencia?'selected':''}>Licencia SI</option>
+                            <option value="false" ${!j.tiene_licencia?'selected':''}>Licencia NO</option>
+                        </select>
+                        <button type="submit" class="btn btn-primary" style="width:100%">Actualizar</button>
+                    </form>
                 `;
             }
             document.getElementById('modal').style.display = 'block';
             document.getElementById('overlay').style.display = 'block';
         }
-        function closeModal() { document.getElementById('modal').style.display = 'none'; document.getElementById('overlay').style.display = 'none'; }
+
+        function closeModal() { 
+            document.getElementById('modal').style.display = 'none'; 
+            document.getElementById('overlay').style.display = 'none'; 
+        }
 
         // --- Lógica del Proceso ---
         let currentFileBase64 = null;
         let currentDesempates = {};
 
         function showStep(s) {
-            ['upload','loading','ties','preview'].forEach(x => document.getElementById(`step-${x}`).style.display = (x===s?'block':'none'));
+            ['upload','loading','ties','preview'].forEach(x => {
+                const el = document.getElementById(`step-${x}`);
+                if (el) el.style.display = (x===s?'block':'none');
+            });
         }
 
         async function processStepPreview(isRetry = false) {
-            console.log("ADMIN: Iniciando Análisis...");
             if (!isRetry) {
-                const file = document.getElementById('excelInput').files[0];
+                const input = document.getElementById('excelInput');
+                const file = input.files[0];
                 if (!file) return alert("Selecciona archivo");
                 const reader = new FileReader();
-                reader.onload = (e) => { currentFileBase64 = e.target.result.split(',')[1]; sendPreview(); };
+                reader.onload = (e) => { 
+                    currentFileBase64 = e.target.result.split(',')[1]; 
+                    sendPreview(); 
+                };
                 reader.readAsDataURL(file);
             } else {
                 sendPreview();
@@ -364,29 +436,46 @@
                 const dl = document.getElementById('debugLogs');
                 dl.style.display = 'block';
                 dl.innerHTML = res.logs.map(l => `<div>> ${l}</div>`).join('');
+                dl.scrollTop = dl.scrollHeight;
             }
 
             if (res.empatesDetectados && res.empatesDetectados.length > 0) {
                 showStep('ties');
                 document.getElementById('tiesList').innerHTML = res.empatesDetectados.map(e => `
-                    <div style="margin-bottom:1rem">
-                        <b>${e.categoria}</b><br>
-                        ${e.jugadores.map(j => `<button onclick="resolveTie('${j.id}')" class="btn btn-sm ${currentDesempates[j.id]?'btn-primary':''}">${j.nickname}</button>`).join(' ')}
+                    <div style="margin-bottom:1.5rem; border-bottom:1px solid #333; padding-bottom:1rem">
+                        <b style="color:#facc15">${e.categoria}</b> (Score: ${e.score})<br>
+                        <div style="display:flex; gap:0.5rem; margin-top:0.5rem">
+                            ${e.jugadores.map(j => `
+                                <button onclick="resolveTie('${j.id}')" class="btn btn-sm ${currentDesempates[j.id]?'btn-primary':''}">
+                                    ${j.nickname}
+                                </button>
+                            `).join('')}
+                        </div>
                     </div>`).join('');
             } else {
                 showStep('preview');
-                document.getElementById('previewTable').innerHTML = `<table style="font-size:0.8rem">` + res.puntosCalculados.map(p => `<tr><td>${p.nickname}</td><td>${p.score}</td><td>${JSON.stringify(p.puntos)}</td></tr>`).join('') + `</table>`;
+                document.getElementById('previewTable').innerHTML = `
+                    <table style="width:100%; font-size:0.8rem">
+                        <thead><tr style="opacity:0.6"><th>Jugador</th><th>Score</th><th>Puntos</th></tr></thead>
+                        <tbody>` + 
+                        res.puntosCalculados.map(p => `
+                            <tr>
+                                <td>${p.nickname}</td>
+                                <td>${p.score}</td>
+                                <td>${Object.entries(p.puntos).map(([c,pts])=>`${c}:<b>${pts}</b>`).join(' ')}</td>
+                            </tr>`).join('') + 
+                        `</tbody>
+                    </table>`;
             }
         }
 
         function resolveTie(id) { 
-            console.log("Resolviendo para:", id);
             currentDesempates[id] = true; 
             sendPreview(); 
         }
 
         async function processStepPublish() {
-            if (!confirm("¿Publicar?")) return;
+            if (!confirm("¿Publicar Resultados? Esto actualizará la clasificación oficial.")) return;
             showStep('loading');
             const res = await api('clasificacion/procesar-etapa', 'POST', {
                 etapa_id: state.activeEtapa.id,
@@ -394,9 +483,27 @@
                 mode: 'commit',
                 desempates: currentDesempates
             });
-            if (res && res.ok) { alert("¡Éxito!"); closeModal(); renderData(); }
+            if (res && res.ok) { 
+                alert("¡Clasificación actualizada con éxito!"); 
+                closeModal(); 
+                renderData(); 
+            } else {
+                alert("Error al publicar resultados");
+                showStep('preview');
+            }
         }
 
+        async function handleModificarJugador(e, id) {
+            e.preventDefault();
+            const res = await api('admin/modificar-jugador', 'POST', {
+                id,
+                nickname: e.target.nickname.value,
+                tiene_licencia: e.target.tiene_licencia.value === 'true'
+            });
+            if (res && res.ok) { closeModal(); renderData(); }
+        }
+
+        // Inicio
         if (state.adminSecret) handleLogin(state.adminSecret);
     </script>
 </body>
