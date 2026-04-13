@@ -66,7 +66,7 @@ module.exports = async function handler(req, res) {
         // 5. Detectar Empates en Top 3 (Solo para modo preview)
         const empatesTop3 = [];
         if (mode === 'preview') {
-            const categorias = ['Absoluta', 'Rookie', 'Senior 45 +', 'Senior 55 +', 'Femenino'];
+            const categorias = ['Absoluta', 'Rookie', 'Senior 45 +', 'Senior 55 +', 'Damas', 'Junior'];
             categorias.forEach(cat => {
                 // Agrupar por score original (sin el ajuste de -0.1) para ver quién empató realmente
                 const sorted = puntosEtapa
@@ -112,7 +112,8 @@ module.exports = async function handler(req, res) {
                     puntos_rookie: r.puntos['Rookie'] || 0,
                     puntos_senior45: r.puntos['Senior 45 +'] || 0,
                     puntos_senior55: r.puntos['Senior 55 +'] || 0,
-                    puntos_femenino: r.puntos['Femenino'] || 0,
+                    puntos_damas: r.puntos['Damas'] || 0,
+                    puntos_junior: r.puntos['Junior'] || 0,
                     score: r.score
                 }, { onConflict: 'etapa_id, jugador_id' });
             }
@@ -125,11 +126,16 @@ module.exports = async function handler(req, res) {
 
             const general = calcularClasificacionGeneral(todosLosResultados);
             
-            const categoriasFinal = { 'Absoluta': [], 'Rookie': [], 'Senior 45 +': [], 'Senior 55 +': [], 'Femenino': [] };
+            const categoriasFinal = { 'Absoluta': [], 'Rookie': [], 'Senior 45 +': [], 'Senior 55 +': [], 'Damas': [], 'Junior': [] };
             Object.keys(categoriasFinal).forEach(cat => {
                 const rankingCat = general.map(j => {
                     const catData = j.categorias[cat] || { total: 0, etapas: [] };
-                    return { name: j.nickname, total: catData.total, pos: 0 };
+                    return { 
+                        name: j.nickname, 
+                        total: catData.total, 
+                        pos: 0,
+                        ...catData // Spread to include e1, e2, e3... from the engine
+                    };
                 }).filter(j => j.total > 0).sort((a, b) => b.total - a.total);
                 rankingCat.forEach((p, idx) => p.pos = idx + 1);
                 categoriasFinal[cat] = rankingCat;

@@ -115,18 +115,19 @@
                                 <th
                                     style="padding: 1.25rem 1.5rem; font-weight: 700; font-size: 0.85rem; color: var(--text-light); text-transform: uppercase;">
                                     Jugador</th>
-                                <th
+                                <th id="header-points"
                                     style="padding: 1.25rem 1.5rem; font-weight: 700; font-size: 0.85rem; color: var(--text-light); text-transform: uppercase; text-align: center;">
                                     Puntos</th>
-                                <th
-                                    style="padding: 1.25rem 1.5rem; font-weight: 700; font-size: 0.85rem; color: var(--text-light); text-transform: uppercase; text-align: center;">
-                                    J1</th>
-                                <th
-                                    style="padding: 1.25rem 1.5rem; font-weight: 700; font-size: 0.85rem; color: var(--text-light); text-transform: uppercase; text-align: center;">
-                                    J2</th>
-                                <th
-                                    style="padding: 1.25rem 1.5rem; font-weight: 700; font-size: 0.85rem; color: var(--text-light); text-transform: uppercase; text-align: center;">
-                                    J3</th>
+                                <th class="stage-header" style="display:none">J1</th>
+                                <th class="stage-header" style="display:none">J2</th>
+                                <th class="stage-header" style="display:none">J3</th>
+                                <th class="stage-header" style="display:none">J4</th>
+                                <th class="stage-header" style="display:none">J5</th>
+                                <th class="stage-header" style="display:none">J6</th>
+                                <th class="stage-header" style="display:none">J7</th>
+                                <th class="stage-header" style="display:none">J8</th>
+                                <th class="stage-header" style="display:none">J9</th>
+                                <th class="stage-header" style="display:none">J10</th>
                             </tr>
                         </thead>
                         <tbody id="ranking-body">
@@ -140,7 +141,6 @@
 
                     async function loadRankings() {
                         try {
-                            // Obtenemos el ranking de la última etapa finalizada
                             const res = await fetch('/api/etapas/listado?estado=finalizada');
                             const etapas = await res.json();
                             
@@ -149,12 +149,10 @@
                                 return;
                             }
 
-                            // La última etapa finalizada tiene el JSON en archivo_excel (según la nueva lógica)
                             const ultimaEtapa = etapas[etapas.length - 1];
                             const json = JSON.parse(ultimaEtapa.archivo_excel);
                             rankingsData = json.categorias;
 
-                            // Update dynamic stage text
                             const jornadaText = document.getElementById('jornada-text');
                             if (jornadaText) {
                                 jornadaText.textContent = `Clasificación oficial de la temporada tras la Etapa ${json.jornada}.`;
@@ -164,8 +162,7 @@
                             btnContainer.innerHTML = '';
 
                             const categories = Object.keys(rankingsData);
-                            // Sort categories strategically: Absoluta first, then Caballeros/Rookie/Senior...
-                            const catPriority = ['Absoluta', 'Caballeros', 'Rookie', 'Senior 45 +', 'Senior 55 +', 'Damas', 'Junior'];
+                            const catPriority = ['Absoluta', 'Rookie', 'Senior 45 +', 'Senior 55 +', 'Damas', 'Junior'];
                             categories.sort((a, b) => {
                                 let idxA = catPriority.indexOf(a);
                                 let idxB = catPriority.indexOf(b);
@@ -210,8 +207,28 @@
                             activeBtn.style.color = 'white';
                         }
 
+                        // Determine how many stages we have in this category
+                        let maxStage = 0;
+                        data.forEach(p => {
+                            Object.keys(p).forEach(k => {
+                                if (k.startsWith('e')) {
+                                    const s = parseInt(k.substring(1));
+                                    if (!isNaN(s) && s > maxStage) maxStage = s;
+                                }
+                            });
+                        });
+
+                        // Show/Hide headers accordingly
+                        const headers = document.querySelectorAll('.stage-header');
+                        headers.forEach((h, idx) => {
+                            const isVisible = (idx < maxStage);
+                            h.style.display = isVisible ? 'table-cell' : 'none';
+                            if (isVisible) {
+                                h.style.cssText = "padding: 1.25rem 1.5rem; font-weight: 700; font-size: 0.85rem; color: var(--text-light); text-transform: uppercase; text-align: center;";
+                            }
+                        });
+
                         body.innerHTML = '';
-                        // Filter out players with 0 points (and unlicensed per user rules)
                         const filteredData = data.filter(player => player.total > 0 && !player.isUnlicensed);
 
                         filteredData.forEach((player) => {
@@ -224,19 +241,25 @@
                             const posColor = player.pos === 1 ? '#f59e0b' : player.pos === 2 ? '#94a3b8' : player.pos === 3 ? '#b45309' : 'var(--text-main)';
                             const posWeight = player.pos <= 3 ? '800' : '500';
 
+                            let stagesHtml = '';
+                            for (let i = 1; i <= maxStage; i++) {
+                                const pts = player[`e${i}`];
+                                stagesHtml += `
+                                    <td style="padding: 1.25rem 1.5rem; text-align: center; color: var(--text-light); font-size: 0.9rem;">
+                                        ${pts !== undefined ? pts : '-'}
+                                    </td>`;
+                            }
+
                             tr.innerHTML = `
-                                <td style="padding: 1.25rem 1.5rem; font-weight: ${posWeight}; color: ${posColor};">#${player.pos}</td>
+                                <td style="padding: 1.25rem 1.5rem; font-weight: ${posWeight}; color: ${posColor}; text-align: center;">#${player.pos}</td>
                                 <td style="padding: 1.25rem 1.5rem; font-weight: 600; color: var(--text-main);">${player.name}</td>
                                 <td style="padding: 1.25rem 1.5rem; text-align: center; font-weight: 700; color: var(--primary-color);">${player.total} pts</td>
-                                <td style="padding: 1.25rem 1.5rem; text-align: center; color: var(--text-light); font-size: 0.9rem;">${player.e1}</td>
-                                <td style="padding: 1.25rem 1.5rem; text-align: center; color: var(--text-light); font-size: 0.9rem;">${player.e2}</td>
-                                <td style="padding: 1.25rem 1.5rem; text-align: center; color: var(--text-light); font-size: 0.9rem;">${player.e3}</td>
+                                ${stagesHtml}
                             `;
                             body.appendChild(tr);
                         });
                     }
 
-                    // Initial load
                     loadRankings();
                 </script>
             </div>
