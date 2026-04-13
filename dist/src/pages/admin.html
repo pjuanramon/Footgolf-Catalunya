@@ -118,6 +118,7 @@
             display: none;
         }
     </style>
+    <link rel="icon" type="image/png" href="/favicon.png?v=1">
   <link rel="stylesheet" crossorigin href="/assets/main-2iTdLJGo.css">
 </head>
 <body class="admin-body">
@@ -126,7 +127,7 @@
         <div class="login-card">
             <h2 style="margin-bottom: 1rem;">Acceso Admin</h2>
             <input type="password" id="secretInput" placeholder="Clave Administrador" class="btn" style="background: var(--admin-bg); color: white; width: 100%; margin-bottom: 1rem;">
-            <button onclick="login()" class="btn btn-primary" style="width: 100%;">Entrar →</button>
+            <button onclick="handleLogin()" class="btn btn-primary" style="width: 100%;">Entrar →</button>
         </div>
     </div>
 
@@ -156,6 +157,7 @@
                         <th>Club</th>
                         <th>Licencia 2026</th>
                         <th>Categorías</th>
+                        <th>Acción</th>
                     </tr>
                 </thead>
                 <tbody id="jugadoresTable">
@@ -185,10 +187,10 @@
         </div>
     </div>
 
-    <!-- Modal Inscritos -->
+    <!-- Modal -->
     <div id="overlay" class="overlay" onclick="closeModal()"></div>
     <div id="modal" class="modal">
-        <h3 id="modalTitle" style="margin-bottom: 1.5rem;">Lista de Inscritos</h3>
+        <h3 id="modalTitle" style="margin-bottom: 1.5rem;">Título</h3>
         <div id="modalContent" style="max-height: 400px; overflow-y: auto;">
             <!-- Injected -->
         </div>
@@ -196,33 +198,73 @@
     </div>
 
     <script>
-        let adminSecret = localStorage.getItem('adminSecret');
-        if (adminSecret) login(adminSecret);
+        // --- Manejo de Errores Global ---
+        window.onerror = function(msg, url, line) {
+            alert("ERROR CRÍTICO JS: " + msg + "\nEn: " + url + ":" + line);
+            return false;
+           // --- Estado Global ---
+        let state = {
+            jugadores: [],
+            torneos: [],
+            rankingNames: [],
+            adminSecret: localStorage.getItem('adminSecret')
+        };
 
-        async function api(path, method = 'GET', body = null) {
-            const headers = {
-                'x-admin-secret': adminSecret,
-                'Content-Type': 'application/json'
-            };
-            const options = { method, headers };
-            if (body) options.body = JSON.stringify(body);
+        console.log("ADMIN: Código cargado correctamente v2.");
 
-            const res = await fetch(`/api/${path}`, options);
-            if (res.status === 401) {
-                logout();
-                return null;
-            }
-            return res.json();
+        // Helpers
+        function normalizeString(s) {
+            if (!s) return '';
+            return s.toString().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, " ").replace(/\s+/g, " ").trim();
         }
 
-        async function login(explicitSecret = null) {
-            const input = document.getElementById('secretInput').value;
-            adminSecret = explicitSecret || input;
-            
-            // Probar acceso con una ruta simple
+        function getLevenshtein(a, b) {
+            const matrix = Array.from({ length: b.length + 1 }, (_, i) => [i]);
+            for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
+            for (let i = 1; i <= b.length; i++) {
+                for (let j = 1; j <= a.length; j++) {
+                    matrix[i][j] = b[i - 1] === a[j - 1] ? matrix[i - 1][j - 1] : Math.min(matrix[i - 1][j - 1] + 1, matrix[i][j - 1] + 1, matrix[i - 1][j] + 1);
+                }
+            }
+            return matrix[b.length][a.length];
+        }
+
+        function findBestMatch(player, officialNames) {
+            if (!Array.isArray(officialNames) || officialNames.length === 0) return null;
+            const pNick = normalizeString(player.nickname);
+            const pName = normalizeString(player.nombre_completo);
+            let best = null;
+            let bestDist = 999;
+            for (const offName of officialNames) {
+                const normOff = normalizeString(offName);
+                if (normOff === pNick || normOff === pName) return { name: offName, type: 'exact' };
+                const dist = Math.min(getLevenshtein(pNick, normOff), getLevenshtein(pName, normOff));
+                if (dist < bestDist) { bestDist = dist; best = offName; }
+            }
+            return bestDist <= 3 ? { name: best, type: 'fuzzy' } : null;
+        }
+
+        async function api(path, method = 'GET', body = null) {
+            const headers = { 'x-admin-secret': state.adminSecret, 'Content-Type': 'application/json' };
+            const options = { method, headers };
+            if (body) options.body = JSON.stringify(body);
+            try {
+                const res = await fetch(`/api/${path}`, options);
+                if (res.status === 401) { logout(); return null; }
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Error en la petición');
+                return data;
+            } catch (err) {
+                alert("API FAIL: " + err.message);
+                return null;
+            }
+        }
+
+        async function handleLogin(explicitSecret = null) {
+            state.adminSecret = explicitSecret || document.getElementById('secretInput').value;
             const data = await api('admin/jugadores');
             if (data) {
-                localStorage.setItem('adminSecret', adminSecret);
+                localStorage.setItem('adminSecret', state.adminSecret);
                 document.getElementById('loginOverlay').style.display = 'none';
                 renderData();
             } else if (!explicitSecret) {
@@ -230,11 +272,8 @@
             }
         }
 
-        function logout() {
-            localStorage.removeItem('adminSecret');
-            location.reload();
-        }
-
+        function logout() { localStorage.removeItem('adminSecret'); location.reload(); }
+        
         function showTab(tab) {
             document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -243,196 +282,122 @@
         }
 
         async function renderData() {
-            // Cargar Jugadores
-            const jugadores = await api('admin/jugadores');
-            const jTable = document.getElementById('jugadoresTable');
-            jTable.innerHTML = jugadores.map(j => `
-                <tr>
-                    <td style="font-weight:800; color:var(--primary-color)">${j.nickname}</td>
-                    <td>${j.nombre_completo || '-'}</td>
-                    <td style="font-size:0.8rem">${j.email}<br><span style="opacity:0.6">${j.telefono || '-'}</span></td>
-                    <td style="font-size:0.8rem">${j.fecha_nacimiento || '-'}<br><span style="opacity:0.6">${j.genero || '-'}</span></td>
-                    <td style="font-size:0.8rem">${j.club || 'Independiente'}</td>
-                    <td><span class="badge ${j.tiene_licencia ? 'badge-success' : 'badge-error'}">${j.tiene_licencia ? 'SÍ' : 'NO'}</span></td>
-                    <td><span style="font-size:0.8rem">${(j.categorias_calculadas || []).join(', ') || '-'}</span></td>
-                </tr>
-            `).join('');
-
-            // Cargar Torneos
-            const torneos = await api('etapas/listado');
-            const tTable = document.getElementById('torneosTable');
-            tTable.innerHTML = torneos.map(t => `
-                <tr>
-                    <td>${t.nombre}</td>
-                    <td>${new Date(t.fecha).toLocaleDateString()}</td>
-                    <td><span class="badge" style="background:rgba(255,255,255,0.1)">${t.tipo.toUpperCase()}</span></td>
-                    <td><span class="badge ${t.estado === 'abierta' ? 'badge-success' : t.estado === 'cerrada' ? 'badge-warn' : 'badge-error'}">${t.estado.toUpperCase()}</span></td>
-                    <td style="display:flex; gap:0.5rem">
-                        <button onclick="verInscritos(${t.id}, '${t.nombre}')" class="btn btn-sm btn-primary">Inscritos</button>
-                        <select onchange="updateEstado(${t.id}, this.value)" class="btn btn-sm" style="background:var(--admin-bg); color:white; border:1px solid var(--admin-border)">
-                            <option value="">Cambiar...</option>
-                            <option value="abierta">Abrir</option>
-                            <option value="cerrada">Cerrar</option>
-                            <option value="finalizada">Finalizar</option>
-                        </select>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        async function updateEstado(id, estado) {
-            if (!estado) return;
-            const res = await api('admin/modificar-etapa', 'POST', { id, estado });
-            if (res.ok) renderData();
-        }
-
-        async function openModal(type, extra = null) {
-            const modal = document.getElementById('modal');
-            const overlay = document.getElementById('overlay');
-            const content = document.getElementById('modalContent');
+            const [jugadores, torneos, rankingNames] = await Promise.all([
+                api('admin/jugadores'),
+                api('etapas/listado'),
+                api('admin/clasificacion-nombres')
+            ]);
+            state.jugadores = jugadores || [];
+            state.torneos = torneos || [];
+            state.rankingNames = rankingNames || [];
             
-            if (type === 'nuevo-jugador') {
-                document.getElementById('modalTitle').textContent = 'Registrar Nuevo Jugador';
+            document.getElementById('jugadoresTable').innerHTML = state.jugadores.map((j, idx) => {
+                const match = j.tiene_licencia ? findBestMatch(j, state.rankingNames) : null;
+                const matchText = match ? `Nick: <b>${match.name}</b>` : (j.tiene_licencia ? '⚠️ No encontrado' : '');
+                return `<tr><td><b>${j.nickname}</b><br><small>${matchText}</small></td><td>${j.nombre_completo || '-'}</td><td>${j.email}</td><td>${j.fecha_nacimiento || '-'}</td><td>${j.club || '-'}</td><td><span class="badge ${j.tiene_licencia ? 'badge-success' : 'badge-error'}">${j.tiene_licencia ? 'SÍ' : 'NO'}</span></td><td>${(j.categorias_calculadas || []).join(', ') || '-'}</td><td><button onclick="uiEditJugador(${idx})" class="btn btn-sm">Editar</button></td></tr>`;
+            }).join('');
+
+            document.getElementById('torneosTable').innerHTML = state.torneos.map((t, idx) => `<tr><td>${t.nombre}</td><td>${new Date(t.fecha).toLocaleDateString()}</td><td>${t.tipo}</td><td>${t.estado}</td><td><button onclick="uiCargarResultados(${idx})" class="btn btn-sm btn-primary">Cargar</button></td></tr>`).join('');
+        }
+
+        function uiEditJugador(idx) { openModal('editar-jugador', state.jugadores[idx]); }
+        function uiCargarResultados(idx) { state.activeEtapa = state.torneos[idx]; openModal('cargar-resultados', state.activeEtapa); }
+
+        function openModal(type, extra = null) {
+            const content = document.getElementById('modalContent');
+            document.getElementById('modalTitle').textContent = type.toUpperCase();
+            if (type === 'cargar-resultados') {
                 content.innerHTML = `
-                    <form onsubmit="crearJugador(event)">
-                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem">
-                            <div style="margin-bottom:1rem">
-                                <label>Nombre Completo:</label>
-                                <input type="text" name="nombre" class="btn" style="width:100%; background:var(--admin-bg)" required>
-                            </div>
-                            <div style="margin-bottom:1rem">
-                                <label>Nickname:</label>
-                                <input type="text" name="nickname" class="btn" style="width:100%; background:var(--admin-bg)" required>
-                            </div>
-                        </div>
-                        <div style="margin-bottom:1rem">
-                            <label>Email:</label>
-                            <input type="email" name="email" class="btn" style="width:100%; background:var(--admin-bg)" required>
-                        </div>
-                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem">
-                            <div style="margin-bottom:1rem">
-                                <label>Teléfono:</label>
-                                <input type="tel" name="telefono" class="btn" style="width:100%; background:var(--admin-bg)">
-                            </div>
-                            <div style="margin-bottom:1rem">
-                                <label>F. Nacimiento:</label>
-                                <input type="date" name="fecha_nacimiento" class="btn" style="width:100%; background:var(--admin-bg)">
-                            </div>
-                        </div>
-                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem">
-                            <div style="margin-bottom:1rem">
-                                <label>Género:</label>
-                                <select name="genero" class="btn" style="width:100%; background:var(--admin-bg)">
-                                    <option value="masculino">Masculino</option>
-                                    <option value="femenino">Femenino</option>
-                                </select>
-                            </div>
-                            <div style="margin-bottom:1rem">
-                                <label>Club:</label>
-                                <select name="club" class="btn" style="width:100%; background:var(--admin-bg)">
-                                    <option value="Independiente">Independiente</option>
-                                    <option value="JABALI TEAM FOOTGOLF">JABALI TEAM FOOTGOLF</option>
-                                    <option value="Apex FootGolf">Apex FootGolf</option>
-                                    <option value="BARCELONA FOOTGOLF">BARCELONA FOOTGOLF</option>
-                                    <option value="AC Maktub FG">AC Maktub FG</option>
-                                </select>
-                            </div>
-                        </div>
-                        <button type="submit" class="btn btn-primary" style="width:100%; margin-top:1rem">Guardar Jugador</button>
-                    </form>
-                `;
-            } else if (type === 'nueva-inscripcion') {
-                const {etapa_id, nombre} = extra;
-                const jugadores = await api('admin/jugadores');
-                document.getElementById('modalTitle').textContent = `Inscribir en ${nombre}`;
-                content.innerHTML = `
-                    <form onsubmit="inscribirManual(event, ${etapa_id})">
-                        <div style="margin-bottom:1rem">
-                            <label>Seleccionar Jugador:</label>
-                            <select name="jugador_id" class="btn" style="width:100%; background:var(--admin-bg)" required>
-                                ${jugadores.map(j => `<option value="${j.id}">${j.nickname} (${j.nombre_completo})</option>`).join('')}
-                            </select>
-                        </div>
-                        <div style="margin-bottom:1rem">
-                            <label>Nombre Equipo (Opcional):</label>
-                            <input type="text" name="equipo" placeholder="Dejar vacío si es individual" class="btn" style="width:100%; background:var(--admin-bg)">
-                        </div>
-                        <button type="submit" class="btn btn-primary" style="width:100%">Confirmar Inscripción</button>
-                    </form>
+                    <div id="step-upload">
+                        <input type="file" id="excelInput" class="btn" style="width:100%"><br><br>
+                        <button onclick="processStepPreview()" class="btn btn-primary" style="width:100%">Analizar</button>
+                    </div>
+                    <div id="step-loading" style="display:none; padding:1rem">⌛ Procesando...</div>
+                    <div id="step-ties" style="display:none">
+                        <div id="tiesList"></div>
+                        <button onclick="console.log('Click en Recalcular'); processStepPreview(true)" class="btn btn-primary" style="width:100%; margin-top:1rem">Recalcular con Desempates</button>
+                    </div>
+                    <div id="step-preview" style="display:none">
+                        <div id="previewTable"></div>
+                        <button onclick="processStepPublish()" class="btn btn-primary" style="width:100%; margin-top:1rem">Publicar</button>
+                    </div>
+                    <div id="debugLogs" style="background:#000; color:#4ade80; padding:10px; font-size:0.7rem; margin-top:10px; max-height:100px; overflow:auto; display:none"></div>
                 `;
             }
+            document.getElementById('modal').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        }
+        function closeModal() { document.getElementById('modal').style.display = 'none'; document.getElementById('overlay').style.display = 'none'; }
 
-            modal.style.display = 'block';
-            overlay.style.display = 'block';
+        // --- Lógica del Proceso ---
+        let currentFileBase64 = null;
+        let currentDesempates = {};
+
+        function showStep(s) {
+            ['upload','loading','ties','preview'].forEach(x => document.getElementById(`step-${x}`).style.display = (x===s?'block':'none'));
         }
 
-        async function crearJugador(e) {
-            e.preventDefault();
-            const f = e.target;
-            const res = await api('admin/crear-jugador', 'POST', {
-                nombre_completo: f.nombre.value,
-                nickname: f.nickname.value,
-                email: f.email.value,
-                telefono: f.telefono ? f.telefono.value : null,
-                fecha_nacimiento: f.fecha_nacimiento ? f.fecha_nacimiento.value : null,
-                genero: f.genero ? f.genero.value : null,
-                club: f.club ? f.club.value : 'Independiente'
-            });
-            if (res.ok) {
-                closeModal();
-                renderData();
+        async function processStepPreview(isRetry = false) {
+            console.log("ADMIN: Iniciando Análisis...");
+            if (!isRetry) {
+                const file = document.getElementById('excelInput').files[0];
+                if (!file) return alert("Selecciona archivo");
+                const reader = new FileReader();
+                reader.onload = (e) => { currentFileBase64 = e.target.result.split(',')[1]; sendPreview(); };
+                reader.readAsDataURL(file);
+            } else {
+                sendPreview();
             }
         }
 
-        async function inscribirManual(e, etapa_id) {
-            e.preventDefault();
-            const f = e.target;
-            const res = await api('admin/inscripcion-manual', 'POST', {
-                etapa_id,
-                jugador_id: f.jugador_id.value,
-                equipo_nombre: f.equipo.value
+        async function sendPreview() {
+            showStep('loading');
+            const res = await api('clasificacion/procesar-etapa', 'POST', {
+                etapa_id: state.activeEtapa.id,
+                excel_base64: currentFileBase64,
+                mode: 'preview',
+                desempates: currentDesempates
             });
-            if (res.ok) {
-                closeModal();
-                renderData();
-            }
-        }
-
-        async function verInscritos(id, nombre) {
-            const inscritos = await api(`admin/inscripciones?etapa_id=${id}`);
-            const modal = document.getElementById('modal');
-            const overlay = document.getElementById('overlay');
-            const content = document.getElementById('modalContent');
+            if (!res) { showStep('upload'); return; }
             
-            document.getElementById('modalTitle').textContent = `Inscritos: ${nombre}`;
-            content.innerHTML = `
-                <div style="display:flex; justify-content:flex-end; margin-bottom:1rem">
-                    <button onclick="openModal('nueva-inscripcion', {etapa_id:${id}, nombre:'${nombre}'})" class="btn btn-sm btn-primary">+ Añadir a Mano</button>
-                </div>
-                ${inscritos.length === 0 ? '<p>No hay inscritos todavía.</p>' : `
-                <table style="font-size:0.85rem">
-                    <thead><tr><th>Jornada</th><th>Nickname</th><th>Pago</th></tr></thead>
-                    <tbody>
-                        ${inscritos.map(i => `
-                            <tr>
-                                <td>${i.equipo_nombre || 'Individual'}</td>
-                                <td>${i.jugadores.nickname}</td>
-                                <td><span class="badge badge-success">SÍ</span></td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            `}`;
+            if (res.logs) {
+                const dl = document.getElementById('debugLogs');
+                dl.style.display = 'block';
+                dl.innerHTML = res.logs.map(l => `<div>> ${l}</div>`).join('');
+            }
 
-            modal.style.display = 'block';
-            overlay.style.display = 'block';
+            if (res.empatesDetectados && res.empatesDetectados.length > 0) {
+                showStep('ties');
+                document.getElementById('tiesList').innerHTML = res.empatesDetectados.map(e => `
+                    <div style="margin-bottom:1rem">
+                        <b>${e.categoria}</b><br>
+                        ${e.jugadores.map(j => `<button onclick="resolveTie('${j.id}')" class="btn btn-sm ${currentDesempates[j.id]?'btn-primary':''}">${j.nickname}</button>`).join(' ')}
+                    </div>`).join('');
+            } else {
+                showStep('preview');
+                document.getElementById('previewTable').innerHTML = `<table style="font-size:0.8rem">` + res.puntosCalculados.map(p => `<tr><td>${p.nickname}</td><td>${p.score}</td><td>${JSON.stringify(p.puntos)}</td></tr>`).join('') + `</table>`;
+            }
         }
 
-        function closeModal() {
-            document.getElementById('modal').style.display = 'none';
-            document.getElementById('overlay').style.display = 'none';
+        function resolveTie(id) { 
+            console.log("Resolviendo para:", id);
+            currentDesempates[id] = true; 
+            sendPreview(); 
         }
 
+        async function processStepPublish() {
+            if (!confirm("¿Publicar?")) return;
+            showStep('loading');
+            const res = await api('clasificacion/procesar-etapa', 'POST', {
+                etapa_id: state.activeEtapa.id,
+                excel_base64: currentFileBase64,
+                mode: 'commit',
+                desempates: currentDesempates
+            });
+            if (res && res.ok) { alert("¡Éxito!"); closeModal(); renderData(); }
+        }
+
+        if (state.adminSecret) handleLogin(state.adminSecret);
     </script>
 </body>
 </html>

@@ -34,17 +34,30 @@ module.exports = async function handler(req, res) {
         for (const row of rows) {
             const rawName = String(row['D'] || '').trim();
             if (!rawName) continue;
-            
-            const isSalazar = rawName.includes('Salazar');
-            if (isSalazar) logs.push(`DEBUG Salazar: Encontrado en fila: "${rawName}"`);
 
-            if (String(row['F']).trim().toUpperCase() === 'NO') {
-                if (isSalazar) logs.push(`DEBUG Salazar: Saltado por columna F (Licencia)`);
+            const isSalazar = rawName.toLowerCase().includes('salazar');
+            const isAbril = rawName.toLowerCase().includes('abril');
+            if (isSalazar || isAbril) logs.push(`DEBUG DEBUG: Encontrado en fila: "${rawName}"`);
+
+            const match = matchPlayerToDb(rawName, dbPlayers || []);
+            const p = match.player;
+
+            // PRIORIDAD 1: Si lo encontramos en la DB y tiene licencia, LO INCLUIMOS.
+            let tieneLicenciaValida = false;
+            if (p) {
+                tieneLicenciaValida = p.tiene_licencia;
+                if (isSalazar || isAbril) logs.push(`DEBUG DEBUG: Matcheado en DB como ${p.nickname}. Tiene licencia DB: ${p.tiene_licencia}`);
+            } else {
+                // Si no está en DB, confiamos en la columna F del Excel
+                tieneLicenciaValida = String(row['F']).trim().toUpperCase() !== 'NO';
+                if (isSalazar || isAbril) logs.push(`DEBUG DEBUG: NO matcheado en DB. Usando Excel Col F: ${tieneLicenciaValida}`);
+            }
+
+            if (!tieneLicenciaValida) {
+                if (isSalazar || isAbril) logs.push(`DEBUG DEBUG: Ignorado por no tener licencia válida.`);
                 logs.push(`Ignorado (Sin Licencia): ${rawName}`);
                 continue;
             }
-            const match = matchPlayerToDb(rawName, dbPlayers || []);
-            const p = match.player;
             
             let wonTie = false;
             if (p && desempates && desempates[p.id]) {
@@ -113,7 +126,7 @@ module.exports = async function handler(req, res) {
                         etapa_id: etapa_id, jugador_id: r.jugador_id,
                         puntos_absoluta: r.puntos['Absoluta'] || 0, puntos_rookie: r.puntos['Rookie'] || 0,
                         puntos_senior45: r.puntos['Senior 45 +'] || 0, puntos_senior55: r.puntos['Senior 55 +'] || 0,
-                        puntos_damas: r.puntos['Damas'] || 0, puntos_junior: r.puntos['Junior'] || 0,
+                        puntos_femenino: r.puntos['Damas'] || 0, puntos_junior: r.puntos['Junior'] || 0,
                         score: Math.round(Number(r.score))
                     }, { onConflict: 'etapa_id, jugador_id' });
                     if (error) logs.push(`ERROR UPSERT ${r.nickname}: ${error.message}`);

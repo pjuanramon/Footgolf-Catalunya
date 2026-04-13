@@ -77,6 +77,7 @@
             display: none;
         }
     </style>
+    <link rel="icon" type="image/png" href="/favicon.png?v=1">
   <link rel="stylesheet" crossorigin href="/assets/main-2iTdLJGo.css">
 </head>
 
@@ -129,57 +130,88 @@
         let currentStages = [];
         let playerIsJuanRa = false;
 
+        const OFFICIAL_TEAMS = [
+            "JABALI TEAM FOOTGOLF",
+            "Apex FootGolf",
+            "BARCELONA FOOTGOLF",
+            "AC Maktub FG",
+            "Bacho Kiro Footgolf",
+            "BUNKER BOYS FootGolf"
+        ];
+
         async function loadStages() {
             try {
-                const res = await fetch('/api/etapas/listado?estado=abierta');
+                // Añadimos un timestamp para evitar cache del navegador/Vercel
+                const res = await fetch(`/api/etapas/listado?estado=abierta,cerrada&t=${Date.now()}`);
                 currentStages = await res.json();
+                console.log('Etapas cargadas:', currentStages);
                 renderStages();
             } catch (err) {
+                console.error('Error loadStages:', err);
                 stagesList.innerHTML = '<p style="text-align: center; color: var(--error-color);">Error al cargar las etapas.</p>';
             }
         }
 
         function renderStages() {
-            if (currentStages.length === 0) {
-                stagesList.innerHTML = '<p style="text-align: center; color: var(--text-light);">No hay etapas abiertas para inscripción en este momento.</p>';
+            if (!currentStages || currentStages.length === 0) {
+                stagesList.innerHTML = '<p style="text-align: center; color: var(--text-light);">No hay etapas próximas para mostrar en este momento.</p>';
                 return;
             }
 
+            // Cambiar el título
+            const titleEl = document.querySelector('.section-title');
+            if (titleEl) titleEl.textContent = 'Próximas Etapas';
+
             stagesList.innerHTML = currentStages.map(etapa => {
                 const esEquipo = etapa.tipo === 'equipos';
+                const esCerrada = etapa.estado === 'cerrada';
                 let precio = esEquipo ? etapa.precio_equipo : 22;
                 
                 if (!esEquipo && playerIsJuanRa) precio = 5;
 
-                const colorStyle = esEquipo ? 'style="background: var(--secondary-color);"' : '';
+                const colorStyle = esEquipo ? 'style="background: var(--secondary-color); font-weight: 800;"' : 'style="font-weight: 800;"';
+                const cardStyle = esCerrada ? 'opacity: 0.95; border-color: rgba(255,255,255,0.2);' : (esEquipo ? 'border-color: var(--secondary-color); border-width: 2px;' : '');
+                const dateBg = esCerrada ? 'background: #475569;' : (esEquipo ? 'background: var(--secondary-color);' : 'background: var(--primary-color);');
 
                 return `
-                    <div class="event-card active dark-section" style="margin-bottom: 2rem; background: var(--bg-dark); color: white; border: 1px solid rgba(255,255,255,0.1); display: block; border-radius: 1.5rem; overflow: hidden; ${esEquipo ? 'border-color: var(--secondary-color);' : ''}">
+                    <div class="event-card active dark-section" style="margin-bottom: 2rem; background: var(--bg-dark); color: white; border: 1px solid rgba(255,255,255,0.1); display: block; border-radius: 1.5rem; overflow: hidden; transform: none; ${cardStyle}">
                         <div style="display: flex; flex-wrap: wrap;">
-                            <div class="date" ${colorStyle} style="min-width: 100px; padding: 1.5rem; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                            <div class="date" style="min-width: 100px; padding: 1.5rem; display: flex; flex-direction: column; align-items: center; justify-content: center; ${dateBg}">
                                 <span style="font-size: 2.2rem; line-height: 1; display: block; font-weight: 800;">${new Date(etapa.fecha).getDate()}</span>
                                 <span style="font-size: 0.9rem; text-transform: uppercase; font-weight: 600;">${new Date(etapa.fecha).toLocaleString('es-ES', { month: 'short' }).replace('.', '')}</span>
                             </div>
                             <div class="event-info" style="flex-grow: 1; padding: 1.5rem; display: flex; flex-direction: column; justify-content: center;">
-                                <h3 style="margin: 0; font-size: 1.5rem; ${esEquipo ? 'color: var(--secondary-color);' : 'color: white;'}">${etapa.nombre}</h3>
+                                <h3 style="margin: 0; font-size: 1.5rem; ${esEquipo ? 'color: var(--secondary-color);' : 'color: white;'}">
+                                    ${etapa.nombre} 
+                                    ${esCerrada ? '<span style="color: #94a3b8; font-size: 0.8rem; font-weight: 400; background: rgba(255,255,255,0.05); padding: 2px 8px; border-radius: 4px; margin-left: 10px;">REGISTRO CERRADO</span>' : ''}
+                                </h3>
                                 <div style="margin-top: 0.5rem; display: flex; gap: 1rem; flex-wrap: wrap;">
                                     <span style="font-size: 0.85rem; color: #cbd5e1;">📍 ${etapa.ubicacion || 'Por determinar'}</span>
                                     <span id="count-${etapa.id}" style="font-size: 0.85rem; color: var(--secondary-color); font-weight: 600;">Cargando inscritos...</span>
                                 </div>
                             </div>
                             <div class="stage-action" style="padding: 1.5rem; display: flex; flex-direction: column; align-items: flex-end; justify-content: center; gap: 0.75rem;">
-                                ${esEquipo ? `
-                                    <input type="text" id="team-${etapa.id}" placeholder="Nombre del Equipo *" 
-                                           style="padding: 0.6rem; border-radius: 0.5rem; border: 1px solid var(--secondary-color); width: 220px; background: rgba(255,255,255,0.05); color: white; margin-bottom: 0.2rem;">
-                                ` : ''}
-                                <button onclick="inscribirse(${etapa.id}, ${esEquipo})" class="btn btn-primary" ${colorStyle} style="padding: 0.8rem 1.5rem;">
-                                    Inscribirme (${precio}€) →
-                                </button>
+                                ${esCerrada ? `
+                                    <div style="background: rgba(239, 68, 68, 0.1); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.2); padding: 0.8rem 1.5rem; border-radius: 0.8rem; font-weight: 600; font-size: 0.9rem;">
+                                        Inscripción Finalizada
+                                    </div>
+                                ` : `
+                                    ${esEquipo ? `
+                                        <select id="team-${etapa.id}" 
+                                               style="padding: 0.6rem; border-radius: 0.5rem; border: 1px solid var(--secondary-color); width: 220px; background: #1e293b; color: white; margin-bottom: 0.2rem; cursor: pointer;">
+                                            <option value="">-- Selecciona tu Equipo --</option>
+                                            ${OFFICIAL_TEAMS.map(team => `<option value="${team}">${team}</option>`).join('')}
+                                        </select>
+                                    ` : ''}
+                                    <button onclick="inscribirse(${etapa.id}, ${esEquipo})" class="btn btn-primary" ${colorStyle} style="padding: 0.8rem 1.5rem;">
+                                        Inscribirme (${precio}€) →
+                                    </button>
+                                `}
                             </div>
                         </div>
                         
                         <!-- Listado de inscritos -->
-                        <div id="list-${etapa.id}" style="background: rgba(255,255,255,0.02); padding: 1rem 1.5rem; border-top: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem;">
+                        <div id="list-${etapa.id}" style="background: rgba(255,255,255,0.02); padding: 1.5rem; border-top: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem;">
                             <span style="color: var(--text-light); opacity: 0.6;">Buscando participantes registrados...</span>
                         </div>
                     </div>
@@ -187,10 +219,10 @@
             }).join('');
 
             // Cargar inscritos para cada etapa
-            currentStages.forEach(etapa => loadInscritos(etapa.id));
+            currentStages.forEach(etapa => loadInscritos(etapa.id, etapa.tipo === 'equipos'));
         }
 
-        async function loadInscritos(etapaId) {
+        async function loadInscritos(etapaId, esEquipo) {
             try {
                 const res = await fetch(`/api/etapas/inscritos?etapa_id=${etapaId}`);
                 const data = await res.json();
@@ -199,23 +231,63 @@
                 const listEl = document.getElementById(`list-${etapaId}`);
                 
                 if (data.length === 0) {
-                    countEl.textContent = '🚀 ¡Sé el primero en inscribirte!';
+                    countEl.textContent = esEquipo ? '🚀 ¡Registra a tu equipo!' : '🚀 ¡Sé el primero en inscribirte!';
                     listEl.style.display = 'none';
                     return;
                 }
 
-                countEl.innerHTML = `✅ ${data.length} inscritos`;
-                
-                const names = data.map(i => {
-                    return `<span style="display: inline-block; background: rgba(255,255,255,0.05); padding: 0.2rem 0.6rem; border-radius: 99px; margin-right: 0.5rem; margin-bottom: 0.4rem; border: 1px solid rgba(255,255,255,0.1);">
-                        ${i.nickname}${i.equipo ? ` <small style="opacity:0.6">(${i.equipo})</small>` : ''}
-                    </span>`;
-                }).join('');
+                let elements = [];
+                let displayCount = 0;
+
+                if (esEquipo) {
+                    // Agrupar por equipos para el Campeonato por Equipos
+                    const equiposUnicos = [...new Set(data.map(i => i.equipo).filter(e => e))];
+                    displayCount = equiposUnicos.length;
+                    countEl.innerHTML = `✅ ${displayCount} equipos inscritos`;
+                    elements = equiposUnicos.map(e => `
+                        <span style="display: inline-block; background: rgba(52, 211, 153, 0.1); color: #34d399; padding: 0.3rem 0.8rem; border-radius: 99px; margin-right: 0.5rem; margin-bottom: 0.4rem; border: 1px solid rgba(52, 211, 153, 0.2); font-weight: 600;">
+                            🛡️ ${e}
+                        </span>
+                    `);
+                } else {
+                    // Mostrar jugadores individuales para etapas normales
+                    displayCount = data.length;
+                    countEl.innerHTML = `✅ ${displayCount} inscritos`;
+                    elements = data.map(i => {
+                        const display = i.tiene_licencia 
+                            ? i.nickname 
+                            : (i.nombre_manual || i.nombre_completo || i.nickname);
+                        
+                        return `<span style="display: inline-block; background: rgba(255,255,255,0.05); padding: 0.2rem 0.6rem; border-radius: 99px; margin-right: 0.5rem; margin-bottom: 0.4rem; border: 1px solid rgba(255,255,255,0.1);">
+                            ${display}
+                        </span>`;
+                    });
+                }
+
+                const summaryText = esEquipo ? `Ver Lista de Equipos (${displayCount})` : `Ver Lista de Inscritos (${displayCount})`;
 
                 listEl.innerHTML = `
-                    <div style="margin-bottom: 0.5rem; color: var(--text-light); font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">Inscritos Confirmados:</div>
-                    <div style="display: flex; flex-wrap: wrap;">${names}</div>
+                    <details style="width: 100%;">
+                        <summary style="cursor: pointer; color: var(--secondary-color); font-weight: 600; font-size: 0.85rem; padding: 0.5rem 0; outline: none; list-style: none; display: flex; align-items: center; gap: 0.5rem;">
+                            <span class="toggle-icon">▶</span> ${summaryText}
+                        </summary>
+                        <div style="padding-top: 1rem; display: flex; flex-wrap: wrap;">
+                            ${elements.join('')}
+                        </div>
+                    </details>
                 `;
+
+                // Añadir estilo para el icono del sumario
+                if (!document.querySelector('#details-style')) {
+                    const style = document.createElement('style');
+                    style.id = 'details-style';
+                    style.textContent = `
+                        details[open] .toggle-icon { transform: rotate(90deg); }
+                        .toggle-icon { transition: transform 0.2s ease; display: inline-block; }
+                        summary::-webkit-details-marker { display: none; }
+                    `;
+                    document.head.appendChild(style);
+                }
             } catch (e) {
                 console.error('Error cargando inscritos:', e);
             }

@@ -198,7 +198,11 @@
     </div>
 
     <script>
-        // --- Estado Global para evitar problemas de escape en HTML ---
+        // --- Manejo de Errores Global ---
+        window.onerror = function(msg, url, line) {
+            alert("ERROR CRÍTICO JS: " + msg + "\nEn: " + url + ":" + line);
+            return false;
+           // --- Estado Global ---
         let state = {
             jugadores: [],
             torneos: [],
@@ -206,15 +210,12 @@
             adminSecret: localStorage.getItem('adminSecret')
         };
 
+        console.log("ADMIN: Código cargado correctamente v2.");
+
         // Helpers
         function normalizeString(s) {
             if (!s) return '';
-            // Normalización extrema: minúsculas, sin acentos, sin puntuación, espacio simple
-            return s.toString().toLowerCase().normalize("NFD")
-                .replace(/[\u0300-\u036f]/g, "")
-                .replace(/[^a-z0-9]/g, " ") 
-                .replace(/\s+/g, " ")
-                .trim();
+            return s.toString().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, " ").replace(/\s+/g, " ").trim();
         }
 
         function getLevenshtein(a, b) {
@@ -229,63 +230,38 @@
         }
 
         function findBestMatch(player, officialNames) {
-            if (!Array.isArray(officialNames) || officialNames.length === 0) {
-                console.warn('Matching: No hay nombres oficiales para comparar.');
-                return null;
-            }
+            if (!Array.isArray(officialNames) || officialNames.length === 0) return null;
             const pNick = normalizeString(player.nickname);
             const pName = normalizeString(player.nombre_completo);
             let best = null;
             let bestDist = 999;
-
             for (const offName of officialNames) {
                 const normOff = normalizeString(offName);
-                if (normOff === pNick || normOff === pName) {
-                    console.log(`Matching: EXACTO para ${player.nickname} -> ${offName}`);
-                    return { name: offName, type: 'exact' };
-                }
-                
+                if (normOff === pNick || normOff === pName) return { name: offName, type: 'exact' };
                 const dist = Math.min(getLevenshtein(pNick, normOff), getLevenshtein(pName, normOff));
-                if (dist < bestDist) {
-                    bestDist = dist;
-                    best = offName;
-                }
+                if (dist < bestDist) { bestDist = dist; best = offName; }
             }
-            
-            if (bestDist <= 3) {
-                console.log(`Matching: FUZZY para ${player.nickname} -> Sugerido: ${best} (dist: ${bestDist})`);
-                return { name: best, type: 'fuzzy' };
-            }
-            
-            console.log(`Matching: FALLO para ${player.nickname}. Sin coincidencias cercanas.`);
-            return null;
+            return bestDist <= 3 ? { name: best, type: 'fuzzy' } : null;
         }
 
         async function api(path, method = 'GET', body = null) {
-            const headers = {
-                'x-admin-secret': state.adminSecret,
-                'Content-Type': 'application/json'
-            };
+            const headers = { 'x-admin-secret': state.adminSecret, 'Content-Type': 'application/json' };
             const options = { method, headers };
             if (body) options.body = JSON.stringify(body);
-
             try {
                 const res = await fetch(`/api/${path}`, options);
-                if (res.status === 401) {
-                    logout();
-                    return null;
-                }
-                return await res.json();
+                if (res.status === 401) { logout(); return null; }
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Error en la petición');
+                return data;
             } catch (err) {
-                console.error('API Error:', err);
+                alert("API FAIL: " + err.message);
                 return null;
             }
         }
 
         async function handleLogin(explicitSecret = null) {
-            const input = document.getElementById('secretInput').value;
-            state.adminSecret = explicitSecret || input;
-            
+            state.adminSecret = explicitSecret || document.getElementById('secretInput').value;
             const data = await api('admin/jugadores');
             if (data) {
                 localStorage.setItem('adminSecret', state.adminSecret);
@@ -296,11 +272,8 @@
             }
         }
 
-        function logout() {
-            localStorage.removeItem('adminSecret');
-            location.reload();
-        }
-
+        function logout() { localStorage.removeItem('adminSecret'); location.reload(); }
+        
         function showTab(tab) {
             document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -314,274 +287,63 @@
                 api('etapas/listado'),
                 api('admin/clasificacion-nombres')
             ]);
-
-            state.jugadores = Array.isArray(jugadores) ? jugadores : [];
-            state.torneos = Array.isArray(torneos) ? torneos : [];
-            state.rankingNames = Array.isArray(rankingNames) ? rankingNames : [];
-
-            console.log('DEBUG: Jugadores recibidos:', state.jugadores.length);
-            console.log('DEBUG: Ranking names recibidos:', state.rankingNames);
-
-            // Render Jugadores
-            const jTable = document.getElementById('jugadoresTable');
-            jTable.innerHTML = state.jugadores.map((j, idx) => {
+            state.jugadores = jugadores || [];
+            state.torneos = torneos || [];
+            state.rankingNames = rankingNames || [];
+            
+            document.getElementById('jugadoresTable').innerHTML = state.jugadores.map((j, idx) => {
                 const match = j.tiene_licencia ? findBestMatch(j, state.rankingNames) : null;
-                const statusColor = match ? (match.type === 'exact' ? '#10b981' : '#f59e0b') : '#ef4444';
-                const matchText = match ? `Nick Clasif: <b>${match.name}</b>` : (j.tiene_licencia ? '⚠️ No encontrado' : '');
-
-                return `
-                <tr>
-                    <td>
-                        <div style="font-weight:800; color:var(--primary-color)">${j.nickname}</div>
-                        ${matchText ? `<div style="font-size:0.75rem; color:${statusColor}; margin-top:0.2rem">${matchText}</div>` : ''}
-                    </td>
-                    <td style="font-size:0.9rem">${j.nombre_completo || '-'}</td>
-                    <td style="font-size:0.8rem">${j.email}<br><span style="opacity:0.6">${j.telefono || '-'}</span></td>
-                    <td style="font-size:0.8rem">${j.fecha_nacimiento || '-'}<br><span style="opacity:0.6">${j.genero || '-'}</span></td>
-                    <td style="font-size:0.8rem">${j.club || 'Independiente'}</td>
-                    <td>
-                        <span class="badge ${j.tiene_licencia ? 'badge-success' : 'badge-error'}">${j.tiene_licencia ? 'SÍ' : 'NO'}</span>
-                        <div style="font-size:0.75rem; opacity:0.6; margin-top:0.2rem">Desde: ${j.anio_licencia || '-'}</div>
-                    </td>
-                    <td><span style="font-size:0.8rem">${(j.categorias_calculadas || []).join(', ') || '-'}</span></td>
-                    <td>
-                        <button onclick="uiEditJugador(${idx})" class="btn btn-sm">Editar</button>
-                        <button onclick="uiNormalizar(${idx})" class="btn btn-sm" style="color:#60a5fa">Norm.</button>
-                    </td>
-                </tr>
-                `;
+                const matchText = match ? `Nick: <b>${match.name}</b>` : (j.tiene_licencia ? '⚠️ No encontrado' : '');
+                return `<tr><td><b>${j.nickname}</b><br><small>${matchText}</small></td><td>${j.nombre_completo || '-'}</td><td>${j.email}</td><td>${j.fecha_nacimiento || '-'}</td><td>${j.club || '-'}</td><td><span class="badge ${j.tiene_licencia ? 'badge-success' : 'badge-error'}">${j.tiene_licencia ? 'SÍ' : 'NO'}</span></td><td>${(j.categorias_calculadas || []).join(', ') || '-'}</td><td><button onclick="uiEditJugador(${idx})" class="btn btn-sm">Editar</button></td></tr>`;
             }).join('');
 
-            // Render Torneos
-            const tTable = document.getElementById('torneosTable');
-            tTable.innerHTML = state.torneos.map((t, idx) => `
-                <tr>
-                    <td>${t.nombre}</td>
-                    <td>${new Date(t.fecha).toLocaleDateString()}</td>
-                    <td>${(t.tipo || 'Etapa').toUpperCase()}</td>
-                    <td><span class="badge ${t.estado === 'abierta' ? 'badge-success' : 'badge-error'}">${(t.estado || '').toUpperCase()}</span></td>
-                    <td>
-                        <div style="display:flex; gap:0.5rem">
-                            <button onclick="uiVerInscritos(${idx})" class="btn btn-sm btn-primary">Inscritos</button>
-                            ${t.estado !== 'finalizada' ? `<button onclick="uiCargarResultados(${idx})" class="btn btn-sm" style="background:var(--secondary-color)">Cargar</button>` : `<button onclick="uiReabrirEtapa(${idx})" class="btn btn-sm" style="background:#475569">Reabrir</button>`}
-                        </div>
-                    </td>
-                </tr>
-            `).join('');
+            document.getElementById('torneosTable').innerHTML = state.torneos.map((t, idx) => `<tr><td>${t.nombre}</td><td>${new Date(t.fecha).toLocaleDateString()}</td><td>${t.tipo}</td><td>${t.estado}</td><td><button onclick="uiCargarResultados(${idx})" class="btn btn-sm btn-primary">Cargar</button></td></tr>`).join('');
         }
 
-        // Acciones UI
-        function uiEditJugador(idx) {
-            openModal('editar-jugador', state.jugadores[idx]);
-        }
+        function uiEditJugador(idx) { openModal('editar-jugador', state.jugadores[idx]); }
+        function uiCargarResultados(idx) { state.activeEtapa = state.torneos[idx]; openModal('cargar-resultados', state.activeEtapa); }
 
-        async function uiNormalizar(idx) {
-            const player = state.jugadores[idx];
-            const match = findBestMatch(player, state.rankingNames);
-            const suggested = match ? match.name : player.nombre_completo;
-
-            if (!suggested || !confirm(`¿Normalizar Nickname de "${player.nickname}" a "${suggested}"?`)) return;
-
-            const res = await api('admin/modificar-jugador', 'POST', {
-                ...player,
-                nickname: suggested
-            });
-            if (res && res.ok) renderData();
-        }
-
-        async function uiVerInscritos(idx) {
-            const t = state.torneos[idx];
-            verInscritos(t.id, t.nombre);
-        }
-
-        function uiCargarResultados(idx) {
-            const t = state.torneos[idx];
-            state.activeEtapa = t;
-            openModal('cargar-resultados', t);
-        }
-
-        async function uiReabrirEtapa(idx) {
-            const t = state.torneos[idx];
-            if (!confirm(`¿Reabrir "${t.nombre}"? Los resultados actuales se mantendrán hasta que cargues unos nuevos.`)) return;
-            const res = await api('admin/modificar-etapa', 'POST', { id: t.id, estado: 'cerrada' });
-            if (res && res.ok) renderData();
-        }
-
-        // Modales
         function openModal(type, extra = null) {
-            const modal = document.getElementById('modal');
-            const overlay = document.getElementById('overlay');
             const content = document.getElementById('modalContent');
             document.getElementById('modalTitle').textContent = type.toUpperCase();
-
-            // Lógica de formularios simplificada
-            if (type === 'nuevo-jugador') {
-                content.innerHTML = `
-                    <form onsubmit="handleCrearJugador(event)">
-                        <input type="text" name="nombre" placeholder="Nombre Completo" class="btn" style="width:100%; margin-bottom:1rem" required>
-                        <input type="text" name="nickname" placeholder="Nickname" class="btn" style="width:100%; margin-bottom:1rem" required>
-                        <input type="email" name="email" placeholder="Email" class="btn" style="width:100%; margin-bottom:1rem" required>
-                        <button type="submit" class="btn btn-primary" style="width:100%">Guardar</button>
-                    </form>`;
-            } else if (type === 'editar-jugador') {
-                const j = extra;
-                content.innerHTML = `
-                    <form onsubmit="handleModificarJugador(event, '${j.id}')">
-                        <input type="text" name="nombre" value="${j.nombre_completo || ''}" class="btn" style="width:100%; margin-bottom:1rem">
-                        <input type="text" name="nickname" value="${j.nickname || ''}" class="btn" style="width:100%; margin-bottom:1rem">
-                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem">
-                            <div>
-                                <label style="font-size:0.8rem; opacity:0.7">Licencia:</label>
-                                <select name="tiene_licencia" class="btn" style="width:100%">
-                                    <option value="true" ${j.tiene_licencia ? 'selected' : ''}>SÍ</option>
-                                    <option value="false" ${!j.tiene_licencia ? 'selected' : ''}>NO</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label style="font-size:0.8rem; opacity:0.7">Año 1ª Licencia:</label>
-                                <input type="number" name="anio_licencia" value="${j.anio_licencia || 2026}" class="btn" style="width:100%">
-                            </div>
-                        </div>
-                    <button type="submit" class="btn btn-primary" style="width:100%">Actualizar</button>
-                    </form>`;
-            } else if (type === 'nueva-inscripcion') {
-                const {id, nombre} = extra;
-                document.getElementById('modalTitle').textContent = `Inscripciones: ${nombre}`;
-                content.innerHTML = `
-                    <form onsubmit="handleInscribirManual(event, ${id}, '${nombre}')">
-                        <div style="margin-bottom:1rem">
-                            <label style="font-size:0.8rem; opacity:0.7">Seleccionar Jugador:</label>
-                            <select name="jugador_id" class="btn" style="width:100%" required>
-                                <option value="">-- Elige un jugador --</option>
-                                ${state.jugadores.map(j => `<option value="${j.id}">${j.nickname} (${j.nombre_completo || ''})</option>`).join('')}
-                            </select>
-                        </div>
-                        <div style="margin-bottom:1rem">
-                            <label style="font-size:0.8rem; opacity:0.7">Nombre Manual (Solo si no está en la lista):</label>
-                            <input type="text" name="nombre_manual" placeholder="Escribir nombre si es nuevo..." class="btn" style="width:100%">
-                        </div>
-                        <div style="margin-bottom:1rem">
-                            <label style="font-size:0.8rem; opacity:0.7">Equipo / Jornada (Opcional):</label>
-                            <input type="text" name="equipo_nombre" placeholder="Nombre equipo..." class="btn" style="width:100%">
-                        </div>
-                    <button type="submit" class="btn btn-primary" style="width:100%">Confirmar Inscripción</button>
-                    </form>`;
-            } else if (type === 'cargar-resultados') {
-                const t = extra;
+            if (type === 'cargar-resultados') {
                 content.innerHTML = `
                     <div id="step-upload">
-                        <p style="font-size:0.9rem; margin-bottom:1rem">Sube el Excel oficial para procesar <b>${t.nombre}</b>.</p>
-                        <input type="file" id="excelInput" accept=".xlsx,.xls" class="btn" style="width:100%; margin-bottom:1rem">
-                        <button onclick="processStepPreview()" class="btn btn-primary" style="width:100%">Analizar Archivo</button>
+                        <input type="file" id="excelInput" class="btn" style="width:100%"><br><br>
+                        <button onclick="processStepPreview()" class="btn btn-primary" style="width:100%">Analizar</button>
                     </div>
+                    <div id="step-loading" style="display:none; padding:1rem">⌛ Procesando...</div>
                     <div id="step-ties" style="display:none">
-                        <p style="background:#fef3c7; color:#92400e; padding:0.5rem; border-radius:4px; font-size:0.8rem; margin-bottom:1rem">
-                            ⚠️ Se han detectado empates en el Podium. Indica quién ganó el desempate en cada categoría.
-                        </p>
                         <div id="tiesList"></div>
-                        <button onclick="processStepPreview(true)" class="btn btn-primary" style="width:100%; margin-top:1rem">Recalcular con Desempates</button>
+                        <button onclick="console.log('Click en Recalcular'); processStepPreview(true)" class="btn btn-primary" style="width:100%; margin-top:1rem">Recalcular con Desempates</button>
                     </div>
                     <div id="step-preview" style="display:none">
-                        <p style="font-size:0.9rem; margin-bottom:1rem">Vista previa de puntos calculados:</p>
-                        <div id="previewTable" style="max-height:250px; overflow-y:auto; border:1px solid #ddd; margin-bottom:1rem"></div>
-                        <button onclick="processStepPublish()" class="btn btn-sm" style="width:100%; background:#10b981; color:white">Publicar Resultados</button>
+                        <div id="previewTable"></div>
+                        <button onclick="processStepPublish()" class="btn btn-primary" style="width:100%; margin-top:1rem">Publicar</button>
                     </div>
+                    <div id="debugLogs" style="background:#000; color:#4ade80; padding:10px; font-size:0.7rem; margin-top:10px; max-height:100px; overflow:auto; display:none"></div>
                 `;
             }
-
-            modal.style.display = 'block';
-            overlay.style.display = 'block';
-        }
-
-        function closeModal() {
-            document.getElementById('modal').style.display = 'none';
-            document.getElementById('overlay').style.display = 'none';
-        }
-
-        async function handleCrearJugador(e) {
-            e.preventDefault();
-            const f = e.target;
-            const res = await api('admin/crear-jugador', 'POST', {
-                nombre_completo: f.nombre.value,
-                nickname: f.nickname.value,
-                email: f.email.value
-            });
-            if (res && res.ok) { closeModal(); renderData(); }
-        }
-
-        async function handleModificarJugador(e, id) {
-            e.preventDefault();
-            const f = e.target;
-            const res = await api('admin/modificar-jugador', 'POST', {
-                id,
-                nombre_completo: f.nombre.value,
-                nickname: f.nickname.value,
-                tiene_licencia: f.tiene_licencia.value === 'true',
-                anio_licencia: f.anio_licencia.value
-            });
-            if (res && res.ok) { closeModal(); renderData(); }
-        }
-
-        async function verInscritos(id, nombre) {
-            const inscritos = await api(`admin/inscripciones?etapa_id=${id}`);
-            if (!inscritos) return;
-
-            document.getElementById('modalTitle').textContent = `Inscritos: ${nombre}`;
-            const content = document.getElementById('modalContent');
-            content.innerHTML = `
-                <div style="display:flex; justify-content:flex-end; margin-bottom:1rem">
-                    <button onclick="openModal('nueva-inscripcion', {id:${id}, nombre:'${nombre}'})" class="btn btn-sm btn-primary">+ Añadir a Mano</button>
-                </div>
-                <table style="font-size:0.9rem">
-                    ${inscritos.map(i => `
-                        <tr>
-                            <td>${i.jugadores ? i.jugadores.nickname : (i.nombre_manual || '???')}</td>
-                            <td>${i.equipo_nombre || 'Individual'}</td>
-                            <td><button onclick="handleEliminar('${i.id}', ${id}, '${nombre}')" class="btn btn-sm" style="color:red">Baja</button></td>
-                        </tr>
-                    `).join('')}
-                </table>
-            `;
             document.getElementById('modal').style.display = 'block';
             document.getElementById('overlay').style.display = 'block';
         }
+        function closeModal() { document.getElementById('modal').style.display = 'none'; document.getElementById('overlay').style.display = 'none'; }
 
-        async function handleEliminar(id, etapaId, etapaNombre) {
-            if (!confirm('¿Dar de baja?')) return;
-            const res = await api('admin/eliminar-inscripcion', 'POST', { id });
-            if (res && res.ok) verInscritos(etapaId, etapaNombre);
-        }
-
-        async function handleInscribirManual(e, etapaId, etapaNombre) {
-            e.preventDefault();
-            const f = e.target;
-            const res = await api('admin/inscripcion-manual', 'POST', {
-                etapa_id: etapaId,
-                jugador_id: f.jugador_id.value || null,
-                nombre_manual: f.nombre_manual.value || null,
-                equipo_nombre: f.equipo_nombre.value || null
-            });
-            if (res && res.ok) {
-                closeModal();
-                verInscritos(etapaId, etapaNombre);
-            } else {
-                alert('Error al inscribir: ' + (res ? res.error : 'Fallo de red'));
-            }
-        }
-
+        // --- Lógica del Proceso ---
         let currentFileBase64 = null;
         let currentDesempates = {};
 
+        function showStep(s) {
+            ['upload','loading','ties','preview'].forEach(x => document.getElementById(`step-${x}`).style.display = (x===s?'block':'none'));
+        }
+
         async function processStepPreview(isRetry = false) {
-            const input = document.getElementById('excelInput');
+            console.log("ADMIN: Iniciando Análisis...");
             if (!isRetry) {
-                if (!input.files[0]) return alert('Selecciona un archivo');
-                const file = input.files[0];
+                const file = document.getElementById('excelInput').files[0];
+                if (!file) return alert("Selecciona archivo");
                 const reader = new FileReader();
-                reader.onload = async (e) => {
-                    currentFileBase64 = e.target.result.split(',')[1];
-                    sendPreview();
-                };
+                reader.onload = (e) => { currentFileBase64 = e.target.result.split(',')[1]; sendPreview(); };
                 reader.readAsDataURL(file);
             } else {
                 sendPreview();
@@ -589,81 +351,53 @@
         }
 
         async function sendPreview() {
+            showStep('loading');
             const res = await api('clasificacion/procesar-etapa', 'POST', {
                 etapa_id: state.activeEtapa.id,
                 excel_base64: currentFileBase64,
                 mode: 'preview',
                 desempates: currentDesempates
             });
-
-            if (!res || !res.ok) return alert('Error al analizar archivo');
+            if (!res) { showStep('upload'); return; }
+            
+            if (res.logs) {
+                const dl = document.getElementById('debugLogs');
+                dl.style.display = 'block';
+                dl.innerHTML = res.logs.map(l => `<div>> ${l}</div>`).join('');
+            }
 
             if (res.empatesDetectados && res.empatesDetectados.length > 0) {
-                document.getElementById('step-upload').style.display = 'none';
-                document.getElementById('step-preview').style.display = 'none';
-                document.getElementById('step-ties').style.display = 'block';
-                
-                const list = document.getElementById('tiesList');
-                list.innerHTML = res.empatesDetectados.map((e, idx) => `
-                    <div style="margin-bottom:1rem; border-bottom:1px dashed #ccc; padding-bottom:0.5rem">
-                        <div style="font-weight:bold; font-size:0.8rem">${e.categoria} (Score: ${e.score})</div>
-                        <div style="display:flex; gap:0.5rem; margin-top:0.4rem">
-                            ${e.jugadores.map(j => `
-                                <button onclick="resolveTie('${e.categoria}', '${j.id}')" 
-                                        class="btn btn-sm ${currentDesempates[j.id] ? 'btn-primary' : ''}" 
-                                        style="font-size:0.7rem">
-                                    ${j.nickname}
-                                </button>
-                            `).join('')}
-                        </div>
-                    </div>
-                `).join('');
+                showStep('ties');
+                document.getElementById('tiesList').innerHTML = res.empatesDetectados.map(e => `
+                    <div style="margin-bottom:1rem">
+                        <b>${e.categoria}</b><br>
+                        ${e.jugadores.map(j => `<button onclick="resolveTie('${j.id}')" class="btn btn-sm ${currentDesempates[j.id]?'btn-primary':''}">${j.nickname}</button>`).join(' ')}
+                    </div>`).join('');
             } else {
-                document.getElementById('step-upload').style.display = 'none';
-                document.getElementById('step-ties').style.display = 'none';
-                document.getElementById('step-preview').style.display = 'block';
-                
-                const table = document.getElementById('previewTable');
-                table.innerHTML = `
-                    <table style="font-size:0.75rem; width:100%">
-                        <thead><tr><th>Jugador</th><th>Score</th><th>Absoluta</th></tr></thead>
-                        <tbody>
-                            ${res.puntosCalculados.slice(0, 10).map(p => `
-                                <tr>
-                                    <td>${p.nickname}</td>
-                                    <td>${p.score}</td>
-                                    <td>${p.puntos['Absoluta'] || 0}</td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                `;
+                showStep('preview');
+                document.getElementById('previewTable').innerHTML = `<table style="font-size:0.8rem">` + res.puntosCalculados.map(p => `<tr><td>${p.nickname}</td><td>${p.score}</td><td>${JSON.stringify(p.puntos)}</td></tr>`).join('') + `</table>`;
             }
         }
 
-        function resolveTie(cat, playerId) {
-            currentDesempates[playerId] = true;
-            sendPreview();
+        function resolveTie(id) { 
+            console.log("Resolviendo para:", id);
+            currentDesempates[id] = true; 
+            sendPreview(); 
         }
 
         async function processStepPublish() {
-            if (!confirm('¿Estás seguro? Esto cerrará la etapa y actualizará la clasificación pública.')) return;
+            if (!confirm("¿Publicar?")) return;
+            showStep('loading');
             const res = await api('clasificacion/procesar-etapa', 'POST', {
                 etapa_id: state.activeEtapa.id,
                 excel_base64: currentFileBase64,
                 mode: 'commit',
                 desempates: currentDesempates
             });
-            if (res && res.ok) {
-                alert('Etapa publicada con éxito');
-                closeModal();
-                renderData();
-            }
+            if (res && res.ok) { alert("¡Éxito!"); closeModal(); renderData(); }
         }
 
-        // Inicio
         if (state.adminSecret) handleLogin(state.adminSecret);
-
     </script>
 </body>
 </html>
