@@ -69,20 +69,36 @@ module.exports = async function handler(req, res) {
         
         if (mode === 'preview') {
             categorias.forEach(cat => {
-                const sorted = puntosEtapa.filter(r => r.puntos[cat] !== undefined).sort((a, b) => a.score - b.score);
+                const sorted = puntosEtapa.filter(r => r.puntos[cat] !== undefined).sort((a, b) => {
+                    if (a.score !== b.score) return a.score - b.score;
+                    if (a.wonTie && !b.wonTie) return -1;
+                    if (!a.wonTie && b.wonTie) return 1;
+                    return 0;
+                });
+
                 const seenScores = {};
                 sorted.forEach((r, idx) => {
                     if (idx < 5) {
                         const score = Number(r.score);
-                        if (!seenScores[score]) seenScores[score] = [];
-                        seenScores[score].push(r);
+                        // Importante: Si ya tiene wonTie, no lo contamos para detectar "nuevo" empate
+                        if (!r.wonTie) {
+                            if (!seenScores[score]) seenScores[score] = [];
+                            seenScores[score].push(r);
+                        }
                     }
                 });
+
                 Object.keys(seenScores).forEach(score => {
-                    if (seenScores[score].length > 1) {
-                        const rankOfGroup = sorted.indexOf(seenScores[score][0]) + 1;
+                    const tiedPlayers = seenScores[score];
+                    // Si hay alguien más con el mismo score y nadie ha ganado el desempate aún en ese grupo
+                    if (tiedPlayers.length > 1) {
+                        const rankOfGroup = sorted.indexOf(tiedPlayers[0]) + 1;
                         if (rankOfGroup <= 3) {
-                            empatesTop3.push({ categoria: cat, score: score, jugadores: seenScores[score].map(g => ({ id: g.jugador_id, nickname: g.nickname })) });
+                            empatesTop3.push({ 
+                                categoria: cat, 
+                                score: score, 
+                                jugadores: tiedPlayers.map(g => ({ id: g.jugador_id, nickname: g.nickname })) 
+                            });
                         }
                     }
                 });
