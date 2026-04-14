@@ -72,6 +72,54 @@
             margin-bottom: 0.5rem;
         }
 
+        .status-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .status-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 1.5rem;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .status-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-card ul {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .status-card li {
+            font-size: 0.95rem;
+            color: var(--text-light);
+            padding: 0.5rem 0.75rem;
+            background: #f8fafc;
+            border-radius: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .status-tag {
+            font-size: 0.75rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-weight: 700;
+        }
+
         @media (max-width: 768px) {
             .ranking-table {
                 font-size: 0.85rem;
@@ -343,6 +391,37 @@
                         </ul>
                     </div>
 
+                </div>
+
+                <div class="status-list">
+                    <!-- Jugadores con licencia y SIN equipo -->
+                    <div class="status-card">
+                        <h3><span style="color: #f59e0b">🟠</span> Licencia Activa (Sin Equipo)</h3>
+                        <p style="font-size: 0.85rem; color: var(--text-light); margin-bottom: 1rem;">Jugadores que ya tienen su licencia 2026 pero aún no están asignados a ningún equipo oficial.</p>
+                        <ul>
+                            <li>David Rojo Demgra <span class="status-tag" style="background: #fef3c7; color: #92400e;">AGENTE LIBRE</span></li>
+                            <li>Joan Torre Rodríguez <span class="status-tag" style="background: #fef3c7; color: #92400e;">AGENTE LIBRE</span></li>
+                            <li>Lucía Bernuz Culebras <span class="status-tag" style="background: #fef3c7; color: #92400e;">AGENTE LIBRE</span></li>
+                        </ul>
+                    </div>
+
+                    <!-- Jugadores con equipo y SIN licencia -->
+                    <div class="status-card">
+                        <h3><span style="color: #ef4444">🔴</span> Pendiente de Licencia (Con Equipo)</h3>
+                        <p style="font-size: 0.85rem; color: var(--text-light); margin-bottom: 1rem;">Jugadores asignados a equipos que deben tramitar su licencia 2026 para poder competir.</p>
+                        <ul>
+                            <li>Nico García <small>(JABALI)</small> <span class="status-tag" style="background: #fee2e2; color: #991b1b;">PENDIENTE</span></li>
+                            <li>Juan Carlos <small>(Apex)</small> <span class="status-tag" style="background: #fee2e2; color: #991b1b;">PENDIENTE</span></li>
+                            <li>Jack Cid (hijo) <small>(Apex)</small> <span class="status-tag" style="background: #fee2e2; color: #991b1b;">PENDIENTE</span></li>
+                            <li>Nicola Perra <small>(BARCELONA)</small> <span class="status-tag" style="background: #fee2e2; color: #991b1b;">PENDIENTE</span></li>
+                            <li>Abisay Padilla <small>(BARCELONA)</small> <span class="status-tag" style="background: #fee2e2; color: #991b1b;">PENDIENTE</span></li>
+                            <li>Albert Navarro <small>(Maktub)</small> <span class="status-tag" style="background: #fee2e2; color: #991b1b;">PENDIENTE</span></li>
+                            <li>Albert Arrebola <small>(Bacho Kiro)</small> <span class="status-tag" style="background: #fee2e2; color: #991b1b;">PENDIENTE</span></li>
+                            <li>Àlex Trallero <small>(Bacho Kiro)</small> <span class="status-tag" style="background: #fee2e2; color: #991b1b;">PENDIENTE</span></li>
+                            <li>Xavi Altimira <small>(Bacho Kiro)</small> <span class="status-tag" style="background: #fee2e2; color: #991b1b;">PENDIENTE</span></li>
+                            <li>Sergio Pizarro <small>(Bacho Kiro)</small> <span class="status-tag" style="background: #fee2e2; color: #991b1b;">PENDIENTE</span></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </section>
