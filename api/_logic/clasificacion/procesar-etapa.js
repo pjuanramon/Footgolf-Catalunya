@@ -129,17 +129,31 @@ module.exports = async function handler(req, res) {
         }
 
         if (mode === 'commit') {
-            logs.push(`Iniciando COMMIT...`);
+            logs.push(`Iniciando COMMIT para etapa ${etapa_id}...`);
+            const targetEtapaId = Number(etapa_id);
+
             for (const r of puntosEtapa) {
+                const isTarget = r.nickname.includes('Salazar') || r.nickname.includes('Abril');
+                if (isTarget) logs.push(`[COMMIT-DEBUG] Intentando upsert para ${r.nickname}. ID: ${r.jugador_id}`);
+
                 try {
                     const { error } = await supabase.from('resultados_etapas').upsert({
-                        etapa_id: etapa_id, jugador_id: r.jugador_id,
-                        puntos_absoluta: r.puntos['Absoluta'] || 0, puntos_rookie: r.puntos['Rookie'] || 0,
-                        puntos_senior45: r.puntos['Senior 45 +'] || 0, puntos_senior55: r.puntos['Senior 55 +'] || 0,
-                        puntos_femenino: r.puntos['Damas'] || 0, puntos_junior: r.puntos['Junior'] || 0,
+                        etapa_id: targetEtapaId, 
+                        jugador_id: String(r.jugador_id),
+                        puntos_absoluta: r.puntos['Absoluta'] || 0, 
+                        puntos_rookie: r.puntos['Rookie'] || 0,
+                        puntos_senior45: r.puntos['Senior 45 +'] || 0, 
+                        puntos_senior55: r.puntos['Senior 55 +'] || 0,
+                        puntos_femenino: r.puntos['Damas'] || 0, 
+                        puntos_junior: r.puntos['Junior'] || 0,
                         score: Math.round(Number(r.score))
                     }, { onConflict: 'etapa_id, jugador_id' });
-                    if (error) logs.push(`ERROR UPSERT ${r.nickname}: ${error.message}`);
+                    
+                    if (error) {
+                        logs.push(`❌ ERROR UPSERT ${r.nickname}: ${error.message}`);
+                    } else if (isTarget) {
+                        logs.push(`✅ UPSERT EXITOSO para ${r.nickname}`);
+                    }
                 } catch (e) {
                     logs.push(`EXCEPTION UPSERT ${r.nickname}: ${e.message}`);
                 }

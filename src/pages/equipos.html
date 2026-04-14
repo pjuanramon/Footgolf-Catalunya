@@ -18,9 +18,10 @@
     <main>
         <header class="page-header">
             <h1 class="gradient-text">Campeonato por Equipos</h1>
-            <p>La competición más apasionante. Formad un equipo y demostrad quién domina el circuito catalán.</p>
+            <p>Toda la información sobre el formato, calendario y plantillas de la temporada 2026.</p>
         </header>
 
+        <!-- FORMATO Y REGLAS -->
         <section class="section">
             <div class="container layout-split">
                 <div class="split-image glass-box"
@@ -29,20 +30,81 @@
                 </div>
                 <div class="split-text text-fade-in">
                     <h2 class="section-title" style="text-align: left;">Sistema de Competición</h2>
-                    <p>El Campeonato de Catalunya por Equipos es la prueba reina del año. Los clubes se enfrentan en
-                        formato <strong>Match Play</strong>, donde la estrategia de los capitanes es tan importante como
-                        la precisión de los jugadores.</p>
                     <ul class="feature-list" style="margin-top: 2rem;">
-                        <li>Equipos de un mínimo de 6 jugadores y máximo de 12.</li>
-                        <li>Enfrentamientos directos: 2 partidos individuales y 2 por parejas (Foursome).</li>
-                        <li>Fase de grupos + Play-offs finales (Final Four).</li>
-                        <li>El ganador representará a Catalunya en el Campeonato de España.</li>
+                        <li><strong>Grupo Único:</strong> Se jugará a un solo grupo.</li>
+                        <li><strong>Fase Final:</strong> Los 2 primeros clasificados pasan directamente a semifinales.</li>
+                        <li><strong>Repesca:</strong> Los otros 4 equipos disputan una repesca (3º vs 6º y 4º vs 5º).</li>
+                        <li><strong>Partidos:</strong> Cada partido será a 12 hoyos.</li>
+                        <li><strong>Ritmo:</strong> En cada etapa del torneo se jugarán 2 jornadas y media.</li>
+                        <li><strong>Equipos:</strong> Mínimo 6 jugadores y máximo 12.</li>
+                        <li><strong>Enfrentamientos:</strong> 2 partidos individuales y 2 por parejas (Foursome).</li>
                     </ul>
                 </div>
             </div>
         </section>
 
-        <section class="section teams-display">
+        <!-- JORNADAS (CALENDARIO) -->
+        <section class="section dark-section" id="jornadas" style="padding-top: 4rem;">
+            <div class="container">
+                <h2 class="section-title">Calendario de Jornadas</h2>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; margin-top: 3rem;">
+                    
+                    <!-- Jornada 1 -->
+                    <div class="glass-box" style="padding: 2.5rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem;">
+                        <h3 style="color: #fbbf24; margin-bottom: 2rem; border-bottom: 2px solid #fbbf24; padding-bottom: 0.5rem; font-weight: 800; font-size: 1.5rem;">Jornada 1</h3>
+                        <div style="display: flex; flex-direction: column; gap: 1.2rem; font-size: 1rem; color: #f8fafc;">
+                            <p>Barcelona Footgolf vs Bunker Boys</p>
+                            <p>AC Maktub vs Apex Footgolf</p>
+                            <p>Jabali Team vs Bacho Kiro Footgolf</p>
+                        </div>
+                    </div>
+
+                    <!-- Jornada 2 -->
+                    <div class="glass-box" style="padding: 2.5rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem;">
+                        <h3 style="color: #fbbf24; margin-bottom: 2rem; border-bottom: 2px solid #fbbf24; padding-bottom: 0.5rem; font-weight: 800; font-size: 1.5rem;">Jornada 2</h3>
+                        <div style="display: flex; flex-direction: column; gap: 1.2rem; font-size: 1rem; color: #f8fafc;">
+                            <p>Bacho Kiro Footgolf vs Barcelona Footgolf</p>
+                            <p>Apex Footgolf vs Jabali Team</p>
+                            <p>AC Maktub vs Bunker Boys</p>
+                        </div>
+                    </div>
+
+                    <!-- Jornada 3 -->
+                    <div class="glass-box" style="padding: 2.5rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem;">
+                        <h3 style="color: #fbbf24; margin-bottom: 2rem; border-bottom: 2px solid #fbbf24; padding-bottom: 0.5rem; font-weight: 800; font-size: 1.5rem;">Jornada 3</h3>
+                        <div style="display: flex; flex-direction: column; gap: 1.2rem; font-size: 1rem; color: #f8fafc;">
+                            <p>Barcelona Footgolf vs Maktub</p>
+                            <p>Bacho Kiro Footgolf vs Apex Footgolf</p>
+                            <p>Bunker Boys vs Jabali Team</p>
+                        </div>
+                    </div>
+
+                    <!-- Jornada 4 -->
+                    <div class="glass-box" style="padding: 2.5rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem;">
+                        <h3 style="color: #fbbf24; margin-bottom: 2rem; border-bottom: 2px solid #fbbf24; padding-bottom: 0.5rem; font-weight: 800; font-size: 1.5rem;">Jornada 4</h3>
+                        <div style="display: flex; flex-direction: column; gap: 1.2rem; font-size: 1rem; color: #f8fafc;">
+                            <p>Maktub vs Bacho Kiro Footgolf</p>
+                            <p>Bunker Boys vs Apex Footgolf</p>
+                            <p>Jabali Team vs Barcelona Footgolf</p>
+                        </div>
+                    </div>
+
+                    <!-- Jornada 5 -->
+                    <div class="glass-box" style="padding: 2.5rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem;">
+                        <h3 style="color: #fbbf24; margin-bottom: 2rem; border-bottom: 2px solid #fbbf24; padding-bottom: 0.5rem; font-weight: 800; font-size: 1.5rem;">Jornada 5</h3>
+                        <div style="display: flex; flex-direction: column; gap: 1.2rem; font-size: 1rem; color: #f8fafc;">
+                            <p>Jabali Team vs Maktub</p>
+                            <p>Apex Footgolf vs Barcelona Footgolf</p>
+                            <p>Bunker Boys vs Bacho Kiro Footgolf</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- EQUIPOS Y JUGADORES -->
+        <section class="section">
             <div class="container">
                 <h2 class="section-title">Equipos y Jugadores 2026</h2>
                 <div class="about-grid"
@@ -52,14 +114,11 @@
                     <div class="about-card"
                         style="text-align: left; padding: 2.5rem; border: 1px solid var(--border-color);">
                         <div class="icon" style="font-size: 3rem; margin-bottom: 1.5rem;">🐗</div>
-                        <h3 style="color: var(--primary-color); font-size: 1.5rem; margin-bottom: 1rem;">JABALI TEAM
-                            FOOTGOLF</h3>
+                        <h3 style="color: var(--primary-color); font-size: 1.5rem; margin-bottom: 1rem;">JABALI TEAM FOOTGOLF</h3>
                         <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.5rem;">
                             <li style="color: var(--text-light);">Fernando Martínez Guillamón</li>
                             <li style="color: var(--text-light);">Gustavo Verse</li>
-                            <li style="font-weight: 700; color: var(--text-main);">Chema Martínez Guillamón <span
-                                    style="font-size: 0.75rem; background: var(--primary-color); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; margin-left: 0.5rem;">Capitán</span>
-                            </li>
+                            <li style="font-weight: 700; color: var(--text-main);">Chema Martínez Guillamón <span style="font-size: 0.75rem; background: var(--primary-color); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; margin-left: 0.5rem;">Capitán</span></li>
                             <li style="color: var(--text-light);">Nico García</li>
                             <li style="color: var(--text-light);">Alberto Salazar Fernández</li>
                         </ul>
@@ -69,12 +128,9 @@
                     <div class="about-card"
                         style="text-align: left; padding: 2.5rem; border: 1px solid var(--border-color);">
                         <div class="icon" style="font-size: 3rem; margin-bottom: 1.5rem;">⛰️</div>
-                        <h3 style="color: var(--secondary-color); font-size: 1.5rem; margin-bottom: 1rem;">Apex FootGolf
-                        </h3>
+                        <h3 style="color: var(--secondary-color); font-size: 1.5rem; margin-bottom: 1rem;">Apex FootGolf</h3>
                         <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.5rem;">
-                            <li style="font-weight: 700; color: var(--text-main);">Alberto Leiva Cañada <span
-                                    style="font-size: 0.75rem; background: var(--secondary-color); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; margin-left: 0.5rem;">Capitán</span>
-                            </li>
+                            <li style="font-weight: 700; color: var(--text-main);">Alberto Leiva Cañada <span style="font-size: 0.75rem; background: var(--secondary-color); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; margin-left: 0.5rem;">Capitán</span></li>
                             <li style="color: var(--text-light);">Daniel Abril Amador</li>
                             <li style="color: var(--text-light);">Xavi Leiva Cañada</li>
                             <li style="color: var(--text-light);">Ivan Luengo Robles</li>
@@ -89,14 +145,11 @@
                     <div class="about-card"
                         style="text-align: left; padding: 2.5rem; border: 1px solid var(--border-color);">
                         <div class="icon" style="font-size: 3rem; margin-bottom: 1.5rem;">🏙️</div>
-                        <h3 style="color: var(--bg-dark); font-size: 1.5rem; margin-bottom: 1rem;">BARCELONA FOOTGOLF
-                        </h3>
+                        <h3 style="color: var(--bg-dark); font-size: 1.5rem; margin-bottom: 1rem;">BARCELONA FOOTGOLF</h3>
                         <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.5rem;">
                             <li style="color: var(--text-light);">Olivier TRESSENS</li>
                             <li style="color: var(--text-light);">Jorge Santiago Buqueras</li>
-                            <li style="font-weight: 700; color: var(--text-main);">JuanRa Perez <span
-                                    style="font-size: 0.75rem; background: var(--bg-dark); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; margin-left: 0.5rem;">Capitán</span>
-                            </li>
+                            <li style="font-weight: 700; color: var(--text-main);">JuanRa Perez <span style="font-size: 0.75rem; background: var(--bg-dark); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; margin-left: 0.5rem;">Capitán</span></li>
                             <li style="color: var(--text-light);">Eduardo Martin Rodriguez</li>
                             <li style="color: var(--text-light);">Nicola Perra</li>
                             <li style="color: var(--text-light);">Sergi Perez Vilar</li>
@@ -104,14 +157,13 @@
                         </ul>
                     </div>
 
+                    <!-- AC Maktub FG -->
                     <div class="about-card"
                         style="text-align: left; padding: 2.5rem; border: 1px solid var(--border-color);">
                         <div class="icon" style="font-size: 3rem; margin-bottom: 1.5rem;">🦅</div>
                         <h3 style="color: #64748b; font-size: 1.5rem; margin-bottom: 1rem;">AC Maktub FG</h3>
                         <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.5rem;">
-                            <li style="font-weight: 700; color: var(--text-main);">Marc Company Salvat <span
-                                    style="font-size: 0.75rem; background: #64748b; color: white; padding: 0.2rem 0.5rem; border-radius: 4px; margin-left: 0.5rem;">Capitán</span>
-                            </li>
+                            <li style="font-weight: 700; color: var(--text-main);">Marc Company Salvat <span style="font-size: 0.75rem; background: #64748b; color: white; padding: 0.2rem 0.5rem; border-radius: 4px; margin-left: 0.5rem;">Capitán</span></li>
                             <li style="color: var(--text-light);">Albert Navarro</li>
                             <li style="color: var(--text-light);">Sergi Pahisa</li>
                             <li style="color: var(--text-light);">Mario Morón Sancho</li>
@@ -125,9 +177,7 @@
                         <div class="icon" style="font-size: 3rem; margin-bottom: 1.5rem;">🏹</div>
                         <h3 style="color: #e11d48; font-size: 1.5rem; margin-bottom: 1rem;">Bacho Kiro Footgolf</h3>
                         <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.5rem;">
-                            <li style="font-weight: 700; color: var(--text-main);">David Linares Ramos <span
-                                    style="font-size: 0.75rem; background: #e11d48; color: white; padding: 0.2rem 0.5rem; border-radius: 4px; margin-left: 0.5rem;">Capitán</span>
-                            </li>
+                            <li style="font-weight: 700; color: var(--text-main);">David Linares Ramos <span style="font-size: 0.75rem; background: #e11d48; color: white; padding: 0.2rem 0.5rem; border-radius: 4px; margin-left: 0.5rem;">Capitán</span></li>
                             <li style="color: var(--text-light);">Albert Arrebola</li>
                             <li style="color: var(--text-light);">Àlex Trallero</li>
                             <li style="color: var(--text-light);">Marc Arrebola Sans</li>
@@ -144,9 +194,7 @@
                         <div class="icon" style="font-size: 3rem; margin-bottom: 1.5rem;">🛡️</div>
                         <h3 style="color: #334155; font-size: 1.5rem; margin-bottom: 1rem;">BUNKER BOYS FootGolf</h3>
                         <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.5rem;">
-                            <li style="font-weight: 700; color: var(--text-main);">Giacomo Bonacini <span
-                                    style="font-size: 0.75rem; background: #334155; color: white; padding: 0.2rem 0.5rem; border-radius: 4px; margin-left: 0.5rem;">Capitán</span>
-                            </li>
+                            <li style="font-weight: 700; color: var(--text-main);">Giacomo Bonacini <span style="font-size: 0.75rem; background: #334155; color: white; padding: 0.2rem 0.5rem; border-radius: 4px; margin-left: 0.5rem;">Capitán</span></li>
                             <li style="color: var(--text-light);">E.Matarrubia</li>
                             <li style="color: var(--text-light);">Jordi Martin</li>
                             <li style="color: var(--text-light);">Juan Medina</li>
