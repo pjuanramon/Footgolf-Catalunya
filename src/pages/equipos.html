@@ -51,6 +51,27 @@
             color: var(--primary-color);
         }
 
+        .glossary {
+            background: #f8fafc;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            border-left: 4px solid var(--secondary-color);
+            margin-top: 2rem;
+        }
+
+        .glossary dt {
+            font-weight: 800;
+            color: var(--text-main);
+            margin-top: 1rem;
+        }
+
+        .glossary dd {
+            color: var(--text-light);
+            font-size: 0.95rem;
+            margin-left: 0;
+            margin-bottom: 0.5rem;
+        }
+
         @media (max-width: 768px) {
             .ranking-table {
                 font-size: 0.85rem;
@@ -91,19 +112,25 @@
                     <ul class="feature-list" style="margin-top: 2rem;">
                         <li><strong>Puntuación:</strong> 3 puntos por victoria, 1 por empate.</li>
                         <li><strong>Grupo Único:</strong> Se jugará a un solo grupo (liga todos contra todos).</li>
-                        <li><strong>Fase Final:</strong> Los 2 primeros clasificados pasan directamente a semifinales.</li>
-                        <li><strong>Repesca:</strong> Los otros 4 equipos disputan una repesca (3º vs 6º y 4º vs 5º).</li>
-                        <li>
-                            <strong>Criterios de Desempate:</strong>
-                            <ol style="margin-left: 2rem; margin-top: 0.5rem; color: var(--text-light); font-size: 0.9rem;">
-                                <li>Puntos totales.</li>
-                                <li>Diferencia de goles (Average general).</li>
-                                <li>Resultado entre ambos equipos (Average particular).</li>
-                            </ol>
-                        </li>
-                        <li><strong>Partidos:</strong> Cada partido será a 12 hoyos.</li>
-                        <li><strong>Ritmo:</strong> En cada etapa del torneo se jugarán 2 jornadas y media.</li>
+                        <li><strong>Criterios de Desempate:</strong> Puntos totales > Diferencia de goles > Resultado particular.</li>
                     </ul>
+
+                    <div class="glossary">
+                        <h3 style="font-size: 1.1rem; color: var(--text-main); margin-bottom: 0.5rem;">Glosario de Competición</h3>
+                        <dl>
+                            <dt>Partido</dt>
+                            <dd>Es cuando un equipo juega contra otro (Equipo A vs Equipo B).</dd>
+                            
+                            <dt>Enfrentamiento</dt>
+                            <dd>Son los 3 duelos que hay dentro de un partido (Individual, Fourball y Foursome).</dd>
+                            
+                            <dt>Gol</dt>
+                            <dd>Se obtiene cuando se gana un enfrentamiento completo. Sirven para la clasificación general y desempates.</dd>
+                            
+                            <dt>Hoyo ganado</dt>
+                            <dd>Los hoyos que se ganan dentro de cada enfrentamiento particular para decidir quién se lleva el Gol.</dd>
+                        </dl>
+                    </div>
                 </div>
             </div>
         </section>
@@ -122,7 +149,7 @@
                                 <th class="hide-mobile">G</th>
                                 <th class="hide-mobile">E</th>
                                 <th class="hide-mobile">P</th>
-                                <th>GF</th>
+                                <th>GF (Goles)</th>
                                 <th>GC</th>
                                 <th>DG</th>
                                 <th class="pts-col">Pts</th>
