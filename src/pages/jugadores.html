@@ -87,7 +87,7 @@
                     const res = await fetch('/api/licencias/listado-2026');
                     const listado = await res.json();
                     const totalSpan = document.getElementById('licencia-total');
-                    if (totalSpan) totalSpan.textContent = `${listado.length} Licenciados`;
+                    if (totalSpan) totalSpan.textContent = `${listado.length} Licencias`;
                     const tbody = document.getElementById('roster-table-body');
                     
                     if (!tbody) return;
