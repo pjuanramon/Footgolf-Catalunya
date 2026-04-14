@@ -10,6 +10,56 @@
     <script src="/js/Navbar.js" defer></script>
     <script src="/js/Footer.js" defer></script>
     <link rel="icon" type="image/png" href="/favicon.png?v=1">
+    <style>
+        .ranking-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 2rem;
+            background: white;
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+        }
+
+        .ranking-table th, .ranking-table td {
+            padding: 1rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .ranking-table th {
+            background: #f1f5f9;
+            color: var(--text-light);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+        }
+
+        .ranking-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .ranking-table td:nth-child(2) {
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .pts-col {
+            background: rgba(30, 143, 58, 0.05);
+            font-weight: 800;
+            color: var(--primary-color);
+        }
+
+        @media (max-width: 768px) {
+            .ranking-table {
+                font-size: 0.85rem;
+            }
+            .hide-mobile {
+                display: none;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -31,14 +81,67 @@
                 <div class="split-text text-fade-in">
                     <h2 class="section-title" style="text-align: left;">Sistema de Competición</h2>
                     <ul class="feature-list" style="margin-top: 2rem;">
-                        <li><strong>Grupo Único:</strong> Se jugará a un solo grupo.</li>
+                        <li><strong>Puntuación:</strong> 3 puntos por victoria, 1 por empate.</li>
+                        <li><strong>Grupo Único:</strong> Se jugará a un solo grupo (liga todos contra todos).</li>
                         <li><strong>Fase Final:</strong> Los 2 primeros clasificados pasan directamente a semifinales.</li>
                         <li><strong>Repesca:</strong> Los otros 4 equipos disputan una repesca (3º vs 6º y 4º vs 5º).</li>
+                        <li>
+                            <strong>Criterios de Desempate:</strong>
+                            <ol style="margin-left: 2rem; margin-top: 0.5rem; color: var(--text-light); font-size: 0.9rem;">
+                                <li>Puntos totales.</li>
+                                <li>Diferencia de goles (Average general).</li>
+                                <li>Resultado entre ambos equipos (Average particular).</li>
+                            </ol>
+                        </li>
                         <li><strong>Partidos:</strong> Cada partido será a 12 hoyos.</li>
                         <li><strong>Ritmo:</strong> En cada etapa del torneo se jugarán 2 jornadas y media.</li>
-                        <li><strong>Equipos:</strong> Mínimo 6 jugadores y máximo 12.</li>
-                        <li><strong>Enfrentamientos:</strong> 2 partidos individuales y 2 por parejas (Foursome).</li>
                     </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- CLASIFICACIÓN -->
+        <section class="section" style="background: #f8fafc; border-top: 1px solid var(--border-color);">
+            <div class="container">
+                <h2 class="section-title">Clasificación Actual</h2>
+                <div class="table-container" style="overflow-x: auto;">
+                    <table class="ranking-table">
+                        <thead>
+                            <tr>
+                                <th>Pos</th>
+                                <th style="text-align: left;">Equipo</th>
+                                <th>PJ</th>
+                                <th class="hide-mobile">G</th>
+                                <th class="hide-mobile">E</th>
+                                <th class="hide-mobile">P</th>
+                                <th>GF</th>
+                                <th>GC</th>
+                                <th>DG</th>
+                                <th class="pts-col">Pts</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Ejemplo inicial de tabla vacía -->
+                            <tr>
+                                <td>1</td><td>AC Maktub FG</td><td>0</td><td class="hide-mobile">0</td><td class="hide-mobile">0</td><td class="hide-mobile">0</td><td>0</td><td>0</td><td>0</td><td class="pts-col">0</td>
+                            </tr>
+                            <tr>
+                                <td>2</td><td>Apex FootGolf</td><td>0</td><td class="hide-mobile">0</td><td class="hide-mobile">0</td><td class="hide-mobile">0</td><td>0</td><td>0</td><td>0</td><td class="pts-col">0</td>
+                            </tr>
+                            <tr>
+                                <td>3</td><td>Bacho Kiro Footgolf</td><td>0</td><td class="hide-mobile">0</td><td class="hide-mobile">0</td><td class="hide-mobile">0</td><td>0</td><td>0</td><td>0</td><td class="pts-col">0</td>
+                            </tr>
+                            <tr>
+                                <td>4</td><td>BARCELONA FOOTGOLF</td><td>0</td><td class="hide-mobile">0</td><td class="hide-mobile">0</td><td class="hide-mobile">0</td><td>0</td><td>0</td><td>0</td><td class="pts-col">0</td>
+                            </tr>
+                            <tr>
+                                <td>5</td><td>BUNKER BOYS FootGolf</td><td>0</td><td class="hide-mobile">0</td><td class="hide-mobile">0</td><td class="hide-mobile">0</td><td>0</td><td>0</td><td>0</td><td class="pts-col">0</td>
+                            </tr>
+                            <tr>
+                                <td>6</td><td>JABALI TEAM FOOTGOLF</td><td>0</td><td class="hide-mobile">0</td><td class="hide-mobile">0</td><td class="hide-mobile">0</td><td>0</td><td>0</td><td>0</td><td class="pts-col">0</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </section>
