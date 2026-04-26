@@ -23,14 +23,14 @@ async function sync() {
         // Individuales 5-10
         { id: 5, nombre: 'Etapa 5', fecha: '2026-06-13', ubicacion: 'La Garriga', estado: 'cerrada', tipo: 'individual' },
         { id: 6, nombre: 'Etapa 6', fecha: '2026-07-04', ubicacion: 'La Garriga', estado: 'cerrada', tipo: 'individual' },
-        { id: 7, nombre: 'Etapa 7', fecha: '2026-07-19', ubicacion: 'La Roca', estado: 'cerrada', tipo: 'individual' },
+        { id: 7, nombre: 'Etapa 7', fecha: '2026-07-18', ubicacion: 'La Garriga', estado: 'cerrada', tipo: 'individual' },
         { id: 8, nombre: 'Etapa 8', fecha: '2026-08-01', ubicacion: 'La Garriga', estado: 'cerrada', tipo: 'individual' },
-        { id: 9, nombre: 'Etapa 9', fecha: '2026-09-20', ubicacion: 'La Roca', estado: 'cerrada', tipo: 'individual' },
+        { id: 9, nombre: 'Etapa 9', fecha: '2026-09-19', ubicacion: 'La Garriga', estado: 'cerrada', tipo: 'individual' },
         { id: 10, nombre: 'Etapa 10', fecha: '2026-10-24', ubicacion: 'La Garriga', estado: 'cerrada', tipo: 'individual' },
         
         // Individuales 11-12
-        { id: 11, nombre: 'Etapa 11', fecha: '2026-11-15', ubicacion: 'La Roca', estado: 'cerrada', tipo: 'individual' },
-        { id: 12, nombre: 'Etapa 12', fecha: '2026-11-29', ubicacion: 'La Roca', estado: 'cerrada', tipo: 'individual' },
+        { id: 11, nombre: 'Etapa 11', fecha: '2026-11-14', ubicacion: 'La Garriga', estado: 'cerrada', tipo: 'individual' },
+        { id: 12, nombre: 'Etapa 12', fecha: '2026-11-28', ubicacion: 'La Garriga', estado: 'cerrada', tipo: 'individual' },
         
         // Final Equipos
         { id: 203, nombre: 'Final Campeonato por Equipos', fecha: '2026-12-12', ubicacion: 'La Garriga', estado: 'cerrada', tipo: 'equipos', precio_equipo: 110 }

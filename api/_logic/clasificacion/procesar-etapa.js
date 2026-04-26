@@ -93,7 +93,9 @@ module.exports = async function handler(req, res) {
         if (mode === 'preview') {
             categorias.forEach(cat => {
                 const sorted = puntosEtapa.filter(r => r.puntos[cat] !== undefined).sort((a, b) => {
-                    if (a.score !== b.score) return a.score - b.score;
+                    const scA = Math.round(Number(a.score));
+                    const scB = Math.round(Number(b.score));
+                    if (scA !== scB) return scA - scB;
                     if (a.wonTie && !b.wonTie) return -1;
                     if (!a.wonTie && b.wonTie) return 1;
                     return 0;
@@ -102,7 +104,7 @@ module.exports = async function handler(req, res) {
                 const seenScores = {};
                 sorted.forEach((r, idx) => {
                     if (idx < 5) {
-                        const score = Number(r.score);
+                        const score = Math.round(Number(r.score));
                         // Importante: Si ya tiene wonTie, no lo contamos para detectar "nuevo" empate
                         if (!r.wonTie) {
                             if (!seenScores[score]) seenScores[score] = [];

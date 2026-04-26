@@ -6,7 +6,7 @@ const { supabase } = require('../../../lib/supabase');
  */
 module.exports = async function crearJugador(req, res) {
     try {
-        const { nombre_completo, nickname, email, telefono, fecha_nacimiento, genero, club } = req.body;
+        const { nombre_completo, nickname, email, telefono, fecha_nacimiento, genero, club, anio_licencia } = req.body;
         if (!nombre_completo || !nickname || !email) return res.status(400).json({ error: 'Faltan parámetros' });
 
         const { data, error } = await supabase
@@ -19,7 +19,8 @@ module.exports = async function crearJugador(req, res) {
                 fecha_nacimiento: fecha_nacimiento || null,
                 genero: genero || null,
                 club: club || 'Independiente',
-                tiene_licencia: false // Por defecto sin licencia
+                tiene_licencia: false, // Por defecto sin licencia
+                anio_licencia: parseInt(anio_licencia) || null
             })
             .select();
 

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Footgolf Catalunya</title>
+    <title>Admin v3 - Footgolf Catalunya</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -132,7 +132,7 @@
     </div>
 
     <div class="admin-header">
-        <h1 class="gradient-text">Panel Control 2026</h1>
+        <h1 class="gradient-text">Panel Control 2026 v3</h1>
         <button onclick="logout()" class="btn btn-sm" style="background: var(--admin-border);">Cerrar Sesión</button>
     </div>
 
@@ -307,7 +307,7 @@
                 const matchText = match ? `Nick: <b>${match.name}</b>` : (j.tiene_licencia ? '⚠️ No encontrado' : '');
                 return `
                 <tr>
-                    <td><b>${j.nickname}</b><br><small style="color:${statusColor}">${matchText}</small></td>
+                    <td><b>${j.nickname}</b><br><small style="color:#94a3b8">1ª Lic: ${j.anio_licencia || '?'}</small><br><small style="color:${statusColor}">${matchText}</small></td>
                     <td>${j.nombre_completo || '-'}</td>
                     <td>${j.email}</td>
                     <td>${j.fecha_nacimiento || '-'}</td>
@@ -373,16 +373,48 @@
                     </div>
                     <div id="debugLogs" style="background:#000; color:#4ade80; padding:10px; font-size:0.75rem; margin-top:10px; max-height:100px; overflow:auto; display:none; font-family:monospace"></div>
                 `;
+            } else if (type === 'nuevo-jugador') {
+                content.innerHTML = `
+                    <form onsubmit="handleCrearJugador(event)">
+                        <div style="margin-bottom:1rem">
+                            <label style="display:block; font-size:0.8rem; color:#94a3b8; margin-bottom:0.4rem">Nickname (Obligatorio)</label>
+                            <input type="text" name="nickname" required class="btn" style="width:100%">
+                        </div>
+                        <div style="margin-bottom:1rem">
+                            <label style="display:block; font-size:0.8rem; color:#94a3b8; margin-bottom:0.4rem">Nombre Completo</label>
+                            <input type="text" name="nombre_completo" required class="btn" style="width:100%">
+                        </div>
+                        <div style="margin-bottom:1rem">
+                            <label style="display:block; font-size:0.8rem; color:#94a3b8; margin-bottom:0.4rem">Email</label>
+                            <input type="email" name="email" required class="btn" style="width:100%">
+                        </div>
+                        <div style="margin-bottom:1rem">
+                            <label style="display:block; font-size:0.8rem; color:#94a3b8; margin-bottom:0.4rem">Año Primera Licencia</label>
+                            <input type="number" name="anio_licencia" placeholder="Ej: 2026" class="btn" style="width:100%">
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width:100%">Crear Jugador</button>
+                    </form>
+                `;
             } else if (type === 'editar-jugador') {
                 const j = extra;
                 content.innerHTML = `
                     <form onsubmit="handleModificarJugador(event, '${j.id}')">
-                        <input type="text" name="nickname" value="${j.nickname}" class="btn" style="width:100%; margin-bottom:1rem">
-                        <select name="tiene_licencia" class="btn" style="width:100%; margin-bottom:1rem">
-                            <option value="true" ${j.tiene_licencia?'selected':''}>Licencia SI</option>
-                            <option value="false" ${!j.tiene_licencia?'selected':''}>Licencia NO</option>
-                        </select>
-                        <button type="submit" class="btn btn-primary" style="width:100%">Actualizar</button>
+                        <div style="margin-bottom:1rem">
+                            <label style="display:block; font-size:0.8rem; color:#94a3b8; margin-bottom:0.4rem">Nickname</label>
+                            <input type="text" name="nickname" value="${j.nickname}" class="btn" style="width:100%">
+                        </div>
+                        <div style="margin-bottom:1rem">
+                            <label style="display:block; font-size:0.8rem; color:#94a3b8; margin-bottom:0.4rem">Año Primera Licencia</label>
+                            <input type="number" name="anio_licencia" value="${j.anio_licencia || ''}" placeholder="Ej: 2023" class="btn" style="width:100%">
+                        </div>
+                        <div style="margin-bottom:1rem">
+                            <label style="display:block; font-size:0.8rem; color:#94a3b8; margin-bottom:0.4rem">Licencia Activa (2026)</label>
+                            <select name="tiene_licencia" class="btn" style="width:100%">
+                                <option value="true" ${j.tiene_licencia?'selected':''}>SÍ</option>
+                                <option value="false" ${!j.tiene_licencia?'selected':''}>NO</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width:100%">Actualizar Jugador</button>
                     </form>
                 `;
             }
@@ -493,14 +525,38 @@
             }
         }
 
+        async function handleCrearJugador(e) {
+            e.preventDefault();
+            const res = await api('admin/crear-jugador', 'POST', {
+                nickname: e.target.nickname.value,
+                nombre_completo: e.target.nombre_completo.value,
+                email: e.target.email.value,
+                anio_licencia: e.target.anio_licencia.value
+            });
+            if (res && res.ok) { 
+                alert("Jugador creado correctamente");
+                closeModal(); 
+                renderData(); 
+            } else {
+                alert("Error al crear jugador: " + (res ? res.error : "Conexión fallida"));
+            }
+        }
+
         async function handleModificarJugador(e, id) {
             e.preventDefault();
             const res = await api('admin/modificar-jugador', 'POST', {
                 id,
                 nickname: e.target.nickname.value,
+                anio_licencia: e.target.anio_licencia.value,
                 tiene_licencia: e.target.tiene_licencia.value === 'true'
             });
-            if (res && res.ok) { closeModal(); renderData(); }
+            if (res && res.ok) { 
+                alert("Cambios guardados correctamente");
+                closeModal(); 
+                renderData(); 
+            } else {
+                alert("Error al actualizar: " + (res ? res.error : "Conexión fallida"));
+            }
         }
 
         // Inicio
