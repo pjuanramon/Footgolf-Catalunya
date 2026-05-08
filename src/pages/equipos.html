@@ -518,7 +518,7 @@
                     <div class="status-card">
                         <h3><span style="color: #f59e0b">🟠</span> Licencia Activa (Sin Equipo)</h3>
                         <p style="font-size: 0.85rem; color: var(--text-light); margin-bottom: 1rem;">Jugadores que ya tienen su licencia 2026 pero aún no están asignados a ningún equipo oficial.</p>
-                        <ul>
+                        <ul id="list-agentes-libres">
                             <li>David Rojo Demgra <span class="status-tag" style="background: #fef3c7; color: #92400e;">AGENTE LIBRE</span></li>
                             <li>Joan Torre Rodríguez <span class="status-tag" style="background: #fef3c7; color: #92400e;">AGENTE LIBRE</span></li>
                             <li>Lucía Bernuz Culebras <span class="status-tag" style="background: #fef3c7; color: #92400e;">AGENTE LIBRE</span></li>
@@ -532,7 +532,7 @@
                     <div class="status-card">
                         <h3><span style="color: #ef4444">🔴</span> Pendiente de Licencia (Con Equipo)</h3>
                         <p style="font-size: 0.85rem; color: var(--text-light); margin-bottom: 1rem;">Jugadores asignados a equipos que deben tramitar su licencia 2026 para poder competir.</p>
-                        <ul>
+                        <ul id="list-pendientes-licencia">
                             <li>Juan Carlos <small>(Apex)</small> <span class="status-tag" style="background: #fee2e2; color: #991b1b;">PENDIENTE</span></li>
                             <li>Jack Cid (hijo) <small>(Apex)</small> <span class="status-tag" style="background: #fee2e2; color: #991b1b;">PENDIENTE</span></li>
                             <li>Nicola Perra <small>(BARCELONA)</small> <span class="status-tag" style="background: #fee2e2; color: #991b1b;">PENDIENTE</span></li>
@@ -549,6 +549,87 @@
         </section>
     </main>
 
+    <script>
+        async function updateLicenseStatus() {
+            const listPendientes = document.getElementById('list-pendientes-licencia');
+            const listAgentes = document.getElementById('list-agentes-libres');
+            
+            if (!listPendientes || !listAgentes) return;
+
+            try {
+                // 1. Obtener listado de licencias 2026 desde la API
+                const res = await fetch('/api/licencias/listado-2026');
+                const licenciados = await res.json();
+                
+                // Función para normalizar nombres y comparar
+                const normalize = (str) => str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+                
+                const tieneLicencia = (nombre) => {
+                    const normNombre = normalize(nombre);
+                    return licenciados.some(l => 
+                        normalize(l.nombre).includes(normNombre) || 
+                        normNombre.includes(normalize(l.nombre))
+                    );
+                };
+
+                // 2. Jugadores "Pendientes" (Los que están en equipos pero NO tienen licencia)
+                // Definimos la lista inicial basada en los que pusimos estáticamente, pero los filtramos
+                const jugadoresEnEquipos = [
+                    { nombre: 'Juan Carlos', equipo: 'Apex' },
+                    { nombre: 'Jack Cid (hijo)', equipo: 'Apex' },
+                    { nombre: 'Nicola Perra', equipo: 'BARCELONA' },
+                    { nombre: 'Abisay Padilla', equipo: 'BARCELONA' },
+                    { nombre: 'Albert Navarro', equipo: 'Maktub' },
+                    { nombre: 'Albert Arrebola', equipo: 'Bacho Kiro' },
+                    { nombre: 'Àlex Trallero', equipo: 'Bacho Kiro' },
+                    { nombre: 'Xavi Altimira', equipo: 'Bacho Kiro' },
+                    { nombre: 'Sergio Pizarro', equipo: 'Bacho Kiro' }
+                ];
+
+                const pendientesReales = jugadoresEnEquipos.filter(j => !tieneLicencia(j.nombre));
+
+                if (pendientesReales.length === 0) {
+                    listPendientes.innerHTML = '<li style="color: var(--primary-color); font-weight: 600;">✅ ¡Todos los jugadores tienen licencia!</li>';
+                } else {
+                    listPendientes.innerHTML = pendientesReales.map(j => `
+                        <li>${j.nombre} <small>(${j.equipo})</small> <span class="status-tag" style="background: #fee2e2; color: #991b1b;">PENDIENTE</span></li>
+                    `).join('');
+                }
+
+                // 3. Agentes Libres (Los que TIENEN licencia pero NO están en equipos)
+                // En este caso, la API ya nos devuelve los licenciados. 
+                // Podríamos filtrar de 'licenciados' los que NO están en la lista de equipos.
+                const nombresEnEquipos = [
+                    'Alberto Leiva Cañada', 'Daniel Abril Amador', 'Xavi Leiva Cañada', 'Ivan Luengo Robles', 
+                    'Gastón Masuck Cardozo', 'David Tellez Viana', 'Juan Carlos', 'Jack Cid (hijo)',
+                    'Olivier TRESSENS', 'Jorge Santiago Buqueras', 'JuanRa Perez', 'Eduardo Martin Rodriguez', 
+                    'Nicola Perra', 'Sergi Perez Vilar', 'Abisay Padilla',
+                    'Marc Company Salvat', 'Albert Navarro', 'Sergi Pahisa', 'Mario Morón Sancho', 'Jordi Ortega López', 'Santiago Jimenez Ortiz',
+                    'David Linares Ramos', 'Albert Arrebola', 'Àlex Trallero', 'Marc Arrebola Sans', 'Raúl Linares', 'Xavi Altimira', 'Jesus Pizarro', 'Sergio Pizarro',
+                    'Giacomo Bonacini', 'E.Matarrubia', 'Jordi Martin', 'Juan Medina', 'Luca Rubinacci'
+                ];
+
+                const agentesLibres = licenciados.filter(l => !nombresEnEquipos.some(ne => {
+                    const normNE = normalize(ne);
+                    const normL = normalize(l.nombre);
+                    return normL.includes(normNE) || normNE.includes(normL);
+                }));
+
+                if (agentesLibres.length === 0) {
+                    listAgentes.innerHTML = '<li style="color: #94a3b8; font-style: italic;">No hay agentes libres con licencia actualmente.</li>';
+                } else {
+                    listAgentes.innerHTML = agentesLibres.map(l => `
+                        <li>${l.nombre} <span class="status-tag" style="background: #fef3c7; color: #92400e;">AGENTE LIBRE</span></li>
+                    `).join('');
+                }
+
+            } catch (err) {
+                console.error('Error actualizando estados de licencia:', err);
+            }
+        }
+
+        updateLicenseStatus();
+    </script>
     <app-footer></app-footer>
 </body>
 
