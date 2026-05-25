@@ -68,6 +68,31 @@
             display: none;
         }
 
+        .event-card.past {
+            opacity: 0.62;
+        }
+
+        .event-badge {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 800;
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+            letter-spacing: 0.05em;
+            margin-top: 0.4rem;
+            text-transform: uppercase;
+        }
+
+        .badge-done { background: #e2e8f0; color: #64748b; }
+        .badge-next { background: rgba(30,143,58,0.15); color: var(--primary-color); animation: pulse-badge 2s infinite; }
+        .badge-copa { background: rgba(255,215,0,0.2); color: #78350f; }
+        .badge-final { background: rgba(30,143,58,0.2); color: var(--primary-color); }
+
+        @keyframes pulse-badge {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.55; }
+        }
+
         @media (max-width: 640px) {
             .filter-container {
                 flex-direction: column;
@@ -94,158 +119,186 @@
                     <button class="btn-filter" id="btn-national" onclick="showCalendar('national')">Calendario Nacional</button>
                 </div>
 
+                <!-- CALENDARIO CATALÁN -->
                 <div id="catalan-calendar">
                     <div class="calendar-grid">
-                    <!-- Event 1 -->
-                    <a href="inscripciones.html" class="event-card dark-section" style="text-decoration: none; display: flex;">
-                        <span class="date"><span style="font-size: 1.5rem; display: block;">24</span>Ene</span>
-                        <div class="event-info">
-                            <h4>Etapa 1</h4>
-                            <p>La Garriga</p>
-                            <p class="text-light" style="margin-top:0.5rem; font-size:0.8rem;">Modalidad: Individual</p>
-                        </div>
-                    </a>
-                    <!-- Event 2 -->
-                    <a href="inscripciones.html" class="event-card dark-section" style="text-decoration: none; display: flex;">
-                        <span class="date"><span style="font-size: 1.5rem; display: block;">28</span>Feb</span>
-                        <div class="event-info">
-                            <h4>Etapa 2</h4>
-                            <p>La Garriga</p>
-                            <p class="text-light" style="margin-top:0.5rem; font-size:0.8rem;">Modalidad: Individual</p>
-                        </div>
-                    </a>
-                    <!-- Event 3 -->
-                    <a href="inscripciones.html" class="event-card dark-section" style="text-decoration: none; display: flex;">
-                        <span class="date"><span style="font-size: 1.5rem; display: block;">15</span>Mar</span>
-                        <div class="event-info">
-                            <h4>Etapa 3</h4>
-                            <p>La Roca</p>
-                            <p class="text-light" style="margin-top:0.5rem; font-size:0.8rem;">Modalidad: Individual</p>
-                        </div>
-                    </a>
-                    <!-- Event 4 -->
-                    <a href="inscripciones.html" class="event-card dark-section" style="text-decoration: none; display: flex;">
-                        <span class="date"><span style="font-size: 1.5rem; display: block;">12</span>Abr</span>
-                        <div class="event-info">
-                            <h4>Etapa 4</h4>
-                            <p>La Roca</p>
-                            <p class="text-light" style="margin-top:0.5rem; font-size:0.8rem;">Modalidad: Individual</p>
-                        </div>
-                    </a>
-                    <!-- Event 5 -->
-                    <a href="inscripciones.html" class="event-card dark-section" style="text-decoration: none; display: flex;">
-                        <span class="date" style="background: var(--secondary-color);"><span
-                                style="font-size: 1.5rem; display: block;">10</span>May</span>
-                        <div class="event-info">
-                            <h4>Camp. Equipos - Jornada 1</h4>
-                            <p>La Roca</p>
-                            <p class="text-light" style="margin-top:0.5rem; font-size:0.8rem;">Modalidad: Por Equipos
-                            </p>
-                        </div>
-                    </a>
-                    <!-- Event 6 -->
-                    <a href="inscripciones.html" class="event-card dark-section" style="text-decoration: none; display: flex;">
-                        <span class="date" style="background: var(--secondary-color);"><span
-                                style="font-size: 1.5rem; display: block;">30</span>May</span>
-                        <div class="event-info">
-                            <h4>Camp. Equipos - Jornada 2</h4>
-                            <p>La Garriga</p>
-                            <p class="text-light" style="margin-top:0.5rem; font-size:0.8rem;">Modalidad: Por Equipos
-                            </p>
-                        </div>
-                    </a>
-                    <!-- Event 7 -->
-                    <a href="inscripciones.html" class="event-card dark-section" style="text-decoration: none; display: flex;">
-                        <span class="date"><span style="font-size: 1.5rem; display: block;">13</span>Jun</span>
-                        <div class="event-info">
-                            <h4>Etapa 5</h4>
-                            <p>La Garriga</p>
-                            <p class="text-light" style="margin-top:0.5rem; font-size:0.8rem;">Modalidad: Individual</p>
-                        </div>
-                    </a>
-                    <!-- Event 8 -->
-                    <a href="inscripciones.html" class="event-card dark-section" style="text-decoration: none; display: flex;">
-                        <span class="date"><span style="font-size: 1.5rem; display: block;">04</span>Jul</span>
-                        <div class="event-info">
-                            <h4>Etapa 6</h4>
-                            <p>La Garriga</p>
-                            <p class="text-light" style="margin-top:0.5rem; font-size:0.8rem;">Modalidad: Individual</p>
-                        </div>
-                    </a>
-                    <!-- Event 9 -->
-                    <a href="inscripciones.html" class="event-card dark-section" style="text-decoration: none; display: flex;">
-                        <span class="date"><span style="font-size: 1.5rem; display: block;">18</span>Jul</span>
-                        <div class="event-info">
-                            <h4>Etapa 7</h4>
-                            <p>La Garriga</p>
-                            <p class="text-light" style="margin-top:0.5rem; font-size:0.8rem;">Modalidad: Individual</p>
-                        </div>
-                    </a>
-                    <!-- Event 10 -->
-                    <a href="inscripciones.html" class="event-card dark-section" style="text-decoration: none; display: flex;">
-                        <span class="date"><span style="font-size: 1.5rem; display: block;">01</span>Ago</span>
-                        <div class="event-info">
-                            <h4>Etapa 8</h4>
-                            <p>La Garriga</p>
-                            <p class="text-light" style="margin-top:0.5rem; font-size:0.8rem;">Modalidad: Individual</p>
-                        </div>
-                    </a>
-                    <!-- Event 11 -->
-                    <a href="inscripciones.html" class="event-card dark-section" style="text-decoration: none; display: flex;">
-                        <span class="date"><span style="font-size: 1.5rem; display: block;">19</span>Sep</span>
-                        <div class="event-info">
-                            <h4>Etapa 9</h4>
-                            <p>La Garriga</p>
-                            <p class="text-light" style="margin-top:0.5rem; font-size:0.8rem;">Modalidad: Individual</p>
-                        </div>
-                    </a>
-                    <!-- Event 12 -->
-                    <a href="inscripciones.html" class="event-card dark-section" style="text-decoration: none; display: flex;">
-                        <span class="date"><span style="font-size: 1.5rem; display: block;">24</span>Oct</span>
-                        <div class="event-info">
-                            <h4>Etapa 10</h4>
-                            <p>La Garriga</p>
-                            <p class="text-light" style="margin-top:0.5rem; font-size:0.8rem;">Modalidad: Individual</p>
-                        </div>
-                    </a>
-                    <!-- Event 13 -->
-                    <a href="inscripciones.html" class="event-card dark-section" style="text-decoration: none; display: flex;">
-                        <span class="date"><span style="font-size: 1.5rem; display: block;">14</span>Nov</span>
-                        <div class="event-info">
-                            <h4>Etapa 11</h4>
-                            <p>La Garriga</p>
-                            <p class="text-light" style="margin-top:0.5rem; font-size:0.8rem;">Modalidad: Individual</p>
-                        </div>
-                    </a>
-                    <!-- Event 14 -->
-                    <a href="inscripciones.html" class="event-card dark-section" style="text-decoration: none; display: flex;">
-                        <span class="date"><span style="font-size: 1.5rem; display: block;">28</span>Nov</span>
-                        <div class="event-info">
-                            <h4>Etapa 12</h4>
-                            <p>La Garriga</p>
-                            <p class="text-light" style="margin-top:0.5rem; font-size:0.8rem;">Modalidad: Individual</p>
-                        </div>
-                    </a>
-                    <!-- Event 15 Final -->
-                    <a href="inscripciones.html" class="event-card dark-section" style="text-decoration: none; display: flex; border: 1px solid var(--secondary-color);">
-                        <span class="date"
-                            style="background: var(--bg-dark); color: var(--secondary-color); border-right: 1px solid var(--secondary-color);"><span
-                                style="font-size: 1.5rem; display: block;">12</span>Dic</span>
-                        <div class="event-info">
-                            <h4 style="color: var(--secondary-color);">Final Campeonato por Equipos</h4>
-                            <p>La Garriga</p>
-                            <p class="text-light" style="margin-top:0.5rem; font-size:0.8rem;">Modalidad: Equipos Final
-                            </p>
-                        </div>
-                    </a>
-                </div>
+
+                        <!-- Etapa 1 - FINALIZADA -->
+                        <a href="inscripciones.html" class="event-card dark-section past" style="text-decoration: none; display: flex;">
+                            <span class="date"><span style="font-size: 1.5rem; display: block;">24</span>Ene</span>
+                            <div class="event-info">
+                                <h4>Etapa 1</h4>
+                                <p>La Garriga</p>
+                                <p class="text-light" style="margin-top:0.25rem; font-size:0.8rem;">Modalidad: Individual</p>
+                                <span class="event-badge badge-done">✓ Finalizada</span>
+                            </div>
+                        </a>
+
+                        <!-- Etapa 2 - FINALIZADA -->
+                        <a href="inscripciones.html" class="event-card dark-section past" style="text-decoration: none; display: flex;">
+                            <span class="date"><span style="font-size: 1.5rem; display: block;">28</span>Feb</span>
+                            <div class="event-info">
+                                <h4>Etapa 2</h4>
+                                <p>La Garriga</p>
+                                <p class="text-light" style="margin-top:0.25rem; font-size:0.8rem;">Modalidad: Individual</p>
+                                <span class="event-badge badge-done">✓ Finalizada</span>
+                            </div>
+                        </a>
+
+                        <!-- Etapa 3 - FINALIZADA -->
+                        <a href="inscripciones.html" class="event-card dark-section past" style="text-decoration: none; display: flex;">
+                            <span class="date"><span style="font-size: 1.5rem; display: block;">15</span>Mar</span>
+                            <div class="event-info">
+                                <h4>Etapa 3</h4>
+                                <p>La Garriga</p>
+                                <p class="text-light" style="margin-top:0.25rem; font-size:0.8rem;">Modalidad: Individual</p>
+                                <span class="event-badge badge-done">✓ Finalizada</span>
+                            </div>
+                        </a>
+
+                        <!-- Etapa 4 - FINALIZADA -->
+                        <a href="inscripciones.html" class="event-card dark-section past" style="text-decoration: none; display: flex;">
+                            <span class="date"><span style="font-size: 1.5rem; display: block;">12</span>Abr</span>
+                            <div class="event-info">
+                                <h4>Etapa 4</h4>
+                                <p>La Garriga</p>
+                                <p class="text-light" style="margin-top:0.25rem; font-size:0.8rem;">Modalidad: Individual</p>
+                                <span class="event-badge badge-done">✓ Finalizada</span>
+                            </div>
+                        </a>
+
+                        <!-- Camp. Equipos J1 - FINALIZADA -->
+                        <a href="equipos.html" class="event-card dark-section past" style="text-decoration: none; display: flex;">
+                            <span class="date" style="background: var(--secondary-color);"><span style="font-size: 1.5rem; display: block;">10</span>May</span>
+                            <div class="event-info">
+                                <h4>Camp. Equipos · Jornada 1</h4>
+                                <p>La Garriga</p>
+                                <p class="text-light" style="margin-top:0.25rem; font-size:0.8rem;">Modalidad: Por Equipos</p>
+                                <span class="event-badge badge-done">✓ Finalizada</span>
+                            </div>
+                        </a>
+
+                        <!-- Camp. Equipos J2 - PRÓXIMA -->
+                        <a href="equipos.html" class="event-card dark-section" style="text-decoration: none; display: flex; border: 1px solid var(--secondary-color); box-shadow: 0 0 18px rgba(30,143,58,0.2);">
+                            <span class="date" style="background: var(--secondary-color);"><span style="font-size: 1.5rem; display: block;">30</span>May</span>
+                            <div class="event-info">
+                                <h4>Camp. Equipos · Jornada 2</h4>
+                                <p>La Garriga</p>
+                                <p class="text-light" style="margin-top:0.25rem; font-size:0.8rem;">Modalidad: Por Equipos</p>
+                                <span class="event-badge badge-next">⚡ Próxima</span>
+                            </div>
+                        </a>
+
+                        <!-- Etapa 5 -->
+                        <a href="inscripciones.html" class="event-card dark-section" style="text-decoration: none; display: flex;">
+                            <span class="date"><span style="font-size: 1.5rem; display: block;">13</span>Jun</span>
+                            <div class="event-info">
+                                <h4>Etapa 5</h4>
+                                <p>La Garriga</p>
+                                <p class="text-light" style="margin-top:0.25rem; font-size:0.8rem;">Modalidad: Individual</p>
+                            </div>
+                        </a>
+
+                        <!-- Etapa 6 -->
+                        <a href="inscripciones.html" class="event-card dark-section" style="text-decoration: none; display: flex;">
+                            <span class="date"><span style="font-size: 1.5rem; display: block;">04</span>Jul</span>
+                            <div class="event-info">
+                                <h4>Etapa 6</h4>
+                                <p>La Garriga</p>
+                                <p class="text-light" style="margin-top:0.25rem; font-size:0.8rem;">Modalidad: Individual</p>
+                            </div>
+                        </a>
+
+                        <!-- Etapa 7 -->
+                        <a href="inscripciones.html" class="event-card dark-section" style="text-decoration: none; display: flex;">
+                            <span class="date"><span style="font-size: 1.5rem; display: block;">18</span>Jul</span>
+                            <div class="event-info">
+                                <h4>Etapa 7</h4>
+                                <p>La Garriga</p>
+                                <p class="text-light" style="margin-top:0.25rem; font-size:0.8rem;">Modalidad: Individual</p>
+                            </div>
+                        </a>
+
+                        <!-- Etapa 8 -->
+                        <a href="inscripciones.html" class="event-card dark-section" style="text-decoration: none; display: flex;">
+                            <span class="date"><span style="font-size: 1.5rem; display: block;">01</span>Ago</span>
+                            <div class="event-info">
+                                <h4>Etapa 8</h4>
+                                <p>La Garriga</p>
+                                <p class="text-light" style="margin-top:0.25rem; font-size:0.8rem;">Modalidad: Individual</p>
+                            </div>
+                        </a>
+
+                        <!-- Etapa 9 -->
+                        <a href="inscripciones.html" class="event-card dark-section" style="text-decoration: none; display: flex;">
+                            <span class="date"><span style="font-size: 1.5rem; display: block;">19</span>Sep</span>
+                            <div class="event-info">
+                                <h4>Etapa 9</h4>
+                                <p>La Garriga</p>
+                                <p class="text-light" style="margin-top:0.25rem; font-size:0.8rem;">Modalidad: Individual</p>
+                            </div>
+                        </a>
+
+                        <!-- Copa Catalana -->
+                        <a href="inscripciones.html" class="event-card dark-section" style="text-decoration: none; display: flex; border: 1px solid #ffd700;">
+                            <span class="date" style="background: #ffd700; color: #000;"><span style="font-size: 1.5rem; display: block;">3-4</span>Oct</span>
+                            <div class="event-info">
+                                <h4 style="color: #ffd700;">Copa Catalana</h4>
+                                <p>La Garriga</p>
+                                <p class="text-light" style="margin-top:0.25rem; font-size:0.8rem;">Modalidad: Match Play</p>
+                                <span class="event-badge badge-copa">🏆 Especial</span>
+                            </div>
+                        </a>
+
+                        <!-- Etapa 10 -->
+                        <a href="inscripciones.html" class="event-card dark-section" style="text-decoration: none; display: flex;">
+                            <span class="date"><span style="font-size: 1.5rem; display: block;">24</span>Oct</span>
+                            <div class="event-info">
+                                <h4>Etapa 10</h4>
+                                <p>La Garriga</p>
+                                <p class="text-light" style="margin-top:0.25rem; font-size:0.8rem;">Modalidad: Individual</p>
+                            </div>
+                        </a>
+
+                        <!-- Etapa 11 -->
+                        <a href="inscripciones.html" class="event-card dark-section" style="text-decoration: none; display: flex;">
+                            <span class="date"><span style="font-size: 1.5rem; display: block;">07</span>Nov</span>
+                            <div class="event-info">
+                                <h4>Etapa 11</h4>
+                                <p>La Garriga</p>
+                                <p class="text-light" style="margin-top:0.25rem; font-size:0.8rem;">Modalidad: Individual</p>
+                            </div>
+                        </a>
+
+                        <!-- Etapa 12 -->
+                        <a href="inscripciones.html" class="event-card dark-section" style="text-decoration: none; display: flex;">
+                            <span class="date"><span style="font-size: 1.5rem; display: block;">14</span>Nov</span>
+                            <div class="event-info">
+                                <h4>Etapa 12</h4>
+                                <p>La Garriga</p>
+                                <p class="text-light" style="margin-top:0.25rem; font-size:0.8rem;">Modalidad: Individual</p>
+                            </div>
+                        </a>
+
+                        <!-- Final Campeonato por Equipos -->
+                        <a href="equipos.html" class="event-card dark-section" style="text-decoration: none; display: flex; border: 1px solid var(--secondary-color);">
+                            <span class="date" style="background: var(--bg-dark); color: var(--secondary-color); border-right: 1px solid var(--secondary-color);"><span style="font-size: 1.5rem; display: block;">12</span>Dic</span>
+                            <div class="event-info">
+                                <h4 style="color: var(--secondary-color);">Final Campeonato por Equipos</h4>
+                                <p>La Garriga</p>
+                                <p class="text-light" style="margin-top:0.25rem; font-size:0.8rem;">Modalidad: Equipos Final</p>
+                                <span class="event-badge badge-final">🏆 Gran Final</span>
+                            </div>
+                        </a>
+
+                    </div>
                 </div>
                 <!-- End Catalan Calendar -->
 
-                <!-- National Calendar -->
+                <!-- CALENDARIO NACIONAL -->
                 <div id="national-calendar">
                     <div class="calendar-grid">
-                        <!-- Event 1 -->
+                        <!-- Etapa Nacional 1 -->
                         <div class="event-card dark-section national-card" style="display: flex;">
                             <span class="date"><span style="font-size: 1.5rem; display: block;">13-15</span>Feb</span>
                             <div class="event-info">
@@ -254,7 +307,7 @@
                                 <p class="text-light" style="margin-top:0.5rem; font-size:0.8rem;">Candeleda, Ávila (CyL)</p>
                             </div>
                         </div>
-                        <!-- Event 2 -->
+                        <!-- Etapa Nacional 2 -->
                         <div class="event-card dark-section national-card" style="display: flex;">
                             <span class="date"><span style="font-size: 1.5rem; display: block;">6-7</span>Mar</span>
                             <div class="event-info">
@@ -263,7 +316,7 @@
                                 <p class="text-light" style="margin-top:0.5rem; font-size:0.8rem;">Calatayud, Zaragoza (Aragón)</p>
                             </div>
                         </div>
-                        <!-- Event 3 -->
+                        <!-- Etapa Nacional 3 -->
                         <div class="event-card dark-section national-card" style="display: flex;">
                             <span class="date"><span style="font-size: 1.5rem; display: block;">17-19</span>Abr</span>
                             <div class="event-info">
@@ -272,7 +325,7 @@
                                 <p class="text-light" style="margin-top:0.5rem; font-size:0.8rem;">Pantón, Lugo (Galicia)</p>
                             </div>
                         </div>
-                        <!-- Event 4-5 -->
+                        <!-- Etapas Nacionales 4-5 -->
                         <div class="event-card dark-section national-card blue-stage" style="display: flex;">
                             <span class="date"><span style="font-size: 1.5rem; display: block;">10-12</span>Jul</span>
                             <div class="event-info">
@@ -281,7 +334,7 @@
                                 <p class="text-light" style="margin-top:0.5rem; font-size:0.8rem;">Molina de Segura, Murcia</p>
                             </div>
                         </div>
-                        <!-- Event 6 -->
+                        <!-- Etapa Nacional 6 -->
                         <div class="event-card dark-section national-card" style="display: flex;">
                             <span class="date"><span style="font-size: 1.5rem; display: block;">7-9</span>Ago</span>
                             <div class="event-info">
@@ -290,7 +343,7 @@
                                 <p class="text-light" style="margin-top:0.5rem; font-size:0.8rem;">Adeje, Tenerife (Islas Canarias)</p>
                             </div>
                         </div>
-                        <!-- Event 7-8 -->
+                        <!-- Etapas Nacionales 7-8 -->
                         <div class="event-card dark-section national-card blue-stage" style="display: flex;">
                             <span class="date"><span style="font-size: 1.5rem; display: block;">3-6</span>Sep</span>
                             <div class="event-info">
@@ -299,7 +352,7 @@
                                 <p class="text-light" style="margin-top:0.5rem; font-size:0.8rem;">Benalup, Cádiz (Andalucía)</p>
                             </div>
                         </div>
-                        <!-- Event 9 -->
+                        <!-- Etapa Nacional 9 -->
                         <div class="event-card dark-section national-card" style="display: flex;">
                             <span class="date"><span style="font-size: 1.5rem; display: block;">16-18</span>Oct</span>
                             <div class="event-info">
@@ -308,7 +361,7 @@
                                 <p class="text-light" style="margin-top:0.5rem; font-size:0.8rem;">Salamanca (Castilla y León)</p>
                             </div>
                         </div>
-                        <!-- Event 10 -->
+                        <!-- Etapa Nacional 10 -->
                         <div class="event-card dark-section national-card" style="display: flex;">
                             <span class="date"><span style="font-size: 1.5rem; display: block;">20-22</span>Nov</span>
                             <div class="event-info">
@@ -319,6 +372,7 @@
                         </div>
                     </div>
                 </div>
+                <!-- End National Calendar -->
 
                 <script>
                     function showCalendar(type) {

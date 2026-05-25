@@ -142,7 +142,10 @@
                     async function loadRankings() {
                         try {
                             const res = await fetch('/api/etapas/listado?estado=finalizada');
-                            const etapas = await res.json();
+                            let etapas = await res.json();
+                            
+                            // Filtrar solo las etapas individuales que tienen clasificación procesada
+                            etapas = etapas.filter(e => e.tipo === 'individual' && e.archivo_excel);
                             
                             if (etapas.length === 0) {
                                 document.getElementById('jornada-text').textContent = "Aún no hay clasificaciones disponibles.";

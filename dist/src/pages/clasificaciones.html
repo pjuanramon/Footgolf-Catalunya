@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Clasificaciones - Footgolf Catalunya</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <script src="/js/Navbar.js" defer></script>
     <script src="/js/Footer.js" defer></script>
     <style>
@@ -142,7 +142,10 @@
                     async function loadRankings() {
                         try {
                             const res = await fetch('/api/etapas/listado?estado=finalizada');
-                            const etapas = await res.json();
+                            let etapas = await res.json();
+                            
+                            // Filtrar solo las etapas individuales que tienen clasificación procesada
+                            etapas = etapas.filter(e => e.tipo === 'individual' && e.archivo_excel);
                             
                             if (etapas.length === 0) {
                                 document.getElementById('jornada-text').textContent = "Aún no hay clasificaciones disponibles.";
