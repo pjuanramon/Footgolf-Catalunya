@@ -389,6 +389,75 @@
             margin-top: 1rem;
             align-self: flex-start;
         }
+
+        /* Estilos de la tabla de obstrucciones */
+        .obs-table-container {
+            width: 100%;
+            overflow-x: auto;
+            margin-top: 2rem;
+            border-radius: 1rem;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-md);
+            background: white;
+        }
+
+        .obs-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.95rem;
+        }
+
+        .obs-table th, .obs-table td {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
+        }
+
+        .obs-table th {
+            background-color: var(--bg-dark);
+            color: white;
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+        }
+
+        .obs-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .obs-table tr:hover {
+            background-color: #f8fafc;
+        }
+
+        .badge {
+            padding: 0.35rem 0.9rem;
+            border-radius: 9999px;
+            font-weight: 800;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .badge-yes {
+            background-color: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        .badge-no {
+            background-color: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        .badge-warning {
+            background-color: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fde68a;
+        }
     </style>
 </head>
 
@@ -516,119 +585,75 @@
                 </div>
             </div>
 
-            <!-- CONTENIDO 4: GUÍA DE OBSTRUCCIONES INTERACTIVA -->
+            <!-- CONTENIDO 4: GUÍA DE OBSTRUCCIONES -->
             <div id="obstructions" class="rules-tab-content">
                 <div class="info-card">
-                    <h2>⚠️ Guía Interactiva de Obstrucciones e Impedimentos</h2>
-                    <p style="color: var(--text-light); font-size: 1.1rem; max-width: 800px; margin-bottom: 2rem;">¿Qué hacer cuando tu balón queda cerca de una piedra, un aspersor, un charco o una estaca? Navega por las categorías para conocer las reglas de alivio oficiales de la FIFG traducidas al español.</p>
+                    <h2>⚠️ Guía de Obstrucciones e Impedimentos</h2>
+                    <p style="color: var(--text-light); font-size: 1.1rem; max-width: 800px; margin-bottom: 1.5rem;">Tabla comparativa de referencia rápida para resolver dudas sobre alivios, penalizaciones e impedimentos en el campo de Footgolf de acuerdo con el reglamento oficial de la FIFG.</p>
 
-                    <div class="obs-container">
-                        <!-- Sidebar de Obstrucciones -->
-                        <aside class="obs-sidebar">
-                            <button class="obs-btn active" onclick="switchObsTab(event, 'obs-loose')">🍂 Impedimentos Sueltos</button>
-                            <button class="obs-btn" onclick="switchObsTab(event, 'obs-movable')">🗑️ Obstrucciones Móviles</button>
-                            <button class="obs-btn" onclick="switchObsTab(event, 'obs-abnormal')">💧 Cond. Anormales</button>
-                            <button class="obs-btn" onclick="switchObsTab(event, 'obs-unsafe')">🐝 Cond. Inseguras</button>
-                            <button class="obs-btn" onclick="switchObsTab(event, 'obs-immovable')">🚧 Obstrucciones Fijas</button>
-                            <button class="obs-btn" onclick="switchObsTab(event, 'obs-tee-ob')">⛳ Salidas y Límites</button>
-                        </aside>
-
-                        <!-- Área de Contenido de Obstrucciones -->
-                        <div class="obs-content-area">
-                            <!-- 1. Impedimentos Sueltos -->
-                            <div id="obs-loose" class="obs-section-content active">
-                                <h3 class="obs-title">🍂 Impedimentos Sueltos (Loose Impediments)</h3>
-                                <p class="obs-desc">Son objetos naturales que no están fijos ni creciendo, ni adheridos al balón o al terreno. Ejemplos comunes: hojas secas, ramas caídas, piedras sueltas, insectos o arena sobre el green.</p>
-                                
-                                <div class="rule-box">
-                                    <h4>Regla de Alivio</h4>
-                                    <p><strong>Alivio Gratuito:</strong> Puedes retirar cualquier impedimento suelto en cualquier parte del campo sin penalización. No importa si está en el búnker, en el fairway o sobre el green.</p>
-                                </div>
-
-                                <div class="rule-box" style="border-left-color: #ef4444;">
-                                    <h4>⚠️ ¡Atención! Riesgo de Penalidad</h4>
-                                    <p>Si al retirar el impedimento suelto haces que tu balón se mueva (excepto en el green), incurres en <strong>1 golpe de penalidad</strong> y debes reponer el balón en su posición original antes de patear.</p>
-                                </div>
-                            </div>
-
-                            <!-- 2. Obstrucciones Móviles -->
-                            <div id="obs-movable" class="obs-section-content">
-                                <h3 class="obs-title">🗑️ Obstrucciones Movibles (Movable Obstructions)</h3>
-                                <p class="obs-desc">Cualquier objeto artificial (creado por el hombre) que se pueda mover con un esfuerzo razonable y sin dañar el campo. Ejemplos: rastrillos de búnker, botellas de agua, latas, estacas de distancia removibles o bolsas de basura.</p>
-                                
-                                <div class="rule-box">
-                                    <h4>Regla de Alivio</h4>
-                                    <p><strong>Alivio Gratuito:</strong> Se pueden retirar sin penalización en cualquier parte del campo. Si el balón se mueve <em>directamente debido a la retirada</em> de la obstrucción móvil, no hay penalidad; simplemente repón el balón en su punto original.</p>
-                                </div>
-
-                                <div class="rule-box">
-                                    <h4>Balón dentro o sobre la obstrucción</h4>
-                                    <p>Si el balón yace dentro o sobre un objeto movible (como una toalla o un rastrillo), puedes levantar el balón, retirar la obstrucción móvil y dropear el balón en el punto exacto directamente debajo de donde estaba, sin penalización.</p>
-                                </div>
-                            </div>
-
-                            <!-- 3. Condiciones Anormales del Campo -->
-                            <div id="obs-abnormal" class="obs-section-content">
-                                <h3 class="obs-title">💧 Condiciones Anormales (Abnormal Course Conditions)</h3>
-                                <p class="obs-desc">Incluye agua temporal (charcos acumulados por lluvia), terreno en reparación (marcado con líneas blancas o estacas azules) y agujeros o montículos creados por animales excavadores.</p>
-                                
-                                <div class="rule-box">
-                                    <h4>Regla de Alivio</h4>
-                                    <p><strong>Alivio Gratuito:</strong> Tienes derecho a alivio si tu balón toca la condición anormal, o si esta interfiere físicamente con tu zona de golpe o tu swing.</p>
-                                </div>
-
-                                <div class="rule-box">
-                                    <h4>Procedimiento de Alivio</h4>
-                                    <p>Encuentra el <strong>punto más cercano de alivio completo</strong> (donde la interferencia desaparece y que no esté más cerca del hoyo). Dropea el balón a la distancia de <strong>un palo</strong> de ese punto, en la misma zona del campo (fairway, rough, etc.).</p>
-                                </div>
-                            </div>
-
-                            <!-- 4. Condiciones Inseguras -->
-                            <div id="obs-unsafe" class="obs-section-content">
-                                <h3 class="obs-title">🐝 Condiciones Inseguras o Peligrosas (Unsafe Conditions)</h3>
-                                <p class="obs-desc">Situaciones donde jugar el balón tal como yace pondría en riesgo físico grave al jugador. Ejemplos: presencia de un enjambre de abejas o avispas, caimanes, serpientes venenosas o tormentas con actividad eléctrica.</p>
-                                
-                                <div class="rule-box">
-                                    <h4>Regla de Alivio por Seguridad</h4>
-                                    <p><strong>Alivio Gratuito Obligatorio:</strong> Por tu propia seguridad, el juego se detiene inmediatamente ante tormentas eléctricas. Ante animales peligrosos, tienes derecho a alivio gratuito tomando el punto de alivio más cercano fuera de peligro, sin penalización.</p>
-                                </div>
-                            </div>
-
-                            <!-- 5. Obstrucciones Inamovibles -->
-                            <div id="obs-immovable" class="obs-section-content">
-                                <h3 class="obs-title">🚧 Obstrucciones Inamovibles (Immovable Obstructions)</h3>
-                                <p class="obs-desc">Cualquier objeto artificial fijo que no se pueda mover fácilmente. Ejemplos comunes en el campo de golf: cabezales de aspersores, cajas de conexiones eléctricas, caminos pavimentados, puentes fijos, bancos de madera o casetas.</p>
-                                
-                                <div class="rule-box">
-                                    <h4>¿Cuándo aplica el Alivio?</h4>
-                                    <p>Aplica cuando hay interferencia física. Esto es, si el balón toca la obstrucción, o si la obstrucción interfiere con el movimiento de tu pierna al patear o con tu recorrido físico de golpeo.</p>
-                                </div>
-
-                                <div class="rule-box" style="border-left-color: #ef4444;">
-                                    <h4>⚠️ ¡Nota Importante! Línea de Juego</h4>
-                                    <p>No tienes alivio si la obstrucción inamovible solo está en tu <strong>línea de juego</strong> (es decir, frente a ti pero sin interferir físicamente con tu balón o tu cuerpo). Debes patear rodeando o sobre el objeto.</p>
-                                </div>
-                            </div>
-
-                            <!-- 6. Marcas de Salida y Fuera de Límites -->
-                            <div id="obs-tee-ob" class="obs-section-content">
-                                <h3 class="obs-title">⛳ Marcas de Salida y Fuera de Límites</h3>
-                                <p class="obs-desc">Reglas especiales que aplican a las estacas y límites físicos del campo de footgolf.</p>
-                                
-                                <div class="rule-box">
-                                    <h4>Marcadores de Salida (Tee Markers)</h4>
-                                    <p>Son considerados objetos fijos durante el tiro de salida del hoyo. No se pueden mover para facilitar la salida. Si interfiere físicamente con un golpe posterior, sí tienes derecho a alivio gratuito (excepto si estás pateando la salida misma).</p>
-                                </div>
-
-                                <div class="rule-box" style="border-left-color: #ef4444;">
-                                    <h4>Fuera de Límites (Out of Bounds - OB)</h4>
-                                    <p>Las estacas blancas marcan el límite del campo de juego. Son consideradas <strong>fijas</strong> y no se permite alivio de ellas. Si tu balón sale del campo (OB), debes reponerlo en el punto del golpe anterior aplicando la regla de <strong>golpe y distancia</strong> (repetir golpe sumando 1 golpe de penalidad).</p>
-                                </div>
-                            </div>
-
-                            <!-- Badge Dinámico inferior -->
-                            <span class="tip-badge">Regla Oficial FIFG 2026</span>
-                        </div>
+                    <div class="obs-table-container">
+                        <table class="obs-table">
+                            <thead>
+                                <tr>
+                                    <th>Situación / Tipo</th>
+                                    <th>Definición y Ejemplos</th>
+                                    <th>¿Se puede mover?</th>
+                                    <th>¿Alivio gratuito?</th>
+                                    <th>Procedimiento de Alivio</th>
+                                    <th>¿Penalidad si se mueve el balón?</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>🍂 Impedimentos Sueltos</strong><br><span style="font-size: 0.8rem; color: var(--text-light);">Loose Impediments</span></td>
+                                    <td>Objetos naturales sueltos: Hojas, ramas secas, piedras caídas, insectos, arena en el green.</td>
+                                    <td><span class="badge badge-yes">SÍ</span></td>
+                                    <td><span class="badge badge-yes">SÍ</span></td>
+                                    <td>Se pueden retirar del campo con cuidado. Si están en el green, se puede barrer la línea de juego.</td>
+                                    <td><span class="badge badge-warning">1 GOLPE*</span><br><span style="font-size: 0.75rem; color: var(--text-light);">*Sin penalidad si ocurre dentro del green. Reponer el balón.</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>🗑️ Obstrucciones Móviles</strong><br><span style="font-size: 0.8rem; color: var(--text-light);">Movable Obstructions</span></td>
+                                    <td>Objetos artificiales móviles: Rastrillos, botellas de agua, latas, estacas de distancia removibles.</td>
+                                    <td><span class="badge badge-yes">SÍ</span></td>
+                                    <td><span class="badge badge-yes">SÍ</span></td>
+                                    <td>Se retira el objeto. Si el balón se mueve al quitarlo, se repone sin penalidad en su punto original.</td>
+                                    <td><span class="badge badge-no">NO</span><br><span style="font-size: 0.75rem; color: var(--text-light);">Reponer el balón sin castigo.</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>🚧 Obstrucciones Fijas</strong><br><span style="font-size: 0.8rem; color: var(--text-light);">Immovable Obstructions</span></td>
+                                    <td>Objetos artificiales fijos: Aspersores, caminos pavimentados, puentes, bancos, casetas.</td>
+                                    <td><span class="badge badge-no">NO</span></td>
+                                    <td><span class="badge badge-yes">SÍ*</span></td>
+                                    <td>*Solo por interferencia de posición, swing o stance (no por línea de tiro). NPCR + área de 1 palo, no más cerca del hoyo.</td>
+                                    <td><span class="badge badge-no">NO</span><br><span style="font-size: 0.75rem; color: var(--text-light);">Se levanta el balón para dropear.</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>💧 Cond. Anormales</strong><br><span style="font-size: 0.8rem; color: var(--text-light);">Abnormal Conditions</span></td>
+                                    <td>Condiciones temporales: Agua temporal (charcos), terreno en reparación, hoyos de animales.</td>
+                                    <td><span class="badge badge-no">NO</span></td>
+                                    <td><span class="badge badge-yes">SÍ</span></td>
+                                    <td>Alivio completo gratuito. Encontrar el Punto Más Cercano de Alivio Completo (NPCR) y dropear a 1 palo.</td>
+                                    <td><span class="badge badge-no">NO</span><br><span style="font-size: 0.75rem; color: var(--text-light);">Se levanta el balón para dropear.</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>⛳ Marcas de Salida</strong><br><span style="font-size: 0.8rem; color: var(--text-light);">Tee Markers</span></td>
+                                    <td>Estacas que delimitan la salida del hoyo actual.</td>
+                                    <td><span class="badge badge-no">NO</span></td>
+                                    <td><span class="badge badge-warning">PARCIAL*</span></td>
+                                    <td>*Sin alivio para el tiro de salida (son fijos). Alivio gratuito como obst. fija para tiros subsecuentes.</td>
+                                    <td><span class="badge badge-no">NO</span><br><span style="font-size: 0.75rem; color: var(--text-light);">Se levanta el balón para dropear.</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Out of Bounds</strong><br><span style="font-size: 0.8rem; color: var(--text-light);">Fuera de Límites (OB)</span></td>
+                                    <td>Estacas blancas u vallas que definen la frontera del campo.</td>
+                                    <td><span class="badge badge-no">NO</span></td>
+                                    <td><span class="badge badge-no">NO</span></td>
+                                    <td>No hay alivio gratuito de las estacas de OB. Si el balón sale (OB), aplicar castigo de golpe y distancia.</td>
+                                    <td><span class="badge badge-warning">1 GOLPE</span><br><span style="font-size: 0.75rem; color: var(--text-light);">Repetir golpe anterior sumando 1 golpe de castigo.</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
