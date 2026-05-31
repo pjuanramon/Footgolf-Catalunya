@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reglas y Obstrucciones - Footgolf Catalunya</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <script src="/js/Navbar.js" defer></script>
+    <script src="/js/Footer.js" defer></script>
+    <link rel="icon" type="image/png" href="/favicon.png?v=1">
+    <style>
+        /* Estilos específicos para la sección de Reglas */
+        .rules-wrapper {
+            max-width: 1100px;
+            margin: -4rem auto 4rem;
+            position: relative;
+            z-index: 10;
+            padding: 0 1rem;
+        }
+
+        .rules-nav {
+            display: flex;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-bottom: 2.5rem;
+            flex-wrap: wrap;
+            background: rgba(15, 23, 42, 0.4);
+            padding: 0.75rem;
+            border-radius: 9999px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+        }
+
+        .rules-nav-btn {
+            background: transparent;
+            color: #94a3b8;
+            border: none;
+            padding: 0.8rem 1.8rem;
+            border-radius: 9999px;
+            font-family: var(--font-family);
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .rules-nav-btn:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .rules-nav-btn.active {
+            background: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 14px 0 rgba(30, 143, 58, 0.4);
+        }
+
+        .rules-tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out forwards;
+        }
+
+        .rules-tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Tarjetas de Información */
+        .info-card {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 3rem;
+            box-shadow: var(--shadow-xl);
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .info-card h2 {
+            color: var(--primary-color);
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .rules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .rule-item {
+            background: var(--bg-color);
+            padding: 2rem;
+            border-radius: 1rem;
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            transition: var(--transition);
+        }
+
+        .rule-item:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+            border-color: rgba(30, 143, 58, 0.2);
+        }
+
+        .rule-item h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.75rem;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .rule-item p {
+            color: var(--text-light);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* Código de Ética */
+        .ethics-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .ethics-item {
+            display: flex;
+            gap: 1.5rem;
+            background: var(--bg-color);
+            padding: 1.75rem;
+            border-radius: 1rem;
+            align-items: flex-start;
+            border-left: 5px solid var(--primary-color);
+            transition: var(--transition);
+        }
+
+        .ethics-item:hover {
+            transform: translateX(5px);
+            background: #f1f5f9;
+        }
+
+        .ethics-icon {
+            font-size: 2rem;
+            line-height: 1;
+        }
+
+        .ethics-details h3 {
+            font-size: 1.15rem;
+            margin-bottom: 0.4rem;
+            color: var(--text-main);
+        }
+
+        .ethics-details p {
+            color: var(--text-light);
+            font-size: 0.95rem;
+        }
+
+        /* Vestimenta */
+        .dress-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .dress-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .dress-card {
+            padding: 2.5rem;
+            border-radius: 1.5rem;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .dress-card.allowed {
+            background: linear-gradient(135deg, #1e3a1e 0%, #111827 100%);
+            border: 1px solid rgba(74, 222, 128, 0.2);
+        }
+
+        .dress-card.forbidden {
+            background: linear-gradient(135deg, #451a1a 0%, #111827 100%);
+            border: 1px solid rgba(248, 113, 113, 0.2);
+        }
+
+        .dress-card h3 {
+            font-size: 1.6rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .dress-card ul {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .dress-card li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        .dress-card.allowed li::before {
+            content: "✓";
+            color: #4ade80;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .dress-card.forbidden li::before {
+            content: "✗";
+            color: #f87171;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        /* Submódulo Obstrucciones */
+        .obs-container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 2.5rem;
+            margin-top: 1.5rem;
+        }
+
+        @media (max-width: 900px) {
+            .obs-container {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+        }
+
+        .obs-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            background: var(--bg-color);
+            padding: 1rem;
+            border-radius: 1rem;
+            border: 1px solid var(--border-color);
+            height: fit-content;
+        }
+
+        .obs-btn {
+            background: transparent;
+            color: var(--text-main);
+            border: none;
+            padding: 1rem 1.25rem;
+            border-radius: 0.75rem;
+            font-family: var(--font-family);
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .obs-btn:hover {
+            background: rgba(30, 143, 58, 0.08);
+            color: var(--primary-color);
+        }
+
+        .obs-btn.active {
+            background: var(--primary-color);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .obs-content-area {
+            background: var(--bg-color);
+            border-radius: 1.5rem;
+            padding: 2.5rem;
+            border: 1px solid var(--border-color);
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .obs-section-content {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out forwards;
+        }
+
+        .obs-section-content.active {
+            display: block;
+        }
+
+        .obs-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.75rem;
+        }
+
+        .obs-desc {
+            font-size: 1.05rem;
+            color: var(--text-main);
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+        }
+
+        .rule-box {
+            background: white;
+            padding: 1.75rem;
+            border-radius: 1rem;
+            border-left: 5px solid var(--secondary-color);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 1.5rem;
+        }
+
+        .rule-box h4 {
+            font-size: 1.1rem;
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .rule-box p {
+            color: var(--text-light);
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        .obs-list {
+            margin-bottom: 1.5rem;
+            padding-left: 1.5rem;
+        }
+
+        .obs-list li {
+            margin-bottom: 0.75rem;
+            color: var(--text-light);
+            position: relative;
+            list-style-type: none;
+        }
+
+        .obs-list li::before {
+            content: "⚽";
+            position: absolute;
+            left: -1.5rem;
+            top: 0.1rem;
+            font-size: 0.8rem;
+        }
+
+        .tip-badge {
+            display: inline-block;
+            background: rgba(245, 158, 11, 0.15);
+            color: #d97706;
+            padding: 0.4rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.8rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-top: 1rem;
+            align-self: flex-start;
+        }
+    </style>
+</head>
+
+<body>
+    <app-navbar></app-navbar>
+
+    <main>
+        <header class="page-header" style="padding-bottom: 8rem;">
+            <h1 class="gradient-text">Reglamento y Guías</h1>
+            <p>Conoce las reglas oficiales, el código ético y la guía interactiva de obstrucciones de Footgolf Catalunya.</p>
+        </header>
+
+        <div class="rules-wrapper">
+            <!-- Navegación por pestañas principales -->
+            <nav class="rules-nav">
+                <button class="rules-nav-btn active" onclick="switchMainTab(event, 'basic-rules')">Reglas Básicas</button>
+                <button class="rules-nav-btn" onclick="switchMainTab(event, 'ethics')">Código de Conducta</button>
+                <button class="rules-nav-btn" onclick="switchMainTab(event, 'dress-code')">Vestimenta (Dress Code)</button>
+                <button class="rules-nav-btn" onclick="switchMainTab(event, 'obstructions')">Guía de Obstrucciones</button>
+            </nav>
+
+            <!-- CONTENIDO 1: REGLAS BÁSICAS -->
+            <div id="basic-rules" class="rules-tab-content active">
+                <div class="info-card">
+                    <h2>⚽ Reglas Básicas del Footgolf</h2>
+                    <p style="color: var(--text-light); font-size: 1.1rem; max-width: 800px; margin-bottom: 2rem;">El Footgolf es un deporte simple en esencia pero que requiere precisión y estrategia. Aquí tienes las reglas fundamentales que todo jugador debe dominar antes de salir al campo.</p>
+
+                    <div class="rules-grid">
+                        <div class="rule-item">
+                            <h3><span>01.</span> Objetivo del Juego</h3>
+                            <p>El objetivo es introducir un balón de fútbol número 5 en un hoyo de 53 centímetros de diámetro con el menor número de golpes posible, siguiendo el recorrido oficial del campo.</p>
+                        </div>
+                        <div class="rule-item">
+                            <h3><span>02.</span> El Golpe de Salida</h3>
+                            <p>Cada hoyo comienza desde el área de salida (tee). El balón debe colocarse en el suelo detrás de la línea imaginaria entre los dos marcadores y patearse con un movimiento limpio.</p>
+                        </div>
+                        <div class="rule-item">
+                            <h3><span>03.</span> Jugar el Balón como Yace</h3>
+                            <p>El balón debe ser jugado exactamente desde donde quedó en el golpe anterior. No está permitido empujarlo, arrastrarlo, ni acomodar el terreno, salvo las excepciones indicadas por las reglas de alivio.</p>
+                        </div>
+                        <div class="rule-item">
+                            <h3><span>04.</span> Balón Completamente Parado</h3>
+                            <p>Antes de realizar cualquier golpe, el balón debe estar completamente inmóvil. Patear un balón en movimiento conlleva una penalización general (2 golpes de castigo).</p>
+                        </div>
+                        <div class="rule-item">
+                            <h3><span>05.</span> Orden de Juego</h3>
+                            <p>En el golpe de salida, el jugador con el mejor resultado en el hoyo anterior patea primero. Para los golpes siguientes, el jugador cuyo balón se encuentre más alejado del hoyo será el primero en patear.</p>
+                        </div>
+                        <div class="rule-item">
+                            <h3><span>06.</span> Identificación del Balón</h3>
+                            <p>Cada jugador debe jugar con un balón único y claramente identificable (con su nombre o marcas personales). Jugar con el balón equivocado conlleva una penalización.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONTENIDO 2: CÓDIGO DE CONDUCTA -->
+            <div id="ethics" class="rules-tab-content">
+                <div class="info-card">
+                    <h2>🤝 Código de Ética y Conducta</h2>
+                    <p style="color: var(--text-light); font-size: 1.1rem; max-width: 800px; margin-bottom: 2rem;">El espíritu deportivo es la base del Footgolf. Todos los jugadores de la Asociación deben comportarse con integridad, cortesía y respeto mutuo en todo momento.</p>
+
+                    <div class="ethics-list">
+                        <div class="ethics-item">
+                            <div class="ethics-icon">🤐</div>
+                            <div class="ethics-details">
+                                <h3>Silencio y Respeto al Golpear</h3>
+                                <p>Por cortesía elemental, ningún jugador debe hablar, hacer ruidos o moverse en la línea de visión o de tiro de otro jugador mientras este se concentra para realizar su golpe.</p>
+                            </div>
+                        </div>
+                        <div class="ethics-item">
+                            <div class="ethics-icon">⏱️</div>
+                            <div class="ethics-details">
+                                <h3>Mantener el Ritmo de Juego</h3>
+                                <p>El juego lento afecta a toda la competición. Los jugadores deben estar listos para patear inmediatamente cuando sea su turno y caminar a un ritmo constante entre golpes.</p>
+                            </div>
+                        </div>
+                        <div class="ethics-item">
+                            <div class="ethics-icon">🌳</div>
+                            <div class="ethics-details">
+                                <h3>Cuidado Absoluto del Campo</h3>
+                                <p>Está terminantemente prohibido dañar el césped, los greens o las instalaciones del club de golf. Los búnkers de arena deben rastrillarse y alisarse completamente tras jugar desde ellos.</p>
+                            </div>
+                        </div>
+                        <div class="ethics-item">
+                            <div class="ethics-icon">✍️</div>
+                            <div class="ethics-details">
+                                <h3>Honestidad Rigurosa en el Marcador</h3>
+                                <p>El footgolf se basa en la confianza. Anotar golpes falsos o manipular la tarjeta de puntuación (física o digital) constituye una falta grave que resultará en la descalificación inmediata.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONTENIDO 3: VESTIMENTA (DRESS CODE) -->
+            <div id="dress-code" class="rules-tab-content">
+                <div class="info-card">
+                    <h2>👕 Código de Vestimenta Oficial</h2>
+                    <p style="color: var(--text-light); font-size: 1.1rem; max-width: 800px; margin-bottom: 2.5rem;">Como deporte de caballeros que comparte espacio con los clubes de golf más prestigiosos, el Footgolf exige una vestimenta elegante que honre la tradición de ambos deportes.</p>
+
+                    <div class="dress-grid">
+                        <div class="dress-card allowed">
+                            <h3>Permitido y Recomendado</h3>
+                            <ul>
+                                <li><strong>Polos con cuello:</strong> Polos clásicos de golf o tenis (de manga corta o larga). Siempre deben vestirse por dentro del pantalón.</li>
+                                <li><strong>Pantalones estilo golf:</strong> Pantalones largos de vestir tipo chino o bermudas formales con bolsillos.</li>
+                                <li><strong>Calcetines altos:</strong> Si se usan bermudas, es obligatorio usar calcetines altos (preferiblemente de estilo argyle o rombos tradicionales).</li>
+                                <li><strong>Gorra tradicional:</strong> Gorra plana clásica de footgolf (boina), visera o gorra de golf tradicional.</li>
+                                <li><strong>Calzado reglamentario:</strong> Zapatillas de fútbol multitaco (tipo "turf") o zapatillas de fútbol sala.</li>
+                            </ul>
+                        </div>
+
+                        <div class="dress-card forbidden">
+                            <h3>Prohibido en el Campo</h3>
+                            <ul>
+                                <li><strong>Sin cuello:</strong> Camisetas de fútbol, camisetas sin mangas, sudaderas con capucha o prendas informales de playa.</li>
+                                <li><strong>Pantalones deportivos:</strong> Pantalones cortos de fútbol, joggers, vaqueros (denim), bañadores o mallas.</li>
+                                <li><strong>Botas de tacos grandes:</strong> Quedan estrictamente prohibidas las botas con tacos de aluminio o goma grande de fútbol 11/7, ya que destrozan los greens de golf.</li>
+                                <li><strong>Descalzo:</strong> Jugar descalzo o con sandalias/chanclas está penalizado con la descalificación.</li>
+                                <li><strong>Gorra hacia atrás:</strong> Llevar la gorra o visera en sentido contrario al juego.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONTENIDO 4: GUÍA DE OBSTRUCCIONES INTERACTIVA -->
+            <div id="obstructions" class="rules-tab-content">
+                <div class="info-card">
+                    <h2>⚠️ Guía Interactiva de Obstrucciones e Impedimentos</h2>
+                    <p style="color: var(--text-light); font-size: 1.1rem; max-width: 800px; margin-bottom: 2rem;">¿Qué hacer cuando tu balón queda cerca de una piedra, un aspersor, un charco o una estaca? Navega por las categorías para conocer las reglas de alivio oficiales de la FIFG traducidas al español.</p>
+
+                    <div class="obs-container">
+                        <!-- Sidebar de Obstrucciones -->
+                        <aside class="obs-sidebar">
+                            <button class="obs-btn active" onclick="switchObsTab(event, 'obs-loose')">🍂 Impedimentos Sueltos</button>
+                            <button class="obs-btn" onclick="switchObsTab(event, 'obs-movable')">🗑️ Obstrucciones Móviles</button>
+                            <button class="obs-btn" onclick="switchObsTab(event, 'obs-abnormal')">💧 Cond. Anormales</button>
+                            <button class="obs-btn" onclick="switchObsTab(event, 'obs-unsafe')">🐝 Cond. Inseguras</button>
+                            <button class="obs-btn" onclick="switchObsTab(event, 'obs-immovable')">🚧 Obstrucciones Fijas</button>
+                            <button class="obs-btn" onclick="switchObsTab(event, 'obs-tee-ob')">⛳ Salidas y Límites</button>
+                        </aside>
+
+                        <!-- Área de Contenido de Obstrucciones -->
+                        <div class="obs-content-area">
+                            <!-- 1. Impedimentos Sueltos -->
+                            <div id="obs-loose" class="obs-section-content active">
+                                <h3 class="obs-title">🍂 Impedimentos Sueltos (Loose Impediments)</h3>
+                                <p class="obs-desc">Son objetos naturales que no están fijos ni creciendo, ni adheridos al balón o al terreno. Ejemplos comunes: hojas secas, ramas caídas, piedras sueltas, insectos o arena sobre el green.</p>
+                                
+                                <div class="rule-box">
+                                    <h4>Regla de Alivio</h4>
+                                    <p><strong>Alivio Gratuito:</strong> Puedes retirar cualquier impedimento suelto en cualquier parte del campo sin penalización. No importa si está en el búnker, en el fairway o sobre el green.</p>
+                                </div>
+
+                                <div class="rule-box" style="border-left-color: #ef4444;">
+                                    <h4>⚠️ ¡Atención! Riesgo de Penalidad</h4>
+                                    <p>Si al retirar el impedimento suelto haces que tu balón se mueva (excepto en el green), incurres en <strong>1 golpe de penalidad</strong> y debes reponer el balón en su posición original antes de patear.</p>
+                                </div>
+                            </div>
+
+                            <!-- 2. Obstrucciones Móviles -->
+                            <div id="obs-movable" class="obs-section-content">
+                                <h3 class="obs-title">🗑️ Obstrucciones Movibles (Movable Obstructions)</h3>
+                                <p class="obs-desc">Cualquier objeto artificial (creado por el hombre) que se pueda mover con un esfuerzo razonable y sin dañar el campo. Ejemplos: rastrillos de búnker, botellas de agua, latas, estacas de distancia removibles o bolsas de basura.</p>
+                                
+                                <div class="rule-box">
+                                    <h4>Regla de Alivio</h4>
+                                    <p><strong>Alivio Gratuito:</strong> Se pueden retirar sin penalización en cualquier parte del campo. Si el balón se mueve <em>directamente debido a la retirada</em> de la obstrucción móvil, no hay penalidad; simplemente repón el balón en su punto original.</p>
+                                </div>
+
+                                <div class="rule-box">
+                                    <h4>Balón dentro o sobre la obstrucción</h4>
+                                    <p>Si el balón yace dentro o sobre un objeto movible (como una toalla o un rastrillo), puedes levantar el balón, retirar la obstrucción móvil y dropear el balón en el punto exacto directamente debajo de donde estaba, sin penalización.</p>
+                                </div>
+                            </div>
+
+                            <!-- 3. Condiciones Anormales del Campo -->
+                            <div id="obs-abnormal" class="obs-section-content">
+                                <h3 class="obs-title">💧 Condiciones Anormales (Abnormal Course Conditions)</h3>
+                                <p class="obs-desc">Incluye agua temporal (charcos acumulados por lluvia), terreno en reparación (marcado con líneas blancas o estacas azules) y agujeros o montículos creados por animales excavadores.</p>
+                                
+                                <div class="rule-box">
+                                    <h4>Regla de Alivio</h4>
+                                    <p><strong>Alivio Gratuito:</strong> Tienes derecho a alivio si tu balón toca la condición anormal, o si esta interfiere físicamente con tu zona de golpe o tu swing.</p>
+                                </div>
+
+                                <div class="rule-box">
+                                    <h4>Procedimiento de Alivio</h4>
+                                    <p>Encuentra el <strong>punto más cercano de alivio completo</strong> (donde la interferencia desaparece y que no esté más cerca del hoyo). Dropea el balón a la distancia de <strong>un palo</strong> de ese punto, en la misma zona del campo (fairway, rough, etc.).</p>
+                                </div>
+                            </div>
+
+                            <!-- 4. Condiciones Inseguras -->
+                            <div id="obs-unsafe" class="obs-section-content">
+                                <h3 class="obs-title">🐝 Condiciones Inseguras o Peligrosas (Unsafe Conditions)</h3>
+                                <p class="obs-desc">Situaciones donde jugar el balón tal como yace pondría en riesgo físico grave al jugador. Ejemplos: presencia de un enjambre de abejas o avispas, caimanes, serpientes venenosas o tormentas con actividad eléctrica.</p>
+                                
+                                <div class="rule-box">
+                                    <h4>Regla de Alivio por Seguridad</h4>
+                                    <p><strong>Alivio Gratuito Obligatorio:</strong> Por tu propia seguridad, el juego se detiene inmediatamente ante tormentas eléctricas. Ante animales peligrosos, tienes derecho a alivio gratuito tomando el punto de alivio más cercano fuera de peligro, sin penalización.</p>
+                                </div>
+                            </div>
+
+                            <!-- 5. Obstrucciones Inamovibles -->
+                            <div id="obs-immovable" class="obs-section-content">
+                                <h3 class="obs-title">🚧 Obstrucciones Inamovibles (Immovable Obstructions)</h3>
+                                <p class="obs-desc">Cualquier objeto artificial fijo que no se pueda mover fácilmente. Ejemplos comunes en el campo de golf: cabezales de aspersores, cajas de conexiones eléctricas, caminos pavimentados, puentes fijos, bancos de madera o casetas.</p>
+                                
+                                <div class="rule-box">
+                                    <h4>¿Cuándo aplica el Alivio?</h4>
+                                    <p>Aplica cuando hay interferencia física. Esto es, si el balón toca la obstrucción, o si la obstrucción interfiere con el movimiento de tu pierna al patear o con tu recorrido físico de golpeo.</p>
+                                </div>
+
+                                <div class="rule-box" style="border-left-color: #ef4444;">
+                                    <h4>⚠️ ¡Nota Importante! Línea de Juego</h4>
+                                    <p>No tienes alivio si la obstrucción inamovible solo está en tu <strong>línea de juego</strong> (es decir, frente a ti pero sin interferir físicamente con tu balón o tu cuerpo). Debes patear rodeando o sobre el objeto.</p>
+                                </div>
+                            </div>
+
+                            <!-- 6. Marcas de Salida y Fuera de Límites -->
+                            <div id="obs-tee-ob" class="obs-section-content">
+                                <h3 class="obs-title">⛳ Marcas de Salida y Fuera de Límites</h3>
+                                <p class="obs-desc">Reglas especiales que aplican a las estacas y límites físicos del campo de footgolf.</p>
+                                
+                                <div class="rule-box">
+                                    <h4>Marcadores de Salida (Tee Markers)</h4>
+                                    <p>Son considerados objetos fijos durante el tiro de salida del hoyo. No se pueden mover para facilitar la salida. Si interfiere físicamente con un golpe posterior, sí tienes derecho a alivio gratuito (excepto si estás pateando la salida misma).</p>
+                                </div>
+
+                                <div class="rule-box" style="border-left-color: #ef4444;">
+                                    <h4>Fuera de Límites (Out of Bounds - OB)</h4>
+                                    <p>Las estacas blancas marcan el límite del campo de juego. Son consideradas <strong>fijas</strong> y no se permite alivio de ellas. Si tu balón sale del campo (OB), debes reponerlo en el punto del golpe anterior aplicando la regla de <strong>golpe y distancia</strong> (repetir golpe sumando 1 golpe de penalidad).</p>
+                                </div>
+                            </div>
+
+                            <!-- Badge Dinámico inferior -->
+                            <span class="tip-badge">Regla Oficial FIFG 2026</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <app-footer></app-footer>
+
+    <script>
+        // Cambiar entre las pestañas principales de la página
+        function switchMainTab(event, tabId) {
+            // Quitar clase active de todos los botones de navegación
+            const navButtons = document.querySelectorAll('.rules-nav-btn');
+            navButtons.forEach(btn => btn.classList.remove('active'));
+
+            // Quitar clase active de todas las pestañas de contenido
+            const tabContents = document.querySelectorAll('.rules-tab-content');
+            tabContents.forEach(content => content.classList.remove('active'));
+
+            // Añadir active al botón presionado y a su contenido respectivo
+            event.target.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        // Cambiar entre las pestañas del submódulo de Obstrucciones
+        function switchObsTab(event, obsSectionId) {
+            // Quitar clase active de los botones del sidebar
+            const obsButtons = document.querySelectorAll('.obs-btn');
+            obsButtons.forEach(btn => btn.classList.remove('active'));
+
+            // Quitar clase active de las secciones de contenido de obstrucción
+            const obsContents = document.querySelectorAll('.obs-section-content');
+            obsContents.forEach(content => content.classList.remove('active'));
+
+            // Añadir active al botón presionado y a la sección de contenido
+            event.target.classList.add('active');
+            document.getElementById(obsSectionId).classList.add('active');
+        }
+    </script>
+</body>
+
+</html>

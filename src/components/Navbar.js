@@ -23,6 +23,7 @@ class Navbar extends HTMLElement {
                     <a href="/institucional.html">Institucional</a>
                     <a href="/equipos.html">Campeonato Equipos</a>
                     <a href="/circular.html">Circular Oficial</a>
+                    <a href="/reglas.html">Reglas & Guías</a>
                     <a href="/palmares.html">Palmarés</a>
                 </div>
             </nav>
