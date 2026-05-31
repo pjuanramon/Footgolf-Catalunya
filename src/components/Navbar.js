@@ -4,8 +4,19 @@ class Navbar extends HTMLElement {
     }
 
     connectedCallback() {
+        // Absolute paths for links and images to ensure reliability on Vercel
         const homeLink = '/index.html';
         const imgPath = '/images/Logo.png';
+
+        // Set favicon dynamically
+        let iconLink = document.querySelector("link[rel~='icon']");
+        if (!iconLink) {
+            iconLink = document.createElement('link');
+            iconLink.rel = 'icon';
+            iconLink.type = 'image/png';
+            document.head.appendChild(iconLink);
+        }
+        iconLink.href = '/favicon.png?v=1';
 
         this.innerHTML = `
             <nav class="navbar">
@@ -16,15 +27,15 @@ class Navbar extends HTMLElement {
                 <button class="menu-toggle" aria-label="Toggle menu">☰</button>
                 <div class="nav-links">
                     <a href="${homeLink}">Inicio</a>
-                    <a href="/calendario.html">Calendario 2026</a>
-                    <a href="/clasificaciones.html">Clasificaciones</a>
-                    <a href="/inscripciones.html">Inscripciones</a>
-                    <a href="/jugadores.html">Jugadores & Licencias</a>
-                    <a href="/institucional.html">Institucional</a>
-                    <a href="/equipos.html">Campeonato Equipos</a>
-                    <a href="/circular.html">Circular Oficial</a>
-                    <a href="/reglas.html">Reglas & Guías</a>
-                    <a href="/palmares.html">Palmarés</a>
+                    <a href="/src/pages/calendario.html">Calendario 2026</a>
+                    <a href="/src/pages/clasificaciones.html">Clasificaciones</a>
+                    <a href="/src/pages/inscripciones.html">Inscripciones</a>
+                    <a href="/src/pages/jugadores.html">Jugadores & Licencias</a>
+                    <a href="/src/pages/institucional.html">Institucional</a>
+                    <a href="/src/pages/equipos.html">Campeonato Equipos</a>
+                    <a href="/src/pages/circular.html">Circular Oficial</a>
+                    <a href="/src/pages/reglas.html">Reglas & Guías</a>
+                    <a href="/src/pages/palmares.html">Palmarés</a>
                 </div>
             </nav>
         `;
