@@ -17,6 +17,7 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.39.7",
     "jszip": "^3.10.1",
+    "redsys-easy": "^5.3.2",
     "resend": "^3.1.0",
     "stripe": "^14.19.0",
     "xlsx": "^0.18.5"

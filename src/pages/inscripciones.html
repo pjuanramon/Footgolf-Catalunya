@@ -102,12 +102,29 @@
                     </div>
                     
                     <p style="font-size: 0.8rem; color: #fbbf24; margin-bottom: 1rem; text-align: center; line-height: 1.4;">
-                        ⚠️ <strong>El Nickname debe coincidir con Footgolf World</strong> para puntuar en el ranking.
+                         ⚠️ <strong>El Nickname debe coincidir con Footgolf World</strong> para puntuar en el ranking.
                     </p>
                     
-                    <p style="font-size: 0.85rem; color: var(--text-light); margin-top: 1rem;">
-                        * Si eres un jugador nuevo, se creará tu ficha automáticamente. Si ya estás registrado, asegúrate de usar el mismo email.
-                    </p>
+                    <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1rem; text-align: left;">
+                        <div style="display: flex; align-items: flex-start; gap: 0.5rem; background: rgba(255,255,255,0.02); padding: 0.8rem; border-radius: 0.5rem; border: 1px solid rgba(255,255,255,0.05);">
+                            <input type="checkbox" id="rgpd-insc" required style="width: auto; margin-top: 0.2rem; cursor: pointer;">
+                            <label for="rgpd-insc" style="font-size: 0.8rem; line-height: 1.4; color: var(--text-light); font-weight: normal; cursor: pointer;">
+                                Acepto la <a href="/src/pages/politica-privacidad.html" target="_blank" style="text-decoration: underline; color: var(--primary-color);">política de privacidad</a> para tramitar mi participación. 🛡️
+                            </label>
+                        </div>
+                        <div style="display: flex; align-items: flex-start; gap: 0.5rem; background: rgba(255,255,255,0.02); padding: 0.8rem; border-radius: 0.5rem; border: 1px solid rgba(255,255,255,0.05);">
+                            <input type="checkbox" id="tyc-insc" required style="width: auto; margin-top: 0.2rem; cursor: pointer;">
+                            <label for="tyc-insc" style="font-size: 0.8rem; line-height: 1.4; color: var(--text-light); font-weight: normal; cursor: pointer;">
+                                Acepto las <a href="/src/pages/terminos-condiciones.html" target="_blank" style="text-decoration: underline; color: var(--primary-color);">condiciones de venta y política de devoluciones</a> de inscripciones. 📋
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Datos del Establecimiento Obligatorios para TPV (VISA/Mastercard) -->
+                    <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(255,255,255,0.03); border: 1px dashed rgba(255,255,255,0.1); border-radius: 0.8rem; font-size: 0.75rem; line-height: 1.5; color: var(--text-light); text-align: center;">
+                        <strong>Entidad:</strong> ASSOCIACIÓ FOOTGOLF CATALUNYA | <strong>CIF:</strong> G26600098<br>
+                        <strong>Domicilio social:</strong> CAMI CAN ROSANES, S/N, 08530 GARRIGA (LA), BARCELONA, ESPAÑA
+                    </div>
                 </div>
 
                 <div id="stages-container">
@@ -357,6 +374,21 @@
                 alert('Por favor, introduce tu Email y Nickname.');
                 if (!emailValue) emailInput.focus();
                 else nicknameInput.focus();
+                return;
+            }
+
+            const rgpdCheck = document.getElementById('rgpd-insc');
+            const tycCheck = document.getElementById('tyc-insc');
+
+            if (!rgpdCheck.checked) {
+                alert('Debe aceptar la política de privacidad para inscribirse.');
+                rgpdCheck.focus();
+                return;
+            }
+
+            if (!tycCheck.checked) {
+                alert('Debe aceptar los términos y condiciones de venta.');
+                tycCheck.focus();
                 return;
             }
 

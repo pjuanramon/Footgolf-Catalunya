@@ -123,6 +123,9 @@ module.exports = async function handler(req, res) {
             case 'jugadores/buscar':
                 return require('./_logic/jugadores/buscar')(req, res);
 
+            case 'redsys/notificacion':
+                return require('./_logic/redsys/notificacion')(req, res);
+
             default:
                 return res.status(404).json({ 
                     error: `Ruta ${path} no encontrada en la API unificada.`,

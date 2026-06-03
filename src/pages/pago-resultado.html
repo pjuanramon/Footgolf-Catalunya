@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Procesando Pago... - Footgolf Catalunya</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <style>
+        .loader-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.1);
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 2rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+
+<body style="background: var(--bg-dark); color: white;">
+    <div class="loader-container">
+        <div class="spinner"></div>
+        <h1 class="gradient-text" style="font-size: 2rem; margin-bottom: 1rem;">Redirigiendo a la pasarela segura...</h1>
+        <p style="color: var(--text-light); max-width: 500px;">Por favor, no cierres esta ventana ni recargues la página. Te estamos redirigiendo al banco para completar tu transacción de forma segura.</p>
+        
+        <!-- Formulario oculto que se enviará automáticamente a Redsys -->
+        <form id="redsys-form" method="POST" style="display: none;">
+            <input type="hidden" name="Ds_SignatureVersion" id="Ds_SignatureVersion">
+            <input type="hidden" name="Ds_MerchantParameters" id="Ds_MerchantParameters">
+            <input type="hidden" name="Ds_Signature" id="Ds_Signature">
+        </form>
+    </div>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const action = params.get('action');
+            const version = params.get('Ds_SignatureVersion');
+            const merchantParams = params.get('Ds_MerchantParameters');
+            const signature = params.get('Ds_Signature');
+
+            if (action && version && merchantParams && signature) {
+                const form = document.getElementById('redsys-form');
+                form.action = action;
+                document.getElementById('Ds_SignatureVersion').value = version;
+                document.getElementById('Ds_MerchantParameters').value = merchantParams;
+                document.getElementById('Ds_Signature').value = signature;
+                
+                // Submit automático
+                form.submit();
+            } else {
+                // Si no hay parámetros correctos, redirigir a inicio
+                alert('Datos de pago incompletos. Serás redirigido a la página de inicio.');
+                window.location.href = '/index.html';
+            }
+        });
+    </script>
+</body>
+
+</html>

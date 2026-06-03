@@ -3,7 +3,7 @@
 // Crea una sesión de Stripe Checkout para pagar la licencia
 // ============================================================
 const { supabase } = require('../../../lib/supabase');
-const { stripe } = require('../../../lib/stripe');
+const paymentGateway = require('../../../lib/payment-gateway');
 const { calcularPrecioLicencia } = require('../../../lib/pricing');
 
 /**
@@ -146,21 +146,13 @@ module.exports = async function handler(req, res) {
             });
         }
 
-        // CASO PAGO: Stripe Checkout
-        const session = await stripe.checkout.sessions.create({
-            payment_method_types: ['card'],
-            mode: 'payment',
-            line_items: [{
-                price_data: {
-                    currency: 'eur',
-                    product_data: {
-                        name: `Licencia Liga Catalana FootGolf ${anioActual}`,
-                        description: `Licencia para ${nickname}`
-                    },
-                    unit_amount: Math.round(precio * 100)
-                },
-                quantity: 1
-            }],
+        // CASO PAGO: Stripe / Redsys unificado
+        const orderId = `lic-${jugadorId || 'new'}-${Date.now()}`;
+        const paymentSession = await paymentGateway.crearSesionPago({
+            orderId,
+            amount: precio,
+            concept: `Licencia Liga Catalana FootGolf ${anioActual}`,
+            description: `Licencia para ${nickname}`,
             metadata: {
                 tipo: 'licencia',
                 nickname: nickname.trim(),
@@ -175,11 +167,11 @@ module.exports = async function handler(req, res) {
                 etapa_inicio: String(etapaInic),
                 es_renovacion: String(esAntiguo)
             },
-            success_url: `${process.env.APP_URL}/src/pages/licencias.html?resultado=exito`,
-            cancel_url: `${process.env.APP_URL}/src/pages/licencias.html?resultado=cancelado`
+            successUrl: `${process.env.APP_URL}/src/pages/licencias.html?resultado=exito`,
+            cancelUrl: `${process.env.APP_URL}/src/pages/licencias.html?resultado=cancelado`
         });
 
-        return res.status(200).json({ url: session.url, precio });
+        return res.status(200).json({ url: paymentSession.url, precio });
 
     } catch (error) {
         console.error('Error en licencias API:', error);

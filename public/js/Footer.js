@@ -35,12 +35,21 @@ class Footer extends HTMLElement {
                             <li><a href="${pagesPrefix}institucional.html">Sobre nosotros</a></li>
                             <li><a href="${pagesPrefix}jugadores.html">Licencias</a></li>
                             <li><a href="${pagesPrefix}circular.html">Circular Oficial</a></li>
-                            <li><a href="#">Contacto</a></li>
+                            <li><a href="mailto:juanra@footgolfcatalunya.com">Contacto</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="footer-title">Legal</h3>
+                        <ul class="footer-links">
+                            <li><a href="${pagesPrefix}aviso-legal.html">Aviso Legal</a></li>
+                            <li><a href="${pagesPrefix}terminos-condiciones.html">Términos y Condiciones</a></li>
+                            <li><a href="${pagesPrefix}politica-privacidad.html">Política de Privacidad</a></li>
+                            <li><a href="${pagesPrefix}politica-cookies.html">Política de Cookies</a></li>
                         </ul>
                     </div>
                 </div>
                 <div class="footer-bottom">
-                    <p>&copy; 2026 Footgolf Catalunya. Todos los derechos reservados.</p>
+                    <p>&copy; 2026 Footgolf Catalunya. Todos los derechos reservados. CIF: G26600098 | Associació Footgolf Catalunya</p>
                 </div>
             </footer>
         `;

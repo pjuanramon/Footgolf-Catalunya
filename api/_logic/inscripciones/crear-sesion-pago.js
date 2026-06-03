@@ -3,7 +3,7 @@
 // Crea una sesión de Stripe Checkout para inscribirse a una etapa
 // ============================================================
 const { supabase } = require('../../../lib/supabase');
-const { stripe } = require('../../../lib/stripe');
+const paymentGateway = require('../../../lib/payment-gateway');
 const { calcularPrecioInscripcion } = require('../../../lib/pricing');
 
 module.exports = async function handler(req, res) {
@@ -51,22 +51,14 @@ module.exports = async function handler(req, res) {
             .select('id').eq('jugador_id', jugador.id).eq('etapa_id', etapa_id).eq('estado', 'pagada').single();
         if (yaInscrito) return res.status(400).json({ error: 'Ya estás inscrito en esta etapa.' });
 
-        // 5. Crear sesión Stripe
+        // 5. Crear sesión Stripe / Redsys unificada
         const esEquipo = etapa.tipo === 'equipos';
-        const session = await stripe.checkout.sessions.create({
-            payment_method_types: ['card'],
-            mode: 'payment',
-            line_items: [{
-                price_data: {
-                    currency: 'eur',
-                    product_data: {
-                        name: `Inscripción ${etapa.nombre}${esEquipo ? ` - Equipo: ${equipo_nombre}` : ''}`,
-                        description: `Inscripción para ${jugador.nickname}`
-                    },
-                    unit_amount: Math.round(precio * 100)
-                },
-                quantity: 1
-            }],
+        const orderId = `ins-${jugador.id}-${etapa_id}-${Date.now()}`;
+        const paymentSession = await paymentGateway.crearSesionPago({
+            orderId,
+            amount: precio,
+            concept: `Inscripción ${etapa.nombre}${esEquipo ? ` - Equipo: ${equipo_nombre}` : ''}`,
+            description: `Inscripción para ${jugador.nickname}`,
             metadata: {
                 tipo: 'inscripcion',
                 jugador_id: jugador.id,
@@ -75,11 +67,11 @@ module.exports = async function handler(req, res) {
                 email: jugador.email,
                 equipo_nombre: equipo_nombre || ''
             },
-            success_url: `${process.env.APP_URL}/src/pages/inscripciones.html?resultado=exito&etapa=${etapa_id}`,
-            cancel_url: `${process.env.APP_URL}/src/pages/inscripciones.html?resultado=cancelado`
+            successUrl: `${process.env.APP_URL}/src/pages/inscripciones.html?resultado=exito&etapa=${etapa_id}`,
+            cancelUrl: `${process.env.APP_URL}/src/pages/inscripciones.html?resultado=cancelado`
         });
 
-        return res.status(200).json({ url: session.url, precio, tieneLicencia: jugador.tiene_licencia });
+        return res.status(200).json({ url: paymentSession.url, precio, tieneLicencia: jugador.tiene_licencia });
 
     } catch (error) {
         console.error('Error inscripciones API:', error);
