@@ -30,7 +30,7 @@ module.exports = async function handler(req, res) {
             telefono, club, es_renovacion, etapa_inicio, ya_pagado, anio_primera_licencia 
         } = req.body;
 
-        if (!supabase || !stripe) return res.status(500).json({ error: 'Falta configuración en el servidor.' });
+        if (!supabase) return res.status(500).json({ error: 'Falta configuración en el servidor.' });
 
         const anioActual = new Date().getFullYear();
         const esAntiguo = es_renovacion === 'si';
@@ -88,6 +88,8 @@ module.exports = async function handler(req, res) {
             .eq('email', itemEmail)
             .single();
 
+        let jugadorId = jugadorExistente ? jugadorExistente.id : null;
+
         // Verificar si ya tiene licencia pagada (si no marcó ya_pagado)
         if (jugadorExistente && !yaFuePagado) {
             const { data: licenciaExistente } = await supabase
@@ -109,7 +111,6 @@ module.exports = async function handler(req, res) {
         // CASO 0€: Registro directo
         if (precio === 0) {
             console.log('Precio 0€: Registro directo');
-            let jugadorId;
             const userData = {
                 nombre_completo: nombre_completo.trim(),
                 fecha_nacimiento: fecha_nacimiento,
@@ -121,7 +122,6 @@ module.exports = async function handler(req, res) {
             };
 
             if (jugadorExistente) {
-                jugadorId = jugadorExistente.id;
                 await supabase.from('jugadores').update(userData).eq('id', jugadorId);
             } else {
                 const { data: newPlayer, error: pErr } = await supabase.from('jugadores').insert({

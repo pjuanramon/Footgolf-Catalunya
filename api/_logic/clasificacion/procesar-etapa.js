@@ -35,6 +35,12 @@ module.exports = async function handler(req, res) {
             const rawName = String(row['D'] || '').trim();
             if (!rawName) continue;
 
+            const rondaJugada = String(row['F'] || '').trim().toUpperCase();
+            if (rondaJugada === 'NO' || rondaJugada === '') {
+                logs.push(`Ignorado (No jugó la ronda): ${rawName}`);
+                continue;
+            }
+
             const isSalazar = rawName.toLowerCase().includes('salazar');
             const isAbril = rawName.toLowerCase().includes('abril');
             if (isSalazar || isAbril) logs.push(`DEBUG DEBUG: Encontrado en fila: "${rawName}"`);
@@ -90,47 +96,51 @@ module.exports = async function handler(req, res) {
         const empatesTop3 = [];
         const categorias = ['Absoluta', 'Rookie', 'Senior 45 +', 'Senior 55 +', 'Damas', 'Junior'];
         
-        if (mode === 'preview') {
-            categorias.forEach(cat => {
-                const sorted = puntosEtapa.filter(r => r.puntos[cat] !== undefined).sort((a, b) => {
-                    const scA = Math.round(Number(a.score));
-                    const scB = Math.round(Number(b.score));
-                    if (scA !== scB) return scA - scB;
-                    if (a.wonTie && !b.wonTie) return -1;
-                    if (!a.wonTie && b.wonTie) return 1;
-                    return 0;
-                });
-
-                const seenScores = {};
-                sorted.forEach((r, idx) => {
-                    if (idx < 5) {
-                        const score = Math.round(Number(r.score));
-                        // Importante: Si ya tiene wonTie, no lo contamos para detectar "nuevo" empate
-                        if (!r.wonTie) {
-                            if (!seenScores[score]) seenScores[score] = [];
-                            seenScores[score].push(r);
-                        }
-                    }
-                });
-
-                Object.keys(seenScores).forEach(score => {
-                    const tiedPlayers = seenScores[score];
-                    // Si hay alguien más con el mismo score y nadie ha ganado el desempate aún en ese grupo
-                    if (tiedPlayers.length > 1) {
-                        const rankOfGroup = sorted.indexOf(tiedPlayers[0]) + 1;
-                        if (rankOfGroup <= 3) {
-                            empatesTop3.push({ 
-                                categoria: cat, 
-                                score: score, 
-                                jugadores: tiedPlayers.map(g => ({ id: g.jugador_id, nickname: g.nickname })) 
-                            });
-                        }
-                    }
-                });
+        categorias.forEach(cat => {
+            const sorted = puntosEtapa.filter(r => r.puntos[cat] !== undefined).sort((a, b) => {
+                const scA = Math.round(Number(a.score));
+                const scB = Math.round(Number(b.score));
+                if (scA !== scB) return scA - scB;
+                if (a.wonTie && !b.wonTie) return -1;
+                if (!a.wonTie && b.wonTie) return 1;
+                return 0;
             });
-        }
+
+            const seenScores = {};
+            sorted.forEach((r, idx) => {
+                if (idx < 5) {
+                    const score = Math.round(Number(r.score));
+                    // Importante: Si ya tiene wonTie, no lo contamos para detectar "nuevo" empate
+                    if (!r.wonTie) {
+                        if (!seenScores[score]) seenScores[score] = [];
+                        seenScores[score].push(r);
+                    }
+                }
+            });
+
+            Object.keys(seenScores).forEach(score => {
+                const tiedPlayers = seenScores[score];
+                // Si hay alguien más con el mismo score y nadie ha ganado el desempate aún en ese grupo
+                if (tiedPlayers.length > 1) {
+                    const rankOfGroup = sorted.indexOf(tiedPlayers[0]) + 1;
+                    if (rankOfGroup <= 3) {
+                        empatesTop3.push({ 
+                            categoria: cat, 
+                            score: score, 
+                            jugadores: tiedPlayers.map(g => ({ id: g.jugador_id, nickname: g.nickname })) 
+                        });
+                    }
+                }
+            });
+        });
 
         if (mode === 'commit') {
+            if (empatesTop3.length > 0) {
+                return res.status(400).json({ 
+                    error: 'No se pueden publicar los resultados porque existen empates en el Top 3 sin resolver.', 
+                    empatesDetectados: empatesTop3 
+                });
+            }
             logs.push(`Iniciando COMMIT para etapa ${etapa_id}...`);
             const targetEtapaId = Number(etapa_id);
 
@@ -147,7 +157,6 @@ module.exports = async function handler(req, res) {
                         puntos_senior45: r.puntos['Senior 45 +'] || 0, 
                         puntos_senior55: r.puntos['Senior 55 +'] || 0,
                         puntos_femenino: r.puntos['Damas'] || 0, 
-                        puntos_junior: r.puntos['Junior'] || 0,
                         score: Math.round(Number(r.score))
                     }, { onConflict: 'etapa_id, jugador_id' });
                     

@@ -13,36 +13,44 @@ async function runAutomation() {
 
     // 1. Detección del torneo
     const hoy = new Date();
-    const diasHastaDomingo = (7 - hoy.getDay()) % 7;
-    const proximoDomingo = new Date(hoy);
-    proximoDomingo.setDate(hoy.getDate() + (diasHastaDomingo === 0 ? 0 : diasHastaDomingo));
     
-    const fechaBusquedaStr = proximoDomingo.toISOString().split('T')[0];
-    console.log(`Buscando torneo para el domingo: ${fechaBusquedaStr}`);
+    // Calculamos el sábado y domingo más cercanos de este fin de semana
+    const sabado = new Date(hoy);
+    sabado.setDate(hoy.getDate() + (6 - hoy.getDay() + 7) % 7);
+    
+    const domingo = new Date(hoy);
+    domingo.setDate(hoy.getDate() + (7 - hoy.getDay() + 7) % 7);
+    
+    const fechaSabadoStr = sabado.toISOString().split('T')[0];
+    const fechaDomingoStr = domingo.toISOString().split('T')[0];
+    
+    console.log(`Buscando torneo para el fin de semana: Sábado ${fechaSabadoStr} o Domingo ${fechaDomingoStr}`);
 
     const { data: etapa, error: etapaError } = await supabase
         .from('etapas')
         .select('*')
-        .eq('fecha', fechaBusquedaStr)
-        .single();
+        .in('fecha', [fechaSabadoStr, fechaDomingoStr])
+        .order('fecha', { ascending: true })
+        .limit(1)
+        .maybeSingle();
 
     if (etapaError || !etapa) {
-        console.log(`No hay torneo programado para el domingo ${fechaBusquedaStr}. Finalizando.`);
+        console.log(`No hay torneo programado para este fin de semana (${fechaSabadoStr} / ${fechaDomingoStr}). Finalizando.`);
         return;
     }
 
     console.log(`Torneo detectado: ${etapa.nombre} (${etapa.fecha})`);
 
     // Validar si hoy es viernes
-    if (hoy.getDay() !== 5) {
+    if (hoy.getDay() !== 5 && !process.env.FORCE_AUTOMATION) {
         console.log(`Hoy no es viernes (es día ${hoy.getDay()}).`);
         return;
     }
 
-    console.log(`¡Es viernes previo al torneo! Iniciando cierre y generación de hits.`);
+    console.log(`¡Iniciando cierre y generación de hits para el torneo del ${etapa.fecha}!`);
 
-    const proximoDomingoDate = new Date(etapa.fecha + 'T12:00:00');
-    const fechaDomingoStr = etapa.fecha;
+    const fechaTorneoDate = new Date(etapa.fecha + 'T12:00:00');
+    const fechaTorneoStr = etapa.fecha;
 
     // 2. Cierre automático de inscripciones
     const { error: updateError } = await supabase
@@ -80,49 +88,79 @@ async function runAutomation() {
     const templatePath = path.resolve(__dirname, '../Excel_ImportHitsTournamentRound983_Export-2026-04-02 09_41_53.xlsx');
     const workbook = xlsx.readFile(templatePath);
     
-    const players = [...jugadoresArr];
-    for (let i = players.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [players[i], players[j]] = [players[j], players[i]];
-    }
+    // Define the exact static groups and calificador status from the user's screenshot
+    const staticDraw = [
+        [
+            { name: 'David Rojo Dengra', cali: 0 },
+            { name: 'Eduardo Martin Rodriguez', cali: 0 },
+            { name: 'Giacomo Bonacini', cali: 1 },
+            { name: 'Juan Rodriguez Curbelo', cali: 0 }
+        ],
+        [
+            { name: 'Pol Santoro Dominguez', cali: 0 },
+            { name: 'Jordi Martin Garcia', cali: 0 },
+            { name: 'Jorge Santiago Buqueras', cali: 0 },
+            { name: 'Olivier Tressens', cali: 1 }
+        ],
+        [
+            { name: 'Mario Morón Sancho', cali: 0 },
+            { name: 'Chema Martínez Guillamon', cali: 0 },
+            { name: 'Daniel Abril Amador', cali: 0 },
+            { name: 'Joan Montesinos', cali: 1 }
+        ],
+        [
+            { name: 'D. Cortés', cali: 0 },
+            { name: 'Santiago Jimenez Ortiz', cali: 1 },
+            { name: 'Sergi Pahisa', cali: 0 },
+            { name: 'Alberto Salazar Fernández', cali: 0 }
+        ],
+        [
+            { name: 'Ivan luengo robles', cali: 0 },
+            { name: 'Erik Matarrubia Galera', cali: 0 },
+            { name: 'Alberto Leiva cañada', cali: 0 },
+            { name: 'Gastón Masuck Cardozo', cali: 1 }
+        ],
+        [
+            { name: 'Xavi Leiva Cañada', cali: 0 },
+            { name: 'Jesús Pizarro Gonzálvez', cali: 0 },
+            { name: 'Gustavo Verse', cali: 1 },
+            { name: 'David Tellez Viana', cali: 0 }
+        ]
+    ];
 
-    const distribution = calculateHitDistribution(players.length);
     const hitData = [];
     const footgolferData = [];
-    let playerIndex = 0;
-    let currentStartTime = new Date(`${fechaDomingoStr}T14:00:00`);
+    let currentStartTime = new Date(`${fechaTorneoStr}T14:00:00`);
 
-    distribution.forEach((size, index) => {
+    staticDraw.forEach((hitPlayers, index) => {
         const hitNumber = index + 1;
         hitData.push({
             'Número de Hit': hitNumber,
             'Hoyo': 1,
-            'Fecha de Salida \r\n DD/MM/YYYY': formatDateDDMMYYYY(proximoDomingoDate),
+            'Fecha de Salida \r\n DD/MM/YYYY': formatDateDDMMYYYY(fechaTorneoDate),
             'Hora de Salida \r\n HH:mm': formatTimeHHmm(currentStartTime)
         });
-        const hitPlayers = players.slice(playerIndex, playerIndex + size);
-        const caliIdx = Math.floor(Math.random() * size);
-        hitPlayers.forEach((p, pIdx) => {
+        
+        hitPlayers.forEach((item) => {
             footgolferData.push({
                 'Número de Hit': hitNumber,
-                'Footgolfer': p,
-                '¿Es Calificador? \r\n 1=Sí \r\n 0=No': (pIdx === caliIdx ? 1 : 0)
+                'Footgolfer': formatFootgolferName(item.name),
+                '¿Es Calificador? \r\n 1=Sí \r\n 0=No': item.cali
             });
         });
-        playerIndex += size;
         currentStartTime.setMinutes(currentStartTime.getMinutes() + 7);
     });
 
     workbook.Sheets['HITS'] = xlsx.utils.json_to_sheet(hitData);
     workbook.Sheets['FOOTGOLFERS'] = xlsx.utils.json_to_sheet(footgolferData);
 
-    const outputFileName = `Hits_Footgolf_${fechaDomingoStr}.xlsx`;
+    const outputFileName = `Hits_Footgolf_${fechaTorneoStr}.xlsx`;
     const outputPath = path.resolve(__dirname, `../${outputFileName}`);
     xlsx.writeFile(workbook, outputPath);
     console.log(`Archivo Excel generado: ${outputFileName}`);
 
     // 6. Envío automático (Intentando uno por uno para evitar bloqueos de Resend Mode Onboarding)
-    const subject = `Hits Footgolf – Torneo ${formatDateDDMMYYYY(proximoDomingoDate)} – Registro cerrado`;
+    const subject = `Hits Footgolf – Torneo ${formatDateDDMMYYYY(fechaTorneoDate)} – Registro cerrado`;
     const recipients = ['pjuanramon@hotmail.com', 'jorge.s.b@hotmail.com'];
     
     for (const email of recipients) {
@@ -132,7 +170,7 @@ async function runAutomation() {
                 from: 'onboarding@resend.dev',
                 to: [email],
                 subject: subject,
-                html: `<p>Se adjuntan los hits para el torneo del domingo.</p>`,
+                html: `<p>Se adjuntan los hits para el torneo.</p>`,
                 attachments: [{ filename: outputFileName, content: fs.readFileSync(outputPath) }]
             });
 
@@ -183,6 +221,38 @@ function formatDateDDMMYYYY(date) {
 
 function formatTimeHHmm(date) {
     return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+}
+
+function formatFootgolferName(fullName) {
+    const cleanName = fullName.trim().replace(/\s+/g, ' ');
+    const map = {
+        'David Rojo Dengra': 'D. Rojo',
+        'Eduardo Martin Rodriguez': 'E. MartinRdz',
+        'Giacomo Bonacini': 'G. Bonacini',
+        'Juan Rodriguez Curbelo': 'J. Rodríguez4237',
+        'Pol Santoro Dominguez': 'P. Santoro',
+        'P. Santoro': 'P. Santoro',
+        'Jordi Martin Garcia': 'J. Martín3955',
+        'Jorge Santiago Buqueras': 'J. Santiago',
+        'Olivier Tressens': 'O. Tressens',
+        'Mario Morón Sancho': 'M. Morón',
+        'Chema Martínez Guillamon': 'C. Guillamon',
+        'Daniel Abril Amador': 'D. Abril',
+        'Joan Montesinos': 'J. Montesinos',
+        'D. Cortés': 'D. Cortés',
+        'Santiago Jimenez Ortiz': 'S. Jimenez',
+        'Sergi Pahisa': 'S. Pahisa',
+        'Alberto Salazar Fernández': 'A. Salazar',
+        'Ivan luengo robles': 'I. Luengo',
+        'Erik Matarrubia Galera': 'E. Matarrubia',
+        'Alberto Leiva cañada': 'A. Leiva',
+        'Gastón Masuck Cardozo': 'G. Masuck',
+        'Xavi Leiva Cañada': 'X. Leiva',
+        'Jesús Pizarro Gonzálvez': 'J. Pizarro',
+        'Gustavo Verse': 'G. Verse',
+        'David Tellez Viana': 'D. Tellez'
+    };
+    return map[cleanName] || cleanName;
 }
 
 runAutomation().catch(console.error);
