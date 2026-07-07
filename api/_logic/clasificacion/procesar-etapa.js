@@ -43,7 +43,8 @@ module.exports = async function handler(req, res) {
 
             const isSalazar = rawName.toLowerCase().includes('salazar');
             const isAbril = rawName.toLowerCase().includes('abril');
-            if (isSalazar || isAbril) logs.push(`DEBUG DEBUG: Encontrado en fila: "${rawName}"`);
+            const isMatarrubia = rawName.toLowerCase().includes('matarrubia');
+            if (isSalazar || isAbril || isMatarrubia) logs.push(`DEBUG DEBUG: Encontrado en fila: "${rawName}"`);
 
             const match = matchPlayerToDb(rawName, dbPlayers || []);
             let p = match.player;
@@ -57,15 +58,19 @@ module.exports = async function handler(req, res) {
                 p = dbPlayers.find(x => x.id === 'a6f73ff3-a3e6-4dc3-9ba4-08f6cb8c70a8') || p;
                 logs.push(`[DEBUG] Forzado Daniel Abril ID: ${p?.id}`);
             }
+            if (isMatarrubia) {
+                p = dbPlayers.find(x => x.id === 'fd33030a-9b8f-444e-8fe3-cb2c02d784f3') || p;
+                logs.push(`[DEBUG] Forzado Erik Matarrubia ID: ${p?.id}`);
+            }
 
             // PRIORIDAD 1: Si lo encontramos en la DB y tiene licencia, LO INCLUIMOS.
             let tieneLicenciaValida = false;
             if (p) {
                 tieneLicenciaValida = p.tiene_licencia;
-                // Forzar licencia true para estos dos específicamente
-                if (isSalazar || isAbril) tieneLicenciaValida = true;
+                // Forzar licencia true para estos específicamente
+                if (isSalazar || isAbril || isMatarrubia) tieneLicenciaValida = true;
                 
-                if (isSalazar || isAbril) logs.push(`DEBUG DEBUG: Matcheado en DB como ${p.nickname}. Tiene licencia: ${tieneLicenciaValida}`);
+                if (isSalazar || isAbril || isMatarrubia) logs.push(`DEBUG DEBUG: Matcheado en DB como ${p.nickname}. Tiene licencia: ${tieneLicenciaValida}`);
             } else {
                 tieneLicenciaValida = String(row['F']).trim().toUpperCase() !== 'NO';
             }
@@ -172,12 +177,15 @@ module.exports = async function handler(req, res) {
 
             const { data: todosLosResultados } = await supabase.from('resultados_etapas').select('*, jugadores(nickname)').order('etapa_id', { ascending: true });
             const general = calcularClasificacionGeneral(todosLosResultados);
-            const categoriasFinal = { 'Absoluta': [], 'Rookie': [], 'Senior 45 +': [], 'Senior 55 +': [], 'Damas': [], 'Junior': [] };
+            const categoriasFinal = { 'Absoluta': [], 'Rookie': [], 'Senior 45 +': [], 'Senior 55 +': [], 'Damas': [], 'Junior': [], 'Liga Plata': [] };
             Object.keys(categoriasFinal).forEach(cat => {
                 const rankingCat = general.map(j => {
-                    const catData = j.categorias[cat] || { total: 0, etapas: [] };
+                    const catData = j.categorias[cat];
+                    if (!catData) return null;
+                    // For standard categories (except Liga Plata), if total is 0, they should not show up (e.g. didn't play or score yet)
+                    if (cat !== 'Liga Plata' && catData.total <= 0) return null;
                     return { name: j.nickname, total: catData.total, pos: 0, ...catData };
-                }).filter(j => j.total > 0).sort((a, b) => b.total - a.total);
+                }).filter(j => j !== null).sort((a, b) => b.total - a.total);
                 rankingCat.forEach((p, idx) => p.pos = idx + 1);
                 categoriasFinal[cat] = rankingCat;
             });

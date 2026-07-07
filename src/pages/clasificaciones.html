@@ -232,7 +232,7 @@
                         });
 
                         body.innerHTML = '';
-                        const filteredData = data.filter(player => player.total > 0 && !player.isUnlicensed);
+                        const filteredData = data.filter(player => player.total >= 0 && !player.isUnlicensed);
 
                         filteredData.forEach((player) => {
                             const tr = document.createElement('tr');

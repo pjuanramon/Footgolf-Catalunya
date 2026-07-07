@@ -67,7 +67,7 @@ async function runAutomation() {
     // Obtener jugadores inscritos (solo pagados)
     const { data: inscritos, error: insError } = await supabase
         .from('inscripciones')
-        .select('jugador:jugadores(nickname)')
+        .select('jugador:jugadores(nombre_completo)')
         .eq('etapa_id', etapa.id)
         .eq('estado', 'pagada');
 
@@ -76,7 +76,7 @@ async function runAutomation() {
         return;
     }
 
-    const jugadoresArr = inscritos.map(i => i.jugador.nickname).filter(n => n);
+    const jugadoresArr = inscritos.map(i => i.jugador.nombre_completo).filter(n => n);
     console.log(`Jugadores inscritos: ${jugadoresArr.length}`);
 
     if (jugadoresArr.length === 0) {
@@ -88,66 +88,39 @@ async function runAutomation() {
     const templatePath = path.resolve(__dirname, '../Excel_ImportHitsTournamentRound983_Export-2026-04-02 09_41_53.xlsx');
     const workbook = xlsx.readFile(templatePath);
     
-    // Define the exact static groups and calificador status from the user's screenshot
-    const staticDraw = [
-        [
-            { name: 'David Rojo Dengra', cali: 0 },
-            { name: 'Eduardo Martin Rodriguez', cali: 0 },
-            { name: 'Giacomo Bonacini', cali: 1 },
-            { name: 'Juan Rodriguez Curbelo', cali: 0 }
-        ],
-        [
-            { name: 'Pol Santoro Dominguez', cali: 0 },
-            { name: 'Jordi Martin Garcia', cali: 0 },
-            { name: 'Jorge Santiago Buqueras', cali: 0 },
-            { name: 'Olivier Tressens', cali: 1 }
-        ],
-        [
-            { name: 'Mario Morón Sancho', cali: 0 },
-            { name: 'Chema Martínez Guillamon', cali: 0 },
-            { name: 'Daniel Abril Amador', cali: 0 },
-            { name: 'Joan Montesinos', cali: 1 }
-        ],
-        [
-            { name: 'D. Cortés', cali: 0 },
-            { name: 'Santiago Jimenez Ortiz', cali: 1 },
-            { name: 'Sergi Pahisa', cali: 0 },
-            { name: 'Alberto Salazar Fernández', cali: 0 }
-        ],
-        [
-            { name: 'Ivan luengo robles', cali: 0 },
-            { name: 'Erik Matarrubia Galera', cali: 0 },
-            { name: 'Alberto Leiva cañada', cali: 0 },
-            { name: 'Gastón Masuck Cardozo', cali: 1 }
-        ],
-        [
-            { name: 'Xavi Leiva Cañada', cali: 0 },
-            { name: 'Jesús Pizarro Gonzálvez', cali: 0 },
-            { name: 'Gustavo Verse', cali: 1 },
-            { name: 'David Tellez Viana', cali: 0 }
-        ]
-    ];
+    // Aleatorizar jugadores de la base de datos
+    const players = [...jugadoresArr].sort(() => Math.random() - 0.5);
+    const distribution = calculateHitDistribution(players.length);
+    console.log(`Distribución de hits (menores primero):`, distribution);
 
     const hitData = [];
     const footgolferData = [];
+    let playerIndex = 0;
     let currentStartTime = new Date(`${fechaTorneoStr}T14:00:00`);
 
-    staticDraw.forEach((hitPlayers, index) => {
+    distribution.forEach((size, index) => {
         const hitNumber = index + 1;
+        
         hitData.push({
             'Número de Hit': hitNumber,
             'Hoyo': 1,
             'Fecha de Salida \r\n DD/MM/YYYY': formatDateDDMMYYYY(fechaTorneoDate),
             'Hora de Salida \r\n HH:mm': formatTimeHHmm(currentStartTime)
         });
+
+        const hitPlayers = players.slice(playerIndex, playerIndex + size);
+        // Designar 1 calificador aleatorio por hit
+        const caliIdx = Math.floor(Math.random() * size);
         
-        hitPlayers.forEach((item) => {
+        hitPlayers.forEach((playerName, pIdx) => {
             footgolferData.push({
                 'Número de Hit': hitNumber,
-                'Footgolfer': formatFootgolferName(item.name),
-                '¿Es Calificador? \r\n 1=Sí \r\n 0=No': item.cali
+                'Footgolfer': playerName.trim(), // Nombre completo sin abreviar
+                '¿Es Calificador? \r\n 1=Sí \r\n 0=No': pIdx === caliIdx ? 1 : 0
             });
         });
+        
+        playerIndex += size;
         currentStartTime.setMinutes(currentStartTime.getMinutes() + 7);
     });
 
@@ -188,13 +161,18 @@ async function runAutomation() {
 function calculateHitDistribution(n) {
     if (n === 0) return [];
     if (n < 3) return [n]; 
+    
     let bestDist = null;
     let minThrees = Infinity;
-    for (let z = 0; z <= 2; z++) {
-        for (let y = 0; y <= Math.floor(n / 4); y++) {
+    let maxFoursAndFives = -1;
+
+    for (let z = 0; z <= n; z++) { // z representa grupos de 3
+        for (let y = 0; y <= Math.floor(n / 4); y++) { // y representa grupos de 4
             let remaining = n - (z * 3) - (y * 4);
             if (remaining >= 0 && remaining % 5 === 0) {
-                let x = remaining / 5;
+                let x = remaining / 5; // x representa grupos de 5
+                
+                // Queremos minimizar los grupos de 3 (z)
                 if (z < minThrees) {
                     minThrees = z;
                     let currentDist = [];
@@ -206,6 +184,7 @@ function calculateHitDistribution(n) {
             }
         }
     }
+    
     if (!bestDist) {
         let dist = []; let rem = n;
         while (rem >= 5) { dist.push(5); rem -= 5; }
