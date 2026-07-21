@@ -180,7 +180,7 @@ module.exports = async function handler(req, res) {
                 }
             }
 
-            const { data: todosLosResultados } = await supabase.from('resultados_etapas').select('*, jugadores(nickname)').order('etapa_id', { ascending: true });
+            const { data: todosLosResultados } = await supabase.from('resultados_etapas').select('*, jugadores(nickname, nombre_completo)').order('etapa_id', { ascending: true });
             const general = calcularClasificacionGeneral(todosLosResultados);
             const categoriasFinal = { 'Absoluta': [], 'Rookie': [], 'Senior 45 +': [], 'Senior 55 +': [], 'Damas': [], 'Junior': [], 'Liga Plata': [] };
             Object.keys(categoriasFinal).forEach(cat => {
@@ -189,7 +189,7 @@ module.exports = async function handler(req, res) {
                     if (!catData) return null;
                     // For standard categories (except Liga Plata), if total is 0, they should not show up (e.g. didn't play or score yet)
                     if (cat !== 'Liga Plata' && catData.total <= 0) return null;
-                    return { name: j.nickname, total: catData.total, pos: 0, ...catData };
+                    return { name: j.nombre_completo || j.nickname, total: catData.total, pos: 0, ...catData };
                 }).filter(j => j !== null).sort((a, b) => b.total - a.total);
                 rankingCat.forEach((p, idx) => p.pos = idx + 1);
                 categoriasFinal[cat] = rankingCat;
