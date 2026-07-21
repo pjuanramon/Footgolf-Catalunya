@@ -30,10 +30,17 @@
             z-index: 10;
             background: #f8fafc;
             border-right: 1px solid var(--border-color);
-            max-width: 140px;
+            max-width: 240px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+        }
+
+        @media (min-width: 768px) {
+            .leaderboard-table th:nth-child(2),
+            .leaderboard-table td:nth-child(2) {
+                max-width: none;
+            }
         }
 
         .leaderboard-table td:nth-child(2) {
