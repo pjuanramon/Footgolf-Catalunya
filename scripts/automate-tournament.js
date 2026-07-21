@@ -96,7 +96,7 @@ async function runAutomation() {
     const hitData = [];
     const footgolferData = [];
     let playerIndex = 0;
-    let currentStartTime = new Date(`${fechaTorneoStr}T14:00:00`);
+    let currentStartTime = new Date(`${fechaTorneoStr}T17:00:00`);
 
     distribution.forEach((size, index) => {
         const hitNumber = index + 1;
@@ -115,7 +115,7 @@ async function runAutomation() {
         hitPlayers.forEach((playerName, pIdx) => {
             footgolferData.push({
                 'Número de Hit': hitNumber,
-                'Footgolfer': playerName.trim(), // Nombre completo sin abreviar
+                'Footgolfer': formatFootgolferName(playerName),
                 '¿Es Calificador? \r\n 1=Sí \r\n 0=No': pIdx === caliIdx ? 1 : 0
             });
         });
@@ -203,35 +203,76 @@ function formatTimeHHmm(date) {
 }
 
 function formatFootgolferName(fullName) {
+    if (!fullName) return '';
     const cleanName = fullName.trim().replace(/\s+/g, ' ');
-    const map = {
-        'David Rojo Dengra': 'D. Rojo',
-        'Eduardo Martin Rodriguez': 'E. MartinRdz',
-        'Giacomo Bonacini': 'G. Bonacini',
-        'Juan Rodriguez Curbelo': 'J. Rodríguez4237',
-        'Pol Santoro Dominguez': 'P. Santoro',
-        'P. Santoro': 'P. Santoro',
-        'Jordi Martin Garcia': 'J. Martín3955',
-        'Jorge Santiago Buqueras': 'J. Santiago',
-        'Olivier Tressens': 'O. Tressens',
-        'Mario Morón Sancho': 'M. Morón',
-        'Chema Martínez Guillamon': 'C. Guillamon',
-        'Daniel Abril Amador': 'D. Abril',
-        'Joan Montesinos': 'J. Montesinos',
-        'D. Cortés': 'D. Cortés',
-        'Santiago Jimenez Ortiz': 'S. Jimenez',
-        'Sergi Pahisa': 'S. Pahisa',
-        'Alberto Salazar Fernández': 'A. Salazar',
-        'Ivan luengo robles': 'I. Luengo',
-        'Erik Matarrubia Galera': 'E. Matarrubia',
+    
+    // Hardcoded maps/exceptions to ensure 100% correct formatting for existing players
+    const manualMap = {
         'Alberto Leiva cañada': 'A. Leiva',
+        'Alberto Leiva cañada ': 'A. Leiva',
+        'Alberto Salazar Fernández': 'A. Salazar',
+        'Daniel Abril Amador': 'D. Abril',
+        'David Linares Ramos': 'D. Linares',
+        'David Rojo Dengra': 'D. Rojo',
+        'David Rojo Demgra': 'D. Rojo',
+        'David Tellez Viana': 'D. Tellez',
+        'Eduardo Martin Rodriguez': 'E. MartinRdz',
+        'Erik Matarrubia Galera': 'E. Matarrubia',
+        'Giacomo Bonacini': 'G. Bonacini',
         'Gastón Masuck Cardozo': 'G. Masuck',
-        'Xavi Leiva Cañada': 'X. Leiva',
+        'Ivan luengo robles': 'I. Luengo',
+        'Ivan Luengo Robles': 'I. Luengo',
+        'Jordi Martin Garcia': 'J. MartínGcia',
+        'Joan Montesinos Vega': 'J. Montesinos',
+        'Joan Montesinos': 'J. Montesinos',
+        'Jordi Ortega López': 'J. Ortega',
+        'Juan Ramón Pérez González': 'J. Perez',
+        'JuanRa Perez': 'J. Perez',
+        'Jesus Pizarro Gonzálvez': 'J. Pizarro',
         'Jesús Pizarro Gonzálvez': 'J. Pizarro',
-        'Gustavo Verse': 'G. Verse',
-        'David Tellez Viana': 'D. Tellez'
+        'Jorge Santiago Buqueras': 'J. Santiago',
+        'Lucía Bernuz Culebras': 'L. Bernuz',
+        'Marc Arrebola Sans': 'M. Arrebola',
+        'Marc Company Salvat': 'M. Company',
+        'Mario Morón Sancho': 'M. Morón',
+        'Mario Morón Sacnho': 'M. Morón',
+        'Nicola Perra': 'N. Perra',
+        'N.Perra': 'N. Perra',
+        'Santiago Jimenez Ortiz': 'S. Jimenez',
+        'Sergi Pahisa Garcia': 'S. Pahisa',
+        'Sergi Pahisa': 'S. Pahisa',
+        'Sergi Perez Vilar': 'S. PerezVilar',
+        'Victor Alvarez Moreno': 'V. Alvarez',
+        'V. Alvarez': 'V. Alvarez',
+        'Xavi Leiva Cañada': 'X. Leiva',
+        'Chema Martínez Guillamon': 'C. Guillamon',
+        'Tressens Olivier': 'O. Tressens',
+        'Olivier Tressens': 'O. Tressens'
     };
-    return map[cleanName] || cleanName;
+    
+    if (manualMap[cleanName]) {
+        return manualMap[cleanName];
+    }
+    
+    // Fallback automatic formatting
+    const parts = cleanName.split(' ');
+    if (parts.length <= 1) return cleanName;
+    
+    const initial = parts[0][0].toUpperCase();
+    
+    // Check if the second word is a known middle name/second first name to skip to the third word for the surname
+    const secondWordsToSkip = ['ramon', 'ramón', 'alejandro', 'manuel', 'jose', 'josé', 'maria', 'maría', 'carlos', 'javier', 'miguel', 'antonio', 'angel', 'ángel'];
+    let surnameIndex = 1;
+    if (parts.length > 2 && secondWordsToSkip.includes(parts[1].toLowerCase())) {
+        surnameIndex = 2;
+    }
+    
+    let surname = parts[surnameIndex];
+    if (surname) {
+        surname = surname.charAt(0).toUpperCase() + surname.slice(1);
+    }
+    
+    return `${initial}. ${surname}`;
 }
 
 runAutomation().catch(console.error);

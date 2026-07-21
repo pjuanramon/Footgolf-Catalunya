@@ -44,7 +44,8 @@ module.exports = async function handler(req, res) {
             const isSalazar = rawName.toLowerCase().includes('salazar');
             const isAbril = rawName.toLowerCase().includes('abril');
             const isMatarrubia = rawName.toLowerCase().includes('matarrubia');
-            if (isSalazar || isAbril || isMatarrubia) logs.push(`DEBUG DEBUG: Encontrado en fila: "${rawName}"`);
+            const isAlvarez = rawName.toLowerCase().includes('alvarez');
+            if (isSalazar || isAbril || isMatarrubia || isAlvarez) logs.push(`DEBUG DEBUG: Encontrado en fila: "${rawName}"`);
 
             const match = matchPlayerToDb(rawName, dbPlayers || []);
             let p = match.player;
@@ -62,15 +63,19 @@ module.exports = async function handler(req, res) {
                 p = dbPlayers.find(x => x.id === 'fd33030a-9b8f-444e-8fe3-cb2c02d784f3') || p;
                 logs.push(`[DEBUG] Forzado Erik Matarrubia ID: ${p?.id}`);
             }
+            if (isAlvarez) {
+                p = dbPlayers.find(x => x.id === '30e5d409-5804-4a5c-936e-7eb1b09e27a3') || p;
+                logs.push(`[DEBUG] Forzado Victor Alvarez ID: ${p?.id}`);
+            }
 
             // PRIORIDAD 1: Si lo encontramos en la DB y tiene licencia, LO INCLUIMOS.
             let tieneLicenciaValida = false;
             if (p) {
                 tieneLicenciaValida = p.tiene_licencia;
                 // Forzar licencia true para estos específicamente
-                if (isSalazar || isAbril || isMatarrubia) tieneLicenciaValida = true;
+                if (isSalazar || isAbril || isMatarrubia || isAlvarez) tieneLicenciaValida = true;
                 
-                if (isSalazar || isAbril || isMatarrubia) logs.push(`DEBUG DEBUG: Matcheado en DB como ${p.nickname}. Tiene licencia: ${tieneLicenciaValida}`);
+                if (isSalazar || isAbril || isMatarrubia || isAlvarez) logs.push(`DEBUG DEBUG: Matcheado en DB como ${p.nickname}. Tiene licencia: ${tieneLicenciaValida}`);
             } else {
                 tieneLicenciaValida = String(row['F']).trim().toUpperCase() !== 'NO';
             }
