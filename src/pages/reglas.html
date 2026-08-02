@@ -458,6 +458,81 @@
             color: #92400e;
             border: 1px solid #fde68a;
         }
+
+        /* Estilos específicos para Reglas Locales */
+        .hole-rule-card {
+            background: var(--bg-color);
+            border-radius: 1.25rem;
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .hole-rule-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+            border-color: rgba(30, 143, 58, 0.3);
+        }
+
+        .hole-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            border-bottom: 1px dashed var(--border-color);
+            padding-bottom: 1rem;
+        }
+
+        .hole-number-tag {
+            background: var(--bg-dark);
+            color: white;
+            font-weight: 800;
+            padding: 0.4rem 1rem;
+            border-radius: 0.75rem;
+            font-size: 1.05rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .badge-opcional {
+            background-color: #e0f2fe;
+            color: #0369a1;
+            border: 1px solid #bae6fd;
+        }
+
+        .badge-obligatorio {
+            background-color: #ffedd5;
+            color: #c2410c;
+            border: 1px solid #fed7aa;
+        }
+
+        .badge-condicional {
+            background-color: #f3e8ff;
+            color: #6b21a8;
+            border: 1px solid #e9d5ff;
+        }
+
+        .badge-ob {
+            background-color: #ffe4e6;
+            color: #be123c;
+            border: 1px solid #fecdd3;
+        }
+
+        .rule-detail-box {
+            background: rgba(255, 255, 255, 0.7);
+            border-left: 4px solid var(--primary-color);
+            padding: 0.85rem 1.15rem;
+            border-radius: 0.5rem;
+            font-size: 0.95rem;
+            color: var(--text-main);
+            line-height: 1.6;
+        }
     </style>
 </head>
 
@@ -467,13 +542,14 @@
     <main>
         <header class="page-header" style="padding-bottom: 8rem;">
             <h1 class="gradient-text">Reglamento y Guías</h1>
-            <p>Conoce las reglas oficiales, el código ético y la guía interactiva de obstrucciones de Footgolf Catalunya.</p>
+            <p>Conoce las reglas oficiales, el código ético, las reglas locales y la guía interactiva de obstrucciones de Footgolf Catalunya.</p>
         </header>
 
         <div class="rules-wrapper">
             <!-- Navegación por pestañas principales -->
             <nav class="rules-nav">
                 <button class="rules-nav-btn active" onclick="switchMainTab(event, 'basic-rules')">Reglas Básicas</button>
+                <button class="rules-nav-btn" onclick="switchMainTab(event, 'local-rules-garriga')">Reglas Locales (La Garriga)</button>
                 <button class="rules-nav-btn" onclick="switchMainTab(event, 'ethics')">Código de Conducta</button>
                 <button class="rules-nav-btn" onclick="switchMainTab(event, 'dress-code')">Vestimenta (Dress Code)</button>
                 <button class="rules-nav-btn" onclick="switchMainTab(event, 'obstructions')">Guía de Obstrucciones</button>
@@ -509,6 +585,91 @@
                         <div class="rule-item">
                             <h3><span>06.</span> Identificación del Balón</h3>
                             <p>Cada jugador debe jugar con un balón único y claramente identificable (con su nombre o marcas personales). Jugar con el balón equivocado conlleva una penalización.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONTENIDO REGLAS LOCALES LA GARRIGA -->
+            <div id="local-rules-garriga" class="rules-tab-content">
+                <div class="info-card">
+                    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+                        <h2 style="margin-bottom: 0;">⛳ Reglas Locales — Campo de La Garriga</h2>
+                        <span class="badge badge-yes" style="font-size: 0.85rem; padding: 0.5rem 1rem;">Recorrido Oficial</span>
+                    </div>
+                    <p style="color: var(--text-light); font-size: 1.1rem; max-width: 850px; margin-bottom: 2.5rem;">
+                        A continuación se especifican las reglas locales y zonas de dropaje vigentes para las pruebas disputadas en el campo de golf de <strong>La Garriga</strong>. Es responsabilidad de todos los competidores conocer y aplicar estas normas correctamente durante el juego.
+                    </p>
+
+                    <div class="rules-grid" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem;">
+                        <!-- HOYO 5 -->
+                        <div class="hole-rule-card">
+                            <div class="hole-header">
+                                <div class="hole-number-tag">
+                                    <span>🚩 Hoyo 5</span>
+                                </div>
+                                <span class="badge badge-opcional">Dropaje Opcional</span>
+                            </div>
+                            <h3 style="font-size: 1.25rem; color: var(--text-main); font-weight: 700; margin-top: 0.5rem;">Zona de Dropaje en Salida</h3>
+                            <div class="rule-detail-box">
+                                <strong>Ubicación:</strong> Salida de golf, situada tras cruzar la carretera.
+                            </div>
+                            <p style="color: var(--text-light); font-size: 0.95rem; line-height: 1.6; margin: 0;">
+                                Esta zona de dropaje es <strong>opcional</strong> y se puede utilizar voluntariamente en cualquier momento durante la disputa del hoyo.
+                            </p>
+                        </div>
+
+                        <!-- HOYO 14 -->
+                        <div class="hole-rule-card">
+                            <div class="hole-header">
+                                <div class="hole-number-tag">
+                                    <span>🚩 Hoyo 14</span>
+                                </div>
+                                <span class="badge badge-obligatorio">Dropaje Obligatorio</span>
+                            </div>
+                            <h3 style="font-size: 1.25rem; color: var(--text-main); font-weight: 700; margin-top: 0.5rem;">Agua en Golpe de Salida</h3>
+                            <div class="rule-detail-box">
+                                <strong>Ubicación:</strong> Entre la estaca y el árbol más cercano en el lado derecho del fairway, junto a la valla.
+                            </div>
+                            <p style="color: var(--text-light); font-size: 0.95rem; line-height: 1.6; margin: 0;">
+                                En el caso de que el balón vaya al agua en el <strong>primer golpe (salida)</strong>, el uso de esta zona de dropaje es <strong>estrictamente obligatorio</strong>.
+                            </p>
+                        </div>
+
+                        <!-- HOYO 16 -->
+                        <div class="hole-rule-card">
+                            <div class="hole-header">
+                                <div class="hole-number-tag">
+                                    <span>🚩 Hoyo 16</span>
+                                </div>
+                                <span class="badge badge-condicional">Dropaje Condicional</span>
+                            </div>
+                            <h3 style="font-size: 1.25rem; color: var(--text-main); font-weight: 700; margin-top: 0.5rem;">Entrada al Agua por Lado Posterior</h3>
+                            <div class="rule-detail-box">
+                                <strong>Condición:</strong> Entrada de balón por el lado posterior del lago.
+                            </div>
+                            <p style="color: var(--text-light); font-size: 0.95rem; line-height: 1.6; margin: 0;">
+                                La zona de dropaje se utiliza <strong>únicamente</strong> para aquellos golpes donde el balón entre al agua por el <em>lado posterior</em> del lago.<br><br>
+                                ⚠️ <strong>Importante:</strong> Si el balón entra al agua por la parte anterior, <strong>NO aplica</strong> la zona de dropaje; rige la regla general de alivio de la FIFG.
+                            </p>
+                        </div>
+
+                        <!-- HOYO 18 -->
+                        <div class="hole-rule-card" style="grid-column: 1 / -1;">
+                            <div class="hole-header">
+                                <div class="hole-number-tag">
+                                    <span>🚩 Hoyo 18</span>
+                                </div>
+                                <span class="badge badge-ob">Fuera de Límites (OB)</span>
+                            </div>
+                            <h3 style="font-size: 1.25rem; color: var(--text-main); font-weight: 700; margin-top: 0.5rem;">Prohibición de Juego por la Zona del Hoyo 1</h3>
+                            <div class="rule-detail-box" style="border-left-color: #be123c;">
+                                <strong>Criterio de Delimitación:</strong> La colina divisoria entre el Hoyo 1 y el Hoyo 18.
+                            </div>
+                            <p style="color: var(--text-light); font-size: 0.95rem; line-height: 1.6; margin: 0;">
+                                Está <strong>estrictamente prohibido</strong> jugar el Hoyo 18 atravesando la superficie del Hoyo 1. Dicha zona es considerada <strong>Fuera de Límites (OB)</strong> y aplica la regla oficial FIFG.<br><br>
+                                🔍 <strong>Procedimiento en Caso de Duda:</strong> Al no haber estacado marcado, el criterio divisor es la colina (su inclinación normalmente desviará el balón de forma evidente a uno de los dos lados). Si persiste duda sobre si el balón reposa en el Hoyo 1, se debe <strong>tomar foto o video</strong> y <strong>jugar dos escenarios de juego</strong> para su posterior comprobación.
+                            </p>
                         </div>
                     </div>
                 </div>
