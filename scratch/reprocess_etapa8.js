@@ -96,8 +96,8 @@ async function runEtapa8() {
     }
     console.log('✅ Etapa 8 insertada/actualizada en tabla resultados_etapas.');
 
-    // 5. Marcar Etapa 8 como cerrada / finalizada
-    await supabase.from('etapas').update({ estado: 'cerrada' }).eq('id', 8);
+    // 5. Marcar Etapa 8 como finalizada
+    await supabase.from('etapas').update({ estado: 'finalizada' }).eq('id', 8);
 
     // 6. Recalcular snapshots acumulados de clasificación hasta la Etapa 8
     const { data: todosLosResultados } = await supabase
