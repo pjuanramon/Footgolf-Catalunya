@@ -140,33 +140,33 @@ CREATE TRIGGER trg_actualizar_licencia
 
 -- ============================================================
 -- Función auxiliar: Calcular fecha de cierre de inscripciones
--- Viernes anterior a la fecha de la etapa, a las 13:00
+-- Miércoles anterior a la fecha de la etapa, a las 18:00
 -- ============================================================
 CREATE OR REPLACE FUNCTION fn_calcular_fecha_cierre(fecha_etapa DATE)
 RETURNS TIMESTAMPTZ AS $$
 DECLARE
     dia_semana INTEGER;
-    dias_hasta_viernes INTEGER;
-    viernes_anterior DATE;
+    dias_hasta_miercoles INTEGER;
+    miercoles_anterior DATE;
 BEGIN
     -- dow: 0=domingo, 1=lunes, ..., 5=viernes, 6=sábado
     dia_semana := EXTRACT(DOW FROM fecha_etapa)::INTEGER;
 
-    -- Calcular cuántos días restar para llegar al viernes anterior
+    -- Calcular cuántos días restar para llegar al miércoles anterior
     CASE dia_semana
-        WHEN 0 THEN dias_hasta_viernes := 2;  -- domingo → viernes = -2
-        WHEN 1 THEN dias_hasta_viernes := 3;  -- lunes → viernes = -3
-        WHEN 2 THEN dias_hasta_viernes := 4;  -- martes → viernes = -4
-        WHEN 3 THEN dias_hasta_viernes := 5;  -- miércoles → viernes = -5
-        WHEN 4 THEN dias_hasta_viernes := 6;  -- jueves → viernes = -6
-        WHEN 5 THEN dias_hasta_viernes := 7;  -- viernes → viernes anterior = -7
-        WHEN 6 THEN dias_hasta_viernes := 1;  -- sábado → viernes = -1
+        WHEN 0 THEN dias_hasta_miercoles := 4;  -- domingo → miércoles = -4
+        WHEN 1 THEN dias_hasta_miercoles := 5;  -- lunes → miércoles = -5
+        WHEN 2 THEN dias_hasta_miercoles := 6;  -- martes → miércoles = -6
+        WHEN 3 THEN dias_hasta_miercoles := 7;  -- miércoles → miércoles anterior = -7
+        WHEN 4 THEN dias_hasta_miercoles := 1;  -- jueves → miércoles = -1
+        WHEN 5 THEN dias_hasta_miercoles := 2;  -- viernes → miércoles = -2
+        WHEN 6 THEN dias_hasta_miercoles := 3;  -- sábado → miércoles = -3
     END CASE;
 
-    viernes_anterior := fecha_etapa - dias_hasta_viernes;
+    miercoles_anterior := fecha_etapa - dias_hasta_miercoles;
 
-    -- Devolver como timestamp con hora 13:00 en zona horaria de España
-    RETURN (viernes_anterior::TEXT || ' 13:00:00')::TIMESTAMPTZ AT TIME ZONE 'Europe/Madrid';
+    -- Devolver como timestamp con hora 18:00 en zona horaria de España
+    RETURN (miercoles_anterior::TEXT || ' 18:00:00')::TIMESTAMPTZ AT TIME ZONE 'Europe/Madrid';
 END;
 $$ LANGUAGE plpgsql IMMUTABLE;
 

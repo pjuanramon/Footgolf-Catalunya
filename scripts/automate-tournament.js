@@ -41,9 +41,9 @@ async function runAutomation() {
 
     console.log(`Torneo detectado: ${etapa.nombre} (${etapa.fecha})`);
 
-    // Validar si hoy es viernes
-    if (hoy.getDay() !== 5 && !process.env.FORCE_AUTOMATION) {
-        console.log(`Hoy no es viernes (es día ${hoy.getDay()}).`);
+    // Validar si hoy es miércoles
+    if (hoy.getDay() !== 3 && !process.env.FORCE_AUTOMATION) {
+        console.log(`Hoy no es miércoles (es día ${hoy.getDay()}).`);
         return;
     }
 
