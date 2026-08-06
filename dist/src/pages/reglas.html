@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reglas y Obstrucciones - Footgolf Catalunya</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <script src="/js/Navbar.js" defer></script>
+    <script src="/js/Footer.js" defer></script>
+    <link rel="icon" type="image/png" href="/favicon.png?v=1">
+    <style>
+        /* Estilos específicos para la sección de Reglas */
+        .rules-wrapper {
+            max-width: 1100px;
+            margin: -4rem auto 4rem;
+            position: relative;
+            z-index: 10;
+            padding: 0 1rem;
+        }
+
+        .rules-nav {
+            display: flex;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-bottom: 2.5rem;
+            flex-wrap: wrap;
+            background: rgba(15, 23, 42, 0.4);
+            padding: 0.75rem;
+            border-radius: 9999px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+        }
+
+        .rules-nav-btn {
+            background: transparent;
+            color: #94a3b8;
+            border: none;
+            padding: 0.8rem 1.8rem;
+            border-radius: 9999px;
+            font-family: var(--font-family);
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .rules-nav-btn:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .rules-nav-btn.active {
+            background: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 14px 0 rgba(30, 143, 58, 0.4);
+        }
+
+        .rules-tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out forwards;
+        }
+
+        .rules-tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Tarjetas de Información */
+        .info-card {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 3rem;
+            box-shadow: var(--shadow-xl);
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .info-card h2 {
+            color: var(--primary-color);
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .rules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .rule-item {
+            background: var(--bg-color);
+            padding: 2rem;
+            border-radius: 1rem;
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            transition: var(--transition);
+        }
+
+        .rule-item:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+            border-color: rgba(30, 143, 58, 0.2);
+        }
+
+        .rule-item h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.75rem;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .rule-item p {
+            color: var(--text-light);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* Código de Ética */
+        .ethics-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .ethics-item {
+            display: flex;
+            gap: 1.5rem;
+            background: var(--bg-color);
+            padding: 1.75rem;
+            border-radius: 1rem;
+            align-items: flex-start;
+            border-left: 5px solid var(--primary-color);
+            transition: var(--transition);
+        }
+
+        .ethics-item:hover {
+            transform: translateX(5px);
+            background: #f1f5f9;
+        }
+
+        .ethics-icon {
+            font-size: 2rem;
+            line-height: 1;
+        }
+
+        .ethics-details h3 {
+            font-size: 1.15rem;
+            margin-bottom: 0.4rem;
+            color: var(--text-main);
+        }
+
+        .ethics-details p {
+            color: var(--text-light);
+            font-size: 0.95rem;
+        }
+
+        /* Vestimenta */
+        .dress-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .dress-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .dress-card {
+            padding: 2.5rem;
+            border-radius: 1.5rem;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .dress-card.allowed {
+            background: linear-gradient(135deg, #1e3a1e 0%, #111827 100%);
+            border: 1px solid rgba(74, 222, 128, 0.2);
+        }
+
+        .dress-card.forbidden {
+            background: linear-gradient(135deg, #451a1a 0%, #111827 100%);
+            border: 1px solid rgba(248, 113, 113, 0.2);
+        }
+
+        .dress-card h3 {
+            font-size: 1.6rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .dress-card ul {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .dress-card li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        .dress-card.allowed li::before {
+            content: "✓";
+            color: #4ade80;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .dress-card.forbidden li::before {
+            content: "✗";
+            color: #f87171;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        /* Submódulo Obstrucciones */
+        .obs-container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 2.5rem;
+            margin-top: 1.5rem;
+        }
+
+        @media (max-width: 900px) {
+            .obs-container {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+        }
+
+        .obs-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            background: var(--bg-color);
+            padding: 1rem;
+            border-radius: 1rem;
+            border: 1px solid var(--border-color);
+            height: fit-content;
+        }
+
+        .obs-btn {
+            background: transparent;
+            color: var(--text-main);
+            border: none;
+            padding: 1rem 1.25rem;
+            border-radius: 0.75rem;
+            font-family: var(--font-family);
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .obs-btn:hover {
+            background: rgba(30, 143, 58, 0.08);
+            color: var(--primary-color);
+        }
+
+        .obs-btn.active {
+            background: var(--primary-color);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .obs-content-area {
+            background: var(--bg-color);
+            border-radius: 1.5rem;
+            padding: 2.5rem;
+            border: 1px solid var(--border-color);
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .obs-section-content {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out forwards;
+        }
+
+        .obs-section-content.active {
+            display: block;
+        }
+
+        .obs-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.75rem;
+        }
+
+        .obs-desc {
+            font-size: 1.05rem;
+            color: var(--text-main);
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+        }
+
+        .rule-box {
+            background: white;
+            padding: 1.75rem;
+            border-radius: 1rem;
+            border-left: 5px solid var(--secondary-color);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 1.5rem;
+        }
+
+        .rule-box h4 {
+            font-size: 1.1rem;
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .rule-box p {
+            color: var(--text-light);
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        .obs-list {
+            margin-bottom: 1.5rem;
+            padding-left: 1.5rem;
+        }
+
+        .obs-list li {
+            margin-bottom: 0.75rem;
+            color: var(--text-light);
+            position: relative;
+            list-style-type: none;
+        }
+
+        .obs-list li::before {
+            content: "⚽";
+            position: absolute;
+            left: -1.5rem;
+            top: 0.1rem;
+            font-size: 0.8rem;
+        }
+
+        .tip-badge {
+            display: inline-block;
+            background: rgba(245, 158, 11, 0.15);
+            color: #d97706;
+            padding: 0.4rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.8rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-top: 1rem;
+            align-self: flex-start;
+        }
+
+        /* Estilos de la tabla de obstrucciones */
+        .obs-table-container {
+            width: 100%;
+            overflow-x: auto;
+            margin-top: 2rem;
+            border-radius: 1rem;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-md);
+            background: white;
+        }
+
+        .obs-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.95rem;
+        }
+
+        .obs-table th, .obs-table td {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
+        }
+
+        .obs-table th {
+            background-color: var(--bg-dark);
+            color: white;
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+        }
+
+        .obs-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .obs-table tr:hover {
+            background-color: #f8fafc;
+        }
+
+        .badge {
+            padding: 0.35rem 0.9rem;
+            border-radius: 9999px;
+            font-weight: 800;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .badge-yes {
+            background-color: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        .badge-no {
+            background-color: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        .badge-warning {
+            background-color: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fde68a;
+        }
+
+        /* Estilos específicos para Reglas Locales */
+        .hole-rule-card {
+            background: var(--bg-color);
+            border-radius: 1.25rem;
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .hole-rule-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+            border-color: rgba(30, 143, 58, 0.3);
+        }
+
+        .hole-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            border-bottom: 1px dashed var(--border-color);
+            padding-bottom: 1rem;
+        }
+
+        .hole-number-tag {
+            background: var(--bg-dark);
+            color: white;
+            font-weight: 800;
+            padding: 0.4rem 1rem;
+            border-radius: 0.75rem;
+            font-size: 1.05rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .badge-opcional {
+            background-color: #e0f2fe;
+            color: #0369a1;
+            border: 1px solid #bae6fd;
+        }
+
+        .badge-obligatorio {
+            background-color: #ffedd5;
+            color: #c2410c;
+            border: 1px solid #fed7aa;
+        }
+
+        .badge-condicional {
+            background-color: #f3e8ff;
+            color: #6b21a8;
+            border: 1px solid #e9d5ff;
+        }
+
+        .badge-ob {
+            background-color: #ffe4e6;
+            color: #be123c;
+            border: 1px solid #fecdd3;
+        }
+
+        .rule-detail-box {
+            background: rgba(255, 255, 255, 0.7);
+            border-left: 4px solid var(--primary-color);
+            padding: 0.85rem 1.15rem;
+            border-radius: 0.5rem;
+            font-size: 0.95rem;
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+    </style>
+  <link rel="stylesheet" crossorigin href="/assets/main-2iTdLJGo.css">
+</head>
+
+<body>
+    <app-navbar></app-navbar>
+
+    <main>
+        <header class="page-header" style="padding-bottom: 8rem;">
+            <h1 class="gradient-text">Reglamento y Guías</h1>
+            <p>Conoce las reglas oficiales, el código ético, las reglas locales y la guía interactiva de obstrucciones de Footgolf Catalunya.</p>
+        </header>
+
+        <div class="rules-wrapper">
+            <!-- Navegación por pestañas principales -->
+            <nav class="rules-nav">
+                <button class="rules-nav-btn active" onclick="switchMainTab(event, 'basic-rules')">Reglas Básicas</button>
+                <button class="rules-nav-btn" onclick="switchMainTab(event, 'local-rules-garriga')">Reglas Locales (La Garriga)</button>
+                <button class="rules-nav-btn" onclick="switchMainTab(event, 'ethics')">Código de Conducta</button>
+                <button class="rules-nav-btn" onclick="switchMainTab(event, 'dress-code')">Vestimenta (Dress Code)</button>
+                <button class="rules-nav-btn" onclick="switchMainTab(event, 'obstructions')">Guía de Obstrucciones</button>
+            </nav>
+
+            <!-- CONTENIDO 1: REGLAS BÁSICAS -->
+            <div id="basic-rules" class="rules-tab-content active">
+                <div class="info-card">
+                    <h2>⚽ Reglas Básicas del Footgolf</h2>
+                    <p style="color: var(--text-light); font-size: 1.1rem; max-width: 800px; margin-bottom: 2rem;">El Footgolf es un deporte simple en esencia pero que requiere precisión y estrategia. Aquí tienes las reglas fundamentales que todo jugador debe dominar antes de salir al campo.</p>
+
+                    <div class="rules-grid">
+                        <div class="rule-item">
+                            <h3><span>01.</span> Objetivo del Juego</h3>
+                            <p>El objetivo es introducir un balón de fútbol número 5 en un hoyo de 53 centímetros de diámetro con el menor número de golpes posible, siguiendo el recorrido oficial del campo.</p>
+                        </div>
+                        <div class="rule-item">
+                            <h3><span>02.</span> El Golpe de Salida</h3>
+                            <p>Cada hoyo comienza desde el área de salida (tee). El balón debe colocarse en el suelo detrás de la línea imaginaria entre los dos marcadores y patearse con un movimiento limpio.</p>
+                        </div>
+                        <div class="rule-item">
+                            <h3><span>03.</span> Jugar el Balón como Yace</h3>
+                            <p>El balón debe ser jugado exactamente desde donde quedó en el golpe anterior. No está permitido empujarlo, arrastrarlo, ni acomodar el terreno, salvo las excepciones indicadas por las reglas de alivio.</p>
+                        </div>
+                        <div class="rule-item">
+                            <h3><span>04.</span> Balón Completamente Parado</h3>
+                            <p>Antes de realizar cualquier golpe, el balón debe estar completamente inmóvil. Patear un balón en movimiento conlleva una penalización general (2 golpes de castigo).</p>
+                        </div>
+                        <div class="rule-item">
+                            <h3><span>05.</span> Orden de Juego</h3>
+                            <p>En el golpe de salida, el jugador con el mejor resultado en el hoyo anterior patea primero. Para los golpes siguientes, el jugador cuyo balón se encuentre más alejado del hoyo será el primero en patear.</p>
+                        </div>
+                        <div class="rule-item">
+                            <h3><span>06.</span> Identificación del Balón</h3>
+                            <p>Cada jugador debe jugar con un balón único y claramente identificable (con su nombre o marcas personales). Jugar con el balón equivocado conlleva una penalización.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONTENIDO REGLAS LOCALES LA GARRIGA -->
+            <div id="local-rules-garriga" class="rules-tab-content">
+                <div class="info-card">
+                    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+                        <h2 style="margin-bottom: 0;">⛳ Reglas Locales — Campo de La Garriga</h2>
+                        <span class="badge badge-yes" style="font-size: 0.85rem; padding: 0.5rem 1rem;">Recorrido Oficial</span>
+                    </div>
+                    <p style="color: var(--text-light); font-size: 1.1rem; max-width: 850px; margin-bottom: 2.5rem;">
+                        A continuación se especifican las reglas locales y zonas de dropaje vigentes para las pruebas disputadas en el campo de golf de <strong>La Garriga</strong>. Es responsabilidad de todos los competidores conocer y aplicar estas normas correctamente durante el juego.
+                    </p>
+
+                    <div class="rules-grid" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem;">
+                        <!-- HOYO 5 -->
+                        <div class="hole-rule-card">
+                            <div class="hole-header">
+                                <div class="hole-number-tag">
+                                    <span>🚩 Hoyo 5</span>
+                                </div>
+                                <span class="badge badge-opcional">Dropaje Opcional</span>
+                            </div>
+                            <h3 style="font-size: 1.25rem; color: var(--text-main); font-weight: 700; margin-top: 0.5rem;">Zona de Dropaje en Salida</h3>
+                            <div class="rule-detail-box">
+                                <strong>Ubicación:</strong> Salida de golf, situada tras cruzar la carretera.
+                            </div>
+                            <p style="color: var(--text-light); font-size: 0.95rem; line-height: 1.6; margin: 0;">
+                                Esta zona de dropaje es <strong>opcional</strong> y se puede utilizar voluntariamente en cualquier momento durante la disputa del hoyo.
+                            </p>
+                        </div>
+
+                        <!-- HOYO 14 -->
+                        <div class="hole-rule-card">
+                            <div class="hole-header">
+                                <div class="hole-number-tag">
+                                    <span>🚩 Hoyo 14</span>
+                                </div>
+                                <span class="badge badge-obligatorio">Dropaje Obligatorio</span>
+                            </div>
+                            <h3 style="font-size: 1.25rem; color: var(--text-main); font-weight: 700; margin-top: 0.5rem;">Agua en Golpe de Salida</h3>
+                            <div class="rule-detail-box">
+                                <strong>Ubicación:</strong> Entre la estaca y el árbol más cercano en el lado derecho del fairway, junto a la valla.
+                            </div>
+                            <p style="color: var(--text-light); font-size: 0.95rem; line-height: 1.6; margin: 0;">
+                                En el caso de que el balón vaya al agua en el <strong>primer golpe (salida)</strong>, el uso de esta zona de dropaje es <strong>estrictamente obligatorio</strong>.
+                            </p>
+                        </div>
+
+                        <!-- HOYO 16 -->
+                        <div class="hole-rule-card">
+                            <div class="hole-header">
+                                <div class="hole-number-tag">
+                                    <span>🚩 Hoyo 16</span>
+                                </div>
+                                <span class="badge badge-condicional">Dropaje Condicional</span>
+                            </div>
+                            <h3 style="font-size: 1.25rem; color: var(--text-main); font-weight: 700; margin-top: 0.5rem;">Entrada al Agua por Lado Posterior</h3>
+                            <div class="rule-detail-box">
+                                <strong>Condición:</strong> Entrada de balón por el lado posterior del lago.
+                            </div>
+                            <p style="color: var(--text-light); font-size: 0.95rem; line-height: 1.6; margin: 0;">
+                                La zona de dropaje se utiliza <strong>únicamente</strong> para aquellos golpes donde el balón entre al agua por el <em>lado posterior</em> del lago.<br><br>
+                                ⚠️ <strong>Importante:</strong> Si el balón entra al agua por la parte anterior, <strong>NO aplica</strong> la zona de dropaje; rige la regla general de alivio de la FIFG.
+                            </p>
+                        </div>
+
+                        <!-- HOYO 18 -->
+                        <div class="hole-rule-card" style="grid-column: 1 / -1;">
+                            <div class="hole-header">
+                                <div class="hole-number-tag">
+                                    <span>🚩 Hoyo 18</span>
+                                </div>
+                                <span class="badge badge-ob">Fuera de Límites (OB)</span>
+                            </div>
+                            <h3 style="font-size: 1.25rem; color: var(--text-main); font-weight: 700; margin-top: 0.5rem;">Prohibición de Juego por la Zona del Hoyo 1</h3>
+                            <div class="rule-detail-box" style="border-left-color: #be123c;">
+                                <strong>Criterio de Delimitación:</strong> La colina divisoria entre el Hoyo 1 y el Hoyo 18.
+                            </div>
+                            <p style="color: var(--text-light); font-size: 0.95rem; line-height: 1.6; margin: 0;">
+                                Está <strong>estrictamente prohibido</strong> jugar el Hoyo 18 atravesando la superficie del Hoyo 1. Dicha zona es considerada <strong>Fuera de Límites (OB)</strong> y aplica la regla oficial FIFG.<br><br>
+                                🔍 <strong>Procedimiento en Caso de Duda:</strong> Al no haber estacado marcado, el criterio divisor es la colina (su inclinación normalmente desviará el balón de forma evidente a uno de los dos lados). Si persiste duda sobre si el balón reposa en el Hoyo 1, se debe <strong>tomar foto o video</strong> y <strong>jugar dos escenarios de juego</strong> para su posterior comprobación.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONTENIDO 2: CÓDIGO DE CONDUCTA -->
+            <div id="ethics" class="rules-tab-content">
+                <div class="info-card">
+                    <h2>🤝 Código de Ética y Conducta</h2>
+                    <p style="color: var(--text-light); font-size: 1.1rem; max-width: 800px; margin-bottom: 2rem;">El espíritu deportivo es la base del Footgolf. Todos los jugadores de la Asociación deben comportarse con integridad, cortesía y respeto mutuo en todo momento.</p>
+
+                    <div class="ethics-list">
+                        <div class="ethics-item">
+                            <div class="ethics-icon">🤐</div>
+                            <div class="ethics-details">
+                                <h3>Silencio y Respeto al Golpear</h3>
+                                <p>Por cortesía elemental, ningún jugador debe hablar, hacer ruidos o moverse en la línea de visión o de tiro de otro jugador mientras este se concentra para realizar su golpe.</p>
+                            </div>
+                        </div>
+                        <div class="ethics-item">
+                            <div class="ethics-icon">⏱️</div>
+                            <div class="ethics-details">
+                                <h3>Mantener el Ritmo de Juego</h3>
+                                <p>El juego lento afecta a toda la competición. Los jugadores deben estar listos para patear inmediatamente cuando sea su turno y caminar a un ritmo constante entre golpes.</p>
+                            </div>
+                        </div>
+                        <div class="ethics-item">
+                            <div class="ethics-icon">🌳</div>
+                            <div class="ethics-details">
+                                <h3>Cuidado Absoluto del Campo</h3>
+                                <p>Está terminantemente prohibido dañar el césped, los greens o las instalaciones del club de golf. Los búnkers de arena deben rastrillarse y alisarse completamente tras jugar desde ellos.</p>
+                            </div>
+                        </div>
+                        <div class="ethics-item">
+                            <div class="ethics-icon">✍️</div>
+                            <div class="ethics-details">
+                                <h3>Honestidad Rigurosa en el Marcador</h3>
+                                <p>El footgolf se basa en la confianza. Anotar golpes falsos o manipular la tarjeta de puntuación (física o digital) constituye una falta grave que resultará en la descalificación inmediata.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONTENIDO 3: VESTIMENTA (DRESS CODE) -->
+            <div id="dress-code" class="rules-tab-content">
+                <div class="info-card">
+                    <h2>👕 Código de Vestimenta Oficial</h2>
+                    <p style="color: var(--text-light); font-size: 1.1rem; max-width: 800px; margin-bottom: 2.5rem;">Como deporte de caballeros que comparte espacio con los clubes de golf más prestigiosos, el Footgolf exige una vestimenta elegante que honre la tradición de ambos deportes.</p>
+
+                    <div class="dress-grid">
+                        <div class="dress-card allowed">
+                            <h3>Permitido y Recomendado</h3>
+                            <ul>
+                                <li><strong>Polos con cuello:</strong> Polos clásicos de golf o tenis (de manga corta o larga). Siempre deben vestirse por dentro del pantalón.</li>
+                                <li><strong>Pantalones estilo golf:</strong> Pantalones largos de vestir tipo chino o bermudas formales con bolsillos.</li>
+                                <li><strong>Calcetines altos:</strong> Si se usan bermudas, es obligatorio usar calcetines altos (preferiblemente de estilo argyle o rombos tradicionales).</li>
+                                <li><strong>Gorra tradicional:</strong> Gorra plana clásica de footgolf (boina), visera o gorra de golf tradicional.</li>
+                                <li><strong>Calzado reglamentario:</strong> Zapatillas de fútbol multitaco (tipo "turf") o zapatillas de fútbol sala.</li>
+                            </ul>
+                        </div>
+
+                        <div class="dress-card forbidden">
+                            <h3>Prohibido en el Campo</h3>
+                            <ul>
+                                <li><strong>Sin cuello:</strong> Camisetas de fútbol, camisetas sin mangas, sudaderas con capucha o prendas informales de playa.</li>
+                                <li><strong>Pantalones deportivos:</strong> Pantalones cortos de fútbol, joggers, vaqueros (denim), bañadores o mallas.</li>
+                                <li><strong>Botas de tacos grandes:</strong> Quedan estrictamente prohibidas las botas con tacos de aluminio o goma grande de fútbol 11/7, ya que destrozan los greens de golf.</li>
+                                <li><strong>Descalzo:</strong> Jugar descalzo o con sandalias/chanclas está penalizado con la descalificación.</li>
+                                <li><strong>Gorra hacia atrás:</strong> Llevar la gorra o visera en sentido contrario al juego.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONTENIDO 4: GUÍA DE OBSTRUCCIONES -->
+            <div id="obstructions" class="rules-tab-content">
+                <div class="info-card">
+                    <h2>⚠️ Guía de Obstáculos y Alivios de la FIFG</h2>
+                    <p style="color: var(--text-light); font-size: 1.1rem; max-width: 800px; margin-bottom: 2rem;">
+                        Accede de forma directa a la guía oficial e interactiva de obstáculos y reglas de alivio de la 
+                        Federación Internacional de FootGolf (FIFG), completamente en castellano.
+                    </p>
+
+                    <!-- Botones de Acción Premium -->
+                    <div style="display: flex; gap: 1rem; margin-bottom: 2.5rem; flex-wrap: wrap;">
+                        <a href="https://www.footgolf.sport/es/guia-de-obstaculos/" target="_blank" rel="noopener" class="rules-nav-btn active" style="text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; text-align: center; box-shadow: 0 4px 14px 0 rgba(30, 143, 58, 0.4);">
+                            <span>↗</span> Abrir en Nueva Pestaña
+                        </a>
+                        <button onclick="toggleFallback()" class="rules-nav-btn" style="background: rgba(255, 255, 255, 0.05); color: var(--text-main); border: 1px solid var(--border-color);">
+                            Ver Guía Rápida Alternativa
+                        </button>
+                    </div>
+
+                    <!-- Iframe oficial de la FIFG -->
+                    <div class="iframe-wrapper" style="position: relative; width: 100%; height: 900px; border-radius: 1.5rem; overflow: hidden; border: 1px solid var(--border-color); box-shadow: var(--shadow-lg); background: white; margin-bottom: 3rem;">
+                        <iframe src="https://www.footgolf.sport/es/guia-de-obstaculos/" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;" title="Guía de Obstáculos Oficial FIFG en Español"></iframe>
+                    </div>
+
+                    <!-- Sección Alternativa de Guías Oficiales -->
+                    <div id="quick-fallback" style="display: none; animation: fadeIn 0.4s ease-in-out forwards; border-top: 1px solid var(--border-color); padding-top: 2.5rem;">
+                        <h3 style="font-size: 1.4rem; color: var(--text-main); margin-bottom: 1.5rem;">📋 Guía de Alivios por Categoría</h3>
+                        <p style="color: var(--text-light); margin-bottom: 2rem;">Si tienes problemas para cargar el portal de la FIFG, a continuación puedes ver las 6 categorías oficiales de alivio con sus respectivos diagramas en alta resolución:</p>
+
+                        <!-- Grid de Categorías -->
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+                            <a href="https://www.footgolf.sport/wp-content/uploads/2024/11/FIFG_obstructions_guide_2023_1.webp" target="_blank" style="display: block; background: var(--bg-color); padding: 1.5rem; border-radius: 1rem; border: 1px solid var(--border-color); text-decoration: none; color: var(--text-main); transition: var(--transition);">
+                                <h4 style="color: var(--primary-color); margin-bottom: 0.5rem;">🍂 1. Impedimentos Sueltos</h4>
+                                <p style="font-size: 0.9rem; color: var(--text-light); margin: 0;">Diagrama oficial en español de alivios para hojas, ramas, piedras y elementos naturales sueltos.</p>
+                            </a>
+                            <a href="https://www.footgolf.sport/wp-content/uploads/2024/11/FIFG_obstructions_guide_2023_2.webp" target="_blank" style="display: block; background: var(--bg-color); padding: 1.5rem; border-radius: 1rem; border: 1px solid var(--border-color); text-decoration: none; color: var(--text-main); transition: var(--transition);">
+                                <h4 style="color: var(--primary-color); margin-bottom: 0.5rem;">🗑️ 2. Obstáculos Movibles</h4>
+                                <p style="font-size: 0.9rem; color: var(--text-light); margin: 0;">Procedimiento de alivio sin penalidad para objetos artificiales móviles como rastrillos o botellas.</p>
+                            </a>
+                            <a href="https://www.footgolf.sport/wp-content/uploads/2024/11/FIFG_obstructions_guide_2023_3.webp" target="_blank" style="display: block; background: var(--bg-color); padding: 1.5rem; border-radius: 1rem; border: 1px solid var(--border-color); text-decoration: none; color: var(--text-main); transition: var(--transition);">
+                                <h4 style="color: var(--primary-color); margin-bottom: 0.5rem;">⛳ 3. Marcadores de Salida</h4>
+                                <p style="font-size: 0.9rem; color: var(--text-light); margin: 0;">Reglas sobre marcas de salida, estacas de fuera de límites (OB) y límites del campo.</p>
+                            </a>
+                            <a href="https://www.footgolf.sport/wp-content/uploads/2024/11/FIFG_obstructions_guide_2023_4.webp" target="_blank" style="display: block; background: var(--bg-color); padding: 1.5rem; border-radius: 1rem; border: 1px solid var(--border-color); text-decoration: none; color: var(--text-main); transition: var(--transition);">
+                                <h4 style="color: var(--primary-color); margin-bottom: 0.5rem;">🚧 4. Obstáculos Inamovibles</h4>
+                                <p style="font-size: 0.9rem; color: var(--text-light); margin: 0;">Punto más cercano de alivio completo (NPCR) para aspersores, caminos pavimentados y puentes.</p>
+                            </a>
+                            <a href="https://www.footgolf.sport/wp-content/uploads/2024/11/FIFG_obstructions_guide_2023_5.webp" target="_blank" style="display: block; background: var(--bg-color); padding: 1.5rem; border-radius: 1rem; border: 1px solid var(--border-color); text-decoration: none; color: var(--text-main); transition: var(--transition);">
+                                <h4 style="color: var(--primary-color); margin-bottom: 0.5rem;">🐝 5. Condiciones Inseguras</h4>
+                                <p style="font-size: 0.9rem; color: var(--text-light); margin: 0;">Alivio obligatorio gratuito por motivos de seguridad ante avispas, animales o tormentas.</p>
+                            </a>
+                            <a href="https://www.footgolf.sport/wp-content/uploads/2024/11/FIFG_obstructions_guide_2023_6.webp" target="_blank" style="display: block; background: var(--bg-color); padding: 1.5rem; border-radius: 1rem; border: 1px solid var(--border-color); text-decoration: none; color: var(--text-main); transition: var(--transition);">
+                                <h4 style="color: var(--primary-color); margin-bottom: 0.5rem;">💧 6. Condiciones Anormales</h4>
+                                <p style="font-size: 0.9rem; color: var(--text-light); margin: 0;">Reglas de alivio para charcos de agua temporal, terreno en reparación (GUR) o madrigueras.</p>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <app-footer></app-footer>
+
+    <script>
+        // Cambiar entre las pestañas principales de la página
+        function switchMainTab(event, tabId) {
+            // Quitar clase active de todos los botones de navegación
+            const navButtons = document.querySelectorAll('.rules-nav-btn');
+            navButtons.forEach(btn => btn.classList.remove('active'));
+
+            // Quitar clase active de todas las pestañas de contenido
+            const tabContents = document.querySelectorAll('.rules-tab-content');
+            tabContents.forEach(content => content.classList.remove('active'));
+
+            // Añadir active al botón presionado y a su contenido respectivo
+            event.target.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        // Toggles the visibility of the fallback obstructions section
+        function toggleFallback() {
+            const fallbackDiv = document.getElementById('quick-fallback');
+            if (fallbackDiv.style.display === 'none' || fallbackDiv.style.display === '') {
+                fallbackDiv.style.display = 'block';
+                fallbackDiv.scrollIntoView({ behavior: 'smooth' });
+            } else {
+                fallbackDiv.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+
+</html>
