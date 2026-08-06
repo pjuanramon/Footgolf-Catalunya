@@ -54,6 +54,12 @@ async function runEtapa8() {
         }
 
         if (p) {
+            // Ajustes manuales solicitados para la Etapa 8:
+            // JuanRa Perez: +1 golpe a su tarjeta (de -2 a -1)
+            // Jesus Pizarro: -1 golpe a su tarjeta (de +3 a +2)
+            if (p.id === '80808d1a-3f56-4879-ab0f-d2891e2d36c8') tpar += 1;
+            if (p.id === 'e8edfffd-438f-4c64-9aad-ceed5ad0b34b') tpar -= 1;
+
             resultadosBrutos.push({
                 rawName,
                 score: tpar,
