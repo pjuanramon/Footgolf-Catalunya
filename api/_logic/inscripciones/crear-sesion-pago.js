@@ -12,7 +12,7 @@ module.exports = async function handler(req, res) {
     }
 
     try {
-        const { nickname, email, etapa_id, equipo_nombre } = req.body;
+        const { nickname, email, etapa_id, equipo_nombre, incluye_balon } = req.body;
 
         if (!nickname || !nickname.trim() || !email || !email.trim() || !etapa_id) {
             return res.status(400).json({ error: 'Nickname, Email y Etapa son obligatorios.' });
@@ -27,8 +27,12 @@ module.exports = async function handler(req, res) {
             return res.status(400).json({ error: 'La etapa no está abierta.' });
         }
 
+        const isCopa = etapa.id === 100 || (etapa.nombre && etapa.nombre.toLowerCase().includes('copa'));
+        // Si es Copa Catalana, por defecto incluye balón salvo que se envíe explícitamente false
+        const conBalon = isCopa ? (incluye_balon !== false) : false;
+
         // 2. Calcular Precio
-        const precio = calcularPrecioInscripcion(etapa, emailNorm);
+        const precio = calcularPrecioInscripcion(etapa, emailNorm, conBalon);
 
         // 3. Buscar o crear jugador
         let jugador;
@@ -54,10 +58,18 @@ module.exports = async function handler(req, res) {
         // 5. Crear sesión Stripe / Redsys unificada
         const esEquipo = etapa.tipo === 'equipos';
         const orderId = `ins-${jugador.id}-${etapa_id}-${Date.now()}`;
+        
+        let concepto = `Inscripción ${etapa.nombre}`;
+        if (esEquipo) {
+            concepto += ` - Equipo: ${equipo_nombre}`;
+        } else if (isCopa) {
+            concepto += conBalon ? ' (con balón oficial)' : ' (sin balón)';
+        }
+
         const paymentSession = await paymentGateway.crearSesionPago({
             orderId,
             amount: precio,
-            concept: `Inscripción ${etapa.nombre}${esEquipo ? ` - Equipo: ${equipo_nombre}` : ''}`,
+            concept: concepto,
             description: `Inscripción para ${jugador.nickname}`,
             metadata: {
                 tipo: 'inscripcion',
@@ -65,7 +77,8 @@ module.exports = async function handler(req, res) {
                 etapa_id: String(etapa_id),
                 nickname: jugador.nickname,
                 email: jugador.email,
-                equipo_nombre: equipo_nombre || ''
+                equipo_nombre: equipo_nombre || '',
+                incluye_balon: conBalon ? 'true' : 'false'
             },
             successUrl: `${process.env.APP_URL}/src/pages/inscripciones.html?resultado=exito&etapa=${etapa_id}`,
             cancelUrl: `${process.env.APP_URL}/src/pages/inscripciones.html?resultado=cancelado`

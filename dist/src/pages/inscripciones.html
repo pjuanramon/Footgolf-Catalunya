@@ -179,14 +179,34 @@
             const titleEl = document.querySelector('.section-title');
             if (titleEl) titleEl.textContent = 'Próximas Etapas';
 
+            let copaBalonSelected = (window._copaBalonSelected !== undefined) ? window._copaBalonSelected : true;
+
+            window.toggleBalon = function(etapaId) {
+                const chk = document.getElementById(`balon-${etapaId}`);
+                if (chk) {
+                    window._copaBalonSelected = chk.checked;
+                    renderStages();
+                }
+            };
+
             stagesList.innerHTML = currentStages.map(etapa => {
                 const esEquipo = etapa.tipo === 'equipos';
                 const esCerrada = etapa.estado === 'cerrada';
                 const esCopa = etapa.id === 100 || (etapa.nombre && etapa.nombre.toLowerCase().includes('copa'));
+                const incluyeBalon = esCopa ? copaBalonSelected : false;
                 
-                let precio = esEquipo ? (etapa.precio_equipo || 110) : (etapa.precio_inscripcion || (esCopa ? 45 : 22));
-                
-                if (!esEquipo && playerIsJuanRa) precio = esCopa ? 7 : 5;
+                let precio = 22;
+                if (esEquipo) {
+                    precio = etapa.precio_equipo || 110;
+                } else if (esCopa) {
+                    if (playerIsJuanRa) {
+                        precio = incluyeBalon ? 22 : 7;
+                    } else {
+                        precio = incluyeBalon ? 60 : 45;
+                    }
+                } else {
+                    precio = playerIsJuanRa ? 5 : (etapa.precio_inscripcion || 22);
+                }
 
                 const colorStyle = esEquipo ? 'style="background: var(--secondary-color); font-weight: 800;"' : (esCopa ? 'style="background: #ffd700; color: #000; font-weight: 800;"' : 'style="font-weight: 800;"');
                 const cardStyle = esCerrada ? 'opacity: 0.95; border-color: rgba(255,255,255,0.2);' : (esEquipo ? 'border-color: var(--secondary-color); border-width: 2px;' : (esCopa ? 'border-color: #ffd700; border-width: 2px;' : ''));
@@ -205,11 +225,19 @@
                                     ${etapa.nombre} 
                                     ${esCerrada ? '<span style="color: #94a3b8; font-size: 0.8rem; font-weight: 400; background: rgba(255,255,255,0.05); padding: 2px 8px; border-radius: 4px; margin-left: 10px;">REGISTRO CERRADO</span>' : ''}
                                 </h3>
-                                <div style="margin-top: 0.5rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+                                <div style="margin-top: 0.5rem; display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
                                     <span style="font-size: 0.85rem; color: #cbd5e1;">📍 ${etapa.ubicacion || 'Por determinar'}</span>
                                     ${esCopa ? '<span style="font-size: 0.85rem; color: #ffd700; font-weight: 600;">🏆 Match Play (Cierre: 27 Sep 23:59)</span>' : ''}
                                     <span id="count-${etapa.id}" style="font-size: 0.85rem; color: var(--secondary-color); font-weight: 600;">Cargando inscritos...</span>
                                 </div>
+                                ${esCopa && !esCerrada ? `
+                                    <div style="margin-top: 0.8rem; background: rgba(255,215,0,0.08); border: 1px solid rgba(255,215,0,0.3); border-radius: 0.6rem; padding: 0.5rem 0.8rem; display: inline-flex; align-items: center; gap: 0.5rem; width: fit-content;">
+                                        <input type="checkbox" id="balon-${etapa.id}" ${copaBalonSelected ? 'checked' : ''} onchange="toggleBalon(${etapa.id})" style="width: 1.15rem; height: 1.15rem; accent-color: #ffd700; cursor: pointer;">
+                                        <label for="balon-${etapa.id}" style="color: #fef08a; font-size: 0.85rem; font-weight: 600; cursor: pointer; user-select: none;">
+                                            ⚽ Incluir balón oficial del torneo (+15€)
+                                        </label>
+                                    </div>
+                                ` : ''}
                             </div>
                             <div class="stage-action" style="padding: 1.5rem; display: flex; flex-direction: column; align-items: flex-end; justify-content: center; gap: 0.75rem;">
                                 ${esCerrada ? `
@@ -396,6 +424,10 @@
                 return;
             }
 
+            const etapaObj = currentStages.find(e => e.id === etapaId);
+            const isCopa = etapaObj && (etapaObj.id === 100 || (etapaObj.nombre && etapaObj.nombre.toLowerCase().includes('copa')));
+            const incluyeBalon = isCopa ? ((window._copaBalonSelected !== undefined) ? window._copaBalonSelected : true) : false;
+
             try {
                 const res = await fetch('/api/inscripciones/crear-sesion-pago', {
                     method: 'POST',
@@ -404,7 +436,8 @@
                         etapa_id: etapaId,
                         email: emailValue,
                         nickname: nicknameValue,
-                        equipo_nombre: equipoNombre
+                        equipo_nombre: equipoNombre,
+                        incluye_balon: incluyeBalon
                     })
                 });
 
