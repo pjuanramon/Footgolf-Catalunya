@@ -182,28 +182,32 @@
             stagesList.innerHTML = currentStages.map(etapa => {
                 const esEquipo = etapa.tipo === 'equipos';
                 const esCerrada = etapa.estado === 'cerrada';
-                let precio = esEquipo ? etapa.precio_equipo : 22;
+                const esCopa = etapa.id === 100 || (etapa.nombre && etapa.nombre.toLowerCase().includes('copa'));
                 
-                if (!esEquipo && playerIsJuanRa) precio = 5;
+                let precio = esEquipo ? (etapa.precio_equipo || 110) : (etapa.precio_inscripcion || (esCopa ? 45 : 22));
+                
+                if (!esEquipo && playerIsJuanRa) precio = esCopa ? 7 : 5;
 
-                const colorStyle = esEquipo ? 'style="background: var(--secondary-color); font-weight: 800;"' : 'style="font-weight: 800;"';
-                const cardStyle = esCerrada ? 'opacity: 0.95; border-color: rgba(255,255,255,0.2);' : (esEquipo ? 'border-color: var(--secondary-color); border-width: 2px;' : '');
-                const dateBg = esCerrada ? 'background: #475569;' : (esEquipo ? 'background: var(--secondary-color);' : 'background: var(--primary-color);');
+                const colorStyle = esEquipo ? 'style="background: var(--secondary-color); font-weight: 800;"' : (esCopa ? 'style="background: #ffd700; color: #000; font-weight: 800;"' : 'style="font-weight: 800;"');
+                const cardStyle = esCerrada ? 'opacity: 0.95; border-color: rgba(255,255,255,0.2);' : (esEquipo ? 'border-color: var(--secondary-color); border-width: 2px;' : (esCopa ? 'border-color: #ffd700; border-width: 2px;' : ''));
+                const dateBg = esCerrada ? 'background: #475569;' : (esEquipo ? 'background: var(--secondary-color);' : (esCopa ? 'background: #ffd700; color: #000;' : 'background: var(--primary-color);'));
+                const dayText = esCopa ? '3-4' : new Date(etapa.fecha).getDate();
 
                 return `
                     <div class="event-card active dark-section" style="margin-bottom: 2rem; background: var(--bg-dark); color: white; border: 1px solid rgba(255,255,255,0.1); display: block; border-radius: 1.5rem; overflow: hidden; transform: none; ${cardStyle}">
                         <div style="display: flex; flex-wrap: wrap;">
                             <div class="date" style="min-width: 100px; padding: 1.5rem; display: flex; flex-direction: column; align-items: center; justify-content: center; ${dateBg}">
-                                <span style="font-size: 2.2rem; line-height: 1; display: block; font-weight: 800;">${new Date(etapa.fecha).getDate()}</span>
+                                <span style="font-size: 2.2rem; line-height: 1; display: block; font-weight: 800;">${dayText}</span>
                                 <span style="font-size: 0.9rem; text-transform: uppercase; font-weight: 600;">${new Date(etapa.fecha).toLocaleString('es-ES', { month: 'short' }).replace('.', '')}</span>
                             </div>
                             <div class="event-info" style="flex-grow: 1; padding: 1.5rem; display: flex; flex-direction: column; justify-content: center;">
-                                <h3 style="margin: 0; font-size: 1.5rem; ${esEquipo ? 'color: var(--secondary-color);' : 'color: white;'}">
+                                <h3 style="margin: 0; font-size: 1.5rem; ${esEquipo ? 'color: var(--secondary-color);' : (esCopa ? 'color: #ffd700;' : 'color: white;')}">
                                     ${etapa.nombre} 
                                     ${esCerrada ? '<span style="color: #94a3b8; font-size: 0.8rem; font-weight: 400; background: rgba(255,255,255,0.05); padding: 2px 8px; border-radius: 4px; margin-left: 10px;">REGISTRO CERRADO</span>' : ''}
                                 </h3>
                                 <div style="margin-top: 0.5rem; display: flex; gap: 1rem; flex-wrap: wrap;">
                                     <span style="font-size: 0.85rem; color: #cbd5e1;">📍 ${etapa.ubicacion || 'Por determinar'}</span>
+                                    ${esCopa ? '<span style="font-size: 0.85rem; color: #ffd700; font-weight: 600;">🏆 Match Play (Cierre: 27 Sep 23:59)</span>' : ''}
                                     <span id="count-${etapa.id}" style="font-size: 0.85rem; color: var(--secondary-color); font-weight: 600;">Cargando inscritos...</span>
                                 </div>
                             </div>

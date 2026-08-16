@@ -36,10 +36,12 @@ module.exports = async function handler(req, res) {
         if (etapasError) throw etapasError;
 
         for (const etapa of etapas) {
-            const fechaCierre = calcularFechaCierre(etapa.fecha);
-            const fechaRecordatorio = calcularFechaRecordatorioCierre(etapa.fecha);
+            const fechaCierre = etapa.fecha_cierre_inscripcion 
+                ? new Date(etapa.fecha_cierre_inscripcion) 
+                : calcularFechaCierre(etapa);
+            const fechaRecordatorio = calcularFechaRecordatorioCierre(etapa);
 
-            // A. ¿Toca cerrar la etapa? (ahora > fechaCierre)
+            // A. ¿Toca cerrar la etapa? (ahora >= fechaCierre)
             if (ahora >= fechaCierre) {
                 const { error: closeError } = await supabase
                     .from('etapas')
