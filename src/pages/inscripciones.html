@@ -158,9 +158,12 @@
 
         async function loadStages() {
             try {
-                // Añadimos un timestamp para evitar cache del navegador/Vercel
                 const res = await fetch(`/api/etapas/listado?estado=abierta,cerrada&t=${Date.now()}`);
-                currentStages = await res.json();
+                const data = await res.json();
+                // Mostrar abiertas o cerradas que sean de fechas futuras/recientes
+                const hoy = new Date();
+                hoy.setHours(0, 0, 0, 0);
+                currentStages = data.filter(e => e.estado === 'abierta' || new Date(e.fecha + 'T23:59:59') >= hoy);
                 console.log('Etapas cargadas:', currentStages);
                 renderStages();
             } catch (err) {
