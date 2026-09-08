@@ -182,7 +182,7 @@
             const titleEl = document.querySelector('.section-title');
             if (titleEl) titleEl.textContent = 'Próximas Etapas';
 
-            let copaBalonSelected = (window._copaBalonSelected !== undefined) ? window._copaBalonSelected : true;
+            let copaBalonSelected = (window._copaBalonSelected !== undefined) ? window._copaBalonSelected : false;
 
             window.toggleBalon = function(etapaId) {
                 const chk = document.getElementById(`balon-${etapaId}`);
@@ -429,7 +429,7 @@
 
             const etapaObj = currentStages.find(e => e.id === etapaId);
             const isCopa = etapaObj && (etapaObj.id === 100 || (etapaObj.nombre && etapaObj.nombre.toLowerCase().includes('copa')));
-            const incluyeBalon = isCopa ? ((window._copaBalonSelected !== undefined) ? window._copaBalonSelected : true) : false;
+            const incluyeBalon = isCopa ? ((window._copaBalonSelected !== undefined) ? window._copaBalonSelected : false) : false;
 
             try {
                 const res = await fetch('/api/inscripciones/crear-sesion-pago', {

@@ -28,8 +28,8 @@ module.exports = async function handler(req, res) {
         }
 
         const isCopa = etapa.id === 100 || (etapa.nombre && etapa.nombre.toLowerCase().includes('copa'));
-        // Si es Copa Catalana, por defecto incluye balón salvo que se envíe explícitamente false
-        const conBalon = isCopa ? (incluye_balon !== false) : false;
+        // Si es Copa Catalana, por defecto NO incluye balón salvo que se marque la casilla explícitamente
+        const conBalon = isCopa ? (incluye_balon === true || incluye_balon === 'true') : false;
 
         // 2. Calcular Precio
         const precio = calcularPrecioInscripcion(etapa, emailNorm, conBalon);
