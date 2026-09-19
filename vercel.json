@@ -12,6 +12,7 @@
     }
   ],
   "rewrites": [
+    { "source": "/directo", "destination": "/src/pages/directo.html" },
     { "source": "/api/:path*", "destination": "/api/main" }
   ]
 }
