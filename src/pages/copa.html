@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Copa Catalana Match Play 2026 - Footgolf Catalunya</title>
+    <meta name="description"
+        content="Sorteo oficial, grupos, calendario y cuadros de eliminatorias de la Copa Catalana Match Play 2026 en Golf La Garriga.">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <script src="/js/Navbar.js" defer></script>
+    <script src="/js/Footer.js" defer></script>
+    <link rel="icon" type="image/png" href="/favicon.png?v=1">
+
+    <style>
+        :root {
+            --copa-gold: #fbbf24;
+            --copa-gold-dark: #b45309;
+            --copa-gold-glow: rgba(251, 191, 36, 0.25);
+            --copa-bg: #030712;
+            --copa-card-bg: rgba(17, 24, 39, 0.85);
+            --copa-border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            background-color: #0b0f19;
+            color: #f1f5f9;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .copa-hero {
+            position: relative;
+            background: radial-gradient(circle at 50% 20%, rgba(251, 191, 36, 0.15) 0%, transparent 60%),
+                radial-gradient(circle at 80% 80%, rgba(30, 143, 58, 0.15) 0%, transparent 50%),
+                linear-gradient(180deg, #020617 0%, #0b0f19 100%);
+            padding: 5rem 1.5rem 3.5rem;
+            text-align: center;
+            border-bottom: 1px solid var(--copa-border);
+            overflow: hidden;
+        }
+
+        .badge-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .badge-gold {
+            background: rgba(251, 191, 36, 0.15);
+            color: #fde047;
+            border: 1px solid rgba(251, 191, 36, 0.4);
+            box-shadow: 0 0 15px rgba(251, 191, 36, 0.2);
+        }
+
+        .badge-green {
+            background: rgba(30, 143, 58, 0.15);
+            color: #4ade80;
+            border: 1px solid rgba(74, 222, 128, 0.3);
+        }
+
+        .copa-title {
+            font-size: clamp(2.4rem, 5vw, 3.8rem);
+            font-weight: 900;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+            margin: 1.2rem 0 0.8rem;
+            background: linear-gradient(135deg, #ffffff 0%, #fef08a 40%, #fbbf24 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .copa-meta {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            margin: 1.5rem auto;
+            color: #94a3b8;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .copa-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 0.5rem 1.2rem;
+            border-radius: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        /* Nav Pills */
+        .subnav-pills {
+            display: flex;
+            justify-content: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+
+        .subnav-btn {
+            background: rgba(255, 255, 255, 0.06);
+            color: #cbd5e1;
+            padding: 0.65rem 1.4rem;
+            border-radius: 9999px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            text-decoration: none;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.25s ease;
+        }
+
+        .subnav-btn:hover,
+        .subnav-btn.active {
+            background: var(--copa-gold);
+            color: #000;
+            border-color: var(--copa-gold);
+            box-shadow: 0 0 20px rgba(251, 191, 36, 0.4);
+            transform: translateY(-2px);
+        }
+
+        /* Section Containers */
+        .section-copa {
+            padding: 4rem 1.5rem;
+            max-width: 1250px;
+            margin: 0 auto;
+        }
+
+        .section-heading {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-heading h2 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-bottom: 0.6rem;
+        }
+
+        .section-heading p {
+            color: #94a3b8;
+            font-size: 1.05rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* Group Cards Grid */
+        .groups-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.75rem;
+        }
+
+        .group-card {
+            background: var(--copa-card-bg);
+            border: 1px solid var(--copa-border);
+            border-radius: 1.25rem;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            transition: transform 0.3s ease, border-color 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .group-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(251, 191, 36, 0.4);
+        }
+
+        .group-header {
+            padding: 1.25rem 1.5rem;
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+            border-bottom: 1px solid var(--copa-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .group-header h3 {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: white;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .group-badge {
+            font-size: 0.72rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 9999px;
+            background: rgba(251, 191, 36, 0.15);
+            color: var(--copa-gold);
+            font-weight: 700;
+            border: 1px solid rgba(251, 191, 36, 0.3);
+        }
+
+        /* Group Player List */
+        .player-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: background 0.2s ease;
+        }
+
+        .player-row:last-child {
+            border-bottom: none;
+        }
+
+        .player-row:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .seed-num {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: #94a3b8;
+            flex-shrink: 0;
+        }
+
+        .player-row:nth-child(1) .seed-num {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fde047;
+            border: 1px solid rgba(251, 191, 36, 0.4);
+        }
+
+        .player-row:nth-child(2) .seed-num {
+            background: rgba(148, 163, 184, 0.2);
+            color: #e2e8f0;
+            border: 1px solid rgba(148, 163, 184, 0.4);
+        }
+
+        .player-row:nth-child(3) .seed-num {
+            background: rgba(180, 83, 9, 0.2);
+            color: #fb923c;
+            border: 1px solid rgba(180, 83, 9, 0.4);
+        }
+
+        .player-info {
+            flex: 1;
+        }
+
+        .player-name {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0 0 0.15rem;
+        }
+
+        .player-club {
+            font-size: 0.78rem;
+            color: #94a3b8;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .destiny-tag {
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 0.2rem 0.55rem;
+            border-radius: 6px;
+            text-transform: uppercase;
+        }
+
+        .tag-qf {
+            background: rgba(30, 143, 58, 0.2);
+            color: #4ade80;
+            border: 1px solid rgba(74, 222, 128, 0.3);
+        }
+
+        .tag-cons {
+            background: rgba(249, 115, 22, 0.15);
+            color: #fb923c;
+            border: 1px solid rgba(249, 115, 22, 0.3);
+        }
+
+        /* Match schedule preview in group */
+        .group-matches-box {
+            background: rgba(0, 0, 0, 0.25);
+            padding: 1rem 1.25rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .group-matches-title {
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #94a3b8;
+            margin-bottom: 0.6rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .mini-match {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.83rem;
+            padding: 0.35rem 0;
+            color: #cbd5e1;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.06);
+        }
+
+        .mini-match:last-child {
+            border-bottom: none;
+        }
+
+        .mini-match span.vs {
+            color: var(--copa-gold);
+            font-weight: 800;
+            font-size: 0.72rem;
+        }
+
+        /* Bracket Styles */
+        .bracket-wrapper {
+            background: var(--copa-card-bg);
+            border: 1px solid var(--copa-border);
+            border-radius: 1.5rem;
+            padding: 2.5rem 2rem;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            overflow-x: auto;
+        }
+
+        .bracket-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(280px, 1fr));
+            gap: 2rem;
+            align-items: center;
+            min-width: 900px;
+        }
+
+        .bracket-round-title {
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--copa-gold);
+            margin-bottom: 1.75rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid rgba(251, 191, 36, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .matches-col {
+            display: flex;
+            flex-direction: column;
+            gap: 1.75rem;
+        }
+
+        .match-card {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.25s ease;
+        }
+
+        .match-card:hover {
+            border-color: rgba(251, 191, 36, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .match-card-header {
+            padding: 0.45rem 1rem;
+            background: rgba(255, 255, 255, 0.04);
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #94a3b8;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .match-team {
+            padding: 0.8rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .match-team:last-child {
+            border-bottom: none;
+        }
+
+        .match-team.winner {
+            background: rgba(30, 143, 58, 0.1);
+            color: #4ade80;
+            font-weight: 800;
+        }
+
+        .team-label {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .team-pos {
+            font-size: 0.72rem;
+            padding: 0.15rem 0.45rem;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.08);
+            color: #cbd5e1;
+            font-weight: 700;
+        }
+
+        .score-box {
+            font-size: 1rem;
+            font-weight: 800;
+            color: #94a3b8;
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+            background: rgba(0, 0, 0, 0.3);
+            min-width: 24px;
+            text-align: center;
+        }
+
+        /* Champion Trophy Highlight */
+        .trophy-banner {
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.12) 0%, rgba(180, 83, 9, 0.12) 100%);
+            border: 2px solid rgba(251, 191, 36, 0.4);
+            border-radius: 1.5rem;
+            padding: 2.5rem;
+            text-align: center;
+            margin-top: 3.5rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 35px rgba(251, 191, 36, 0.15);
+        }
+
+        .trophy-banner::before {
+            content: "🏆";
+            position: absolute;
+            right: -20px;
+            bottom: -30px;
+            font-size: 10rem;
+            opacity: 0.08;
+            pointer-events: none;
+        }
+
+        /* Rules Info Grid */
+        .rules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .rule-card {
+            background: var(--copa-card-bg);
+            border: 1px solid var(--copa-border);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            border-left: 4px solid var(--copa-gold);
+        }
+
+        .rule-card h4 {
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.6rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .rule-card p {
+            color: #94a3b8;
+            font-size: 0.92rem;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        /* Responsive tweaks */
+        @media (max-width: 768px) {
+            .copa-hero {
+                padding: 4rem 1rem 2.5rem;
+            }
+
+            .bracket-grid {
+                grid-template-columns: 1fr;
+                min-width: 100%;
+            }
+
+            .bracket-wrapper {
+                padding: 1.5rem 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <app-navbar></app-navbar>
+
+    <main>
+        <!-- HERO COPA CATALANA MATCH PLAY -->
+        <header class="copa-hero">
+            <div style="max-width: 900px; margin: 0 auto;">
+                <div style="display: flex; justify-content: center; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 1rem;">
+                    <span class="badge-pill badge-gold">🏆 Torneo Oficial 2026</span>
+                    <span class="badge-pill badge-green">📍 Golf La Garriga</span>
+                    <span class="badge-pill" style="background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3);">
+                        ⚔️ Modalidad Match Play
+                    </span>
+                </div>
+
+                <h1 class="copa-title">Copa Catalana Match Play 2026</h1>
+                <p style="color: #cbd5e1; font-size: 1.2rem; max-width: 700px; margin: 0 auto; line-height: 1.6;">
+                    La gran fiesta del cara a cara del Footgolf catalán. <strong>12 jugadores</strong>, <strong>4 grupos</strong>, cruces directos y la corona en juego este fin de semana en La Garriga.
+                </p>
+
+                <div class="copa-meta">
+                    <div class="copa-meta-item">
+                        <span>📅</span>
+                        <span><strong>3 y 4 de Octubre de 2026</strong></span>
+                    </div>
+                    <div class="copa-meta-item">
+                        <span>👥</span>
+                        <span><strong>12 Jugadores Clasificados</strong></span>
+                    </div>
+                    <div class="copa-meta-item">
+                        <span>⛳</span>
+                        <span><strong>Golf La Garriga (Recorrido Oficial)</strong></span>
+                    </div>
+                    <div class="copa-meta-item">
+                        <span>👑</span>
+                        <span>Defensor: <strong>Jorge Santiago (2025)</strong></span>
+                    </div>
+                </div>
+
+                <!-- Subnavigation Buttons -->
+                <div class="subnav-pills">
+                    <a href="#grupos" class="subnav-btn active">📊 Fase de Grupos</a>
+                    <a href="#cuadro-campeones" class="subnav-btn">🥇 Cuadro de Campeones</a>
+                    <a href="#cuadro-consolacion" class="subnav-btn">🥉 Cuadro de Consolación</a>
+                    <a href="#formato" class="subnav-btn">📜 Formato & Reglas</a>
+                </div>
+            </div>
+        </header>
+
+        <!-- SECCIÓN 1: FASE DE GRUPOS -->
+        <section id="grupos" class="section-copa">
+            <div class="section-heading">
+                <h2><span>📊</span> Fase de Grupos — Sorteo Oficial</h2>
+                <p>12 jugadores repartidos en 4 grupos de 3. Cada jugador disputa <strong>2 partidos</strong>. Los dos primeros de cada grupo avanzan a Cuartos de Final (Cuadro de Campeones); los terceros pasan a Semifinales del Cuadro de Consolación.</p>
+            </div>
+
+            <div class="groups-grid">
+                <!-- GRUPO A -->
+                <div class="group-card">
+                    <div class="group-header">
+                        <h3><span>🅰️</span> GRUPO A</h3>
+                        <span class="group-badge">3 Jugadores · 3 Partidos</span>
+                    </div>
+                    <div class="player-list">
+                        <div class="player-row">
+                            <div class="seed-num">1</div>
+                            <div class="player-info">
+                                <div class="player-name">Iván Luengo</div>
+                                <div class="player-club">Apex FootGolf</div>
+                            </div>
+                            <span class="destiny-tag tag-qf">Top 2 → QF</span>
+                        </div>
+                        <div class="player-row">
+                            <div class="seed-num">2</div>
+                            <div class="player-info">
+                                <div class="player-name">Xavi Leiva</div>
+                                <div class="player-club">Apex FootGolf</div>
+                            </div>
+                            <span class="destiny-tag tag-qf">Top 2 → QF</span>
+                        </div>
+                        <div class="player-row">
+                            <div class="seed-num">3</div>
+                            <div class="player-info">
+                                <div class="player-name">Sergi Pahisa</div>
+                                <div class="player-club">AC Maktub FG</div>
+                            </div>
+                            <span class="destiny-tag tag-cons">3.º → Consolación</span>
+                        </div>
+                    </div>
+                    <div class="group-matches-box">
+                        <div class="group-matches-title"><span>⚔️</span> Enfrentamientos del Grupo</div>
+                        <div class="mini-match">
+                            <span>Iván Luengo</span>
+                            <span class="vs">VS</span>
+                            <span>Xavi Leiva</span>
+                        </div>
+                        <div class="mini-match">
+                            <span>Xavi Leiva</span>
+                            <span class="vs">VS</span>
+                            <span>Sergi Pahisa</span>
+                        </div>
+                        <div class="mini-match">
+                            <span>Iván Luengo</span>
+                            <span class="vs">VS</span>
+                            <span>Sergi Pahisa</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GRUPO B -->
+                <div class="group-card">
+                    <div class="group-header">
+                        <h3><span>🅱️</span> GRUPO B</h3>
+                        <span class="group-badge">3 Jugadores · 3 Partidos</span>
+                    </div>
+                    <div class="player-list">
+                        <div class="player-row">
+                            <div class="seed-num">1</div>
+                            <div class="player-info">
+                                <div class="player-name">Juan Ramón Pérez (JuanRa)</div>
+                                <div class="player-club">Apex FootGolf</div>
+                            </div>
+                            <span class="destiny-tag tag-qf">Top 2 → QF</span>
+                        </div>
+                        <div class="player-row">
+                            <div class="seed-num">2</div>
+                            <div class="player-info">
+                                <div class="player-name">Jordi Martín</div>
+                                <div class="player-club">Bunker Boys FootGolf</div>
+                            </div>
+                            <span class="destiny-tag tag-qf">Top 2 → QF</span>
+                        </div>
+                        <div class="player-row">
+                            <div class="seed-num">3</div>
+                            <div class="player-info">
+                                <div class="player-name">Daniel Abril</div>
+                                <div class="player-club">Apex FootGolf</div>
+                            </div>
+                            <span class="destiny-tag tag-cons">3.º → Consolación</span>
+                        </div>
+                    </div>
+                    <div class="group-matches-box">
+                        <div class="group-matches-title"><span>⚔️</span> Enfrentamientos del Grupo</div>
+                        <div class="mini-match">
+                            <span>JuanRa Pérez</span>
+                            <span class="vs">VS</span>
+                            <span>Jordi Martín</span>
+                        </div>
+                        <div class="mini-match">
+                            <span>Jordi Martín</span>
+                            <span class="vs">VS</span>
+                            <span>Daniel Abril</span>
+                        </div>
+                        <div class="mini-match">
+                            <span>JuanRa Pérez</span>
+                            <span class="vs">VS</span>
+                            <span>Daniel Abril</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GRUPO C -->
+                <div class="group-card">
+                    <div class="group-header">
+                        <h3><span>🅲</span> GRUPO C</h3>
+                        <span class="group-badge">3 Jugadores · 3 Partidos</span>
+                    </div>
+                    <div class="player-list">
+                        <div class="player-row">
+                            <div class="seed-num">1</div>
+                            <div class="player-info">
+                                <div class="player-name">Jorge Santiago</div>
+                                <div class="player-club">Barcelona Footgolf · Vigente Campeón</div>
+                            </div>
+                            <span class="destiny-tag tag-qf">Top 2 → QF</span>
+                        </div>
+                        <div class="player-row">
+                            <div class="seed-num">2</div>
+                            <div class="player-info">
+                                <div class="player-name">Juan Medina</div>
+                                <div class="player-club">Independiente</div>
+                            </div>
+                            <span class="destiny-tag tag-qf">Top 2 → QF</span>
+                        </div>
+                        <div class="player-row">
+                            <div class="seed-num">3</div>
+                            <div class="player-info">
+                                <div class="player-name">Gustavo Verse</div>
+                                <div class="player-club">Jabalí Team Footgolf</div>
+                            </div>
+                            <span class="destiny-tag tag-cons">3.º → Consolación</span>
+                        </div>
+                    </div>
+                    <div class="group-matches-box">
+                        <div class="group-matches-title"><span>⚔️</span> Enfrentamientos del Grupo</div>
+                        <div class="mini-match">
+                            <span>Jorge Santiago</span>
+                            <span class="vs">VS</span>
+                            <span>Juan Medina</span>
+                        </div>
+                        <div class="mini-match">
+                            <span>Juan Medina</span>
+                            <span class="vs">VS</span>
+                            <span>Gustavo Verse</span>
+                        </div>
+                        <div class="mini-match">
+                            <span>Jorge Santiago</span>
+                            <span class="vs">VS</span>
+                            <span>Gustavo Verse</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GRUPO D -->
+                <div class="group-card">
+                    <div class="group-header">
+                        <h3><span>🅳</span> GRUPO D</h3>
+                        <span class="group-badge">3 Jugadores · 3 Partidos</span>
+                    </div>
+                    <div class="player-list">
+                        <div class="player-row">
+                            <div class="seed-num">1</div>
+                            <div class="player-info">
+                                <div class="player-name">David Téllez</div>
+                                <div class="player-club">Apex FootGolf</div>
+                            </div>
+                            <span class="destiny-tag tag-qf">Top 2 → QF</span>
+                        </div>
+                        <div class="player-row">
+                            <div class="seed-num">2</div>
+                            <div class="player-info">
+                                <div class="player-name">Alberto Leiva</div>
+                                <div class="player-club">Apex FootGolf</div>
+                            </div>
+                            <span class="destiny-tag tag-qf">Top 2 → QF</span>
+                        </div>
+                        <div class="player-row">
+                            <div class="seed-num">3</div>
+                            <div class="player-info">
+                                <div class="player-name">Jesús Pizarro "Chechu"</div>
+                                <div class="player-club">Independiente</div>
+                            </div>
+                            <span class="destiny-tag tag-cons">3.º → Consolación</span>
+                        </div>
+                    </div>
+                    <div class="group-matches-box">
+                        <div class="group-matches-title"><span>⚔️</span> Enfrentamientos del Grupo</div>
+                        <div class="mini-match">
+                            <span>David Téllez</span>
+                            <span class="vs">VS</span>
+                            <span>Alberto Leiva</span>
+                        </div>
+                        <div class="mini-match">
+                            <span>Alberto Leiva</span>
+                            <span class="vs">VS</span>
+                            <span>Jesús Pizarro</span>
+                        </div>
+                        <div class="mini-match">
+                            <span>David Téllez</span>
+                            <span class="vs">VS</span>
+                            <span>Jesús Pizarro</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 2: CUADRO DE CAMPEONES -->
+        <section id="cuadro-campeones" style="background: rgba(2, 6, 23, 0.6); padding: 5rem 1.5rem; border-top: 1px solid var(--copa-border); border-bottom: 1px solid var(--copa-border);">
+            <div style="max-width: 1250px; margin: 0 auto;">
+                <div class="section-heading">
+                    <span class="badge-pill badge-gold">Fase Final</span>
+                    <h2 style="margin-top: 0.5rem;"><span>🥇</span> Cuadro de Campeones</h2>
+                    <p>Los 8 clasificados (1.º y 2.º de cada grupo) se enfrentan en eliminatorias directas hasta coronar al Campeón de la Copa Catalana Match Play 2026.</p>
+                </div>
+
+                <div class="bracket-wrapper">
+                    <div class="bracket-grid">
+                        <!-- COLUMNA 1: CUARTOS DE FINAL -->
+                        <div>
+                            <div class="bracket-round-title">
+                                <span>🥊</span> Cuartos de Final (QF)
+                            </div>
+                            <div class="matches-col">
+                                <!-- QF1 -->
+                                <div class="match-card">
+                                    <div class="match-card-header">
+                                        <span>QF1</span>
+                                        <span>Cruce A vs B</span>
+                                    </div>
+                                    <div class="match-team">
+                                        <div class="team-label">
+                                            <span class="team-pos">1º A</span>
+                                            <span>1.º Grupo A</span>
+                                        </div>
+                                        <span class="score-box">-</span>
+                                    </div>
+                                    <div class="match-team">
+                                        <div class="team-label">
+                                            <span class="team-pos">2º B</span>
+                                            <span>2.º Grupo B</span>
+                                        </div>
+                                        <span class="score-box">-</span>
+                                    </div>
+                                </div>
+
+                                <!-- QF3 -->
+                                <div class="match-card">
+                                    <div class="match-card-header">
+                                        <span>QF3</span>
+                                        <span>Cruce C vs D</span>
+                                    </div>
+                                    <div class="match-team">
+                                        <div class="team-label">
+                                            <span class="team-pos">1º C</span>
+                                            <span>1.º Grupo C</span>
+                                        </div>
+                                        <span class="score-box">-</span>
+                                    </div>
+                                    <div class="match-team">
+                                        <div class="team-label">
+                                            <span class="team-pos">2º D</span>
+                                            <span>2.º Grupo D</span>
+                                        </div>
+                                        <span class="score-box">-</span>
+                                    </div>
+                                </div>
+
+                                <!-- QF2 -->
+                                <div class="match-card">
+                                    <div class="match-card-header">
+                                        <span>QF2</span>
+                                        <span>Cruce B vs A</span>
+                                    </div>
+                                    <div class="match-team">
+                                        <div class="team-label">
+                                            <span class="team-pos">1º B</span>
+                                            <span>1.º Grupo B</span>
+                                        </div>
+                                        <span class="score-box">-</span>
+                                    </div>
+                                    <div class="match-team">
+                                        <div class="team-label">
+                                            <span class="team-pos">2º A</span>
+                                            <span>2.º Grupo A</span>
+                                        </div>
+                                        <span class="score-box">-</span>
+                                    </div>
+                                </div>
+
+                                <!-- QF4 -->
+                                <div class="match-card">
+                                    <div class="match-card-header">
+                                        <span>QF4</span>
+                                        <span>Cruce D vs C</span>
+                                    </div>
+                                    <div class="match-team">
+                                        <div class="team-label">
+                                            <span class="team-pos">1º D</span>
+                                            <span>1.º Grupo D</span>
+                                        </div>
+                                        <span class="score-box">-</span>
+                                    </div>
+                                    <div class="match-team">
+                                        <div class="team-label">
+                                            <span class="team-pos">2º C</span>
+                                            <span>2.º Grupo C</span>
+                                        </div>
+                                        <span class="score-box">-</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- COLUMNA 2: SEMIFINALES -->
+                        <div>
+                            <div class="bracket-round-title">
+                                <span>⚡</span> Semifinales (SF)
+                            </div>
+                            <div class="matches-col" style="gap: 7rem; justify-content: center;">
+                                <!-- SF1 -->
+                                <div class="match-card">
+                                    <div class="match-card-header">
+                                        <span>SF1</span>
+                                        <span>Camino Final Superior</span>
+                                    </div>
+                                    <div class="match-team">
+                                        <div class="team-label">
+                                            <span class="team-pos">QF1</span>
+                                            <span>Ganador QF1</span>
+                                        </div>
+                                        <span class="score-box">-</span>
+                                    </div>
+                                    <div class="match-team">
+                                        <div class="team-label">
+                                            <span class="team-pos">QF3</span>
+                                            <span>Ganador QF3</span>
+                                        </div>
+                                        <span class="score-box">-</span>
+                                    </div>
+                                </div>
+
+                                <!-- SF2 -->
+                                <div class="match-card">
+                                    <div class="match-card-header">
+                                        <span>SF2</span>
+                                        <span>Camino Final Inferior</span>
+                                    </div>
+                                    <div class="match-team">
+                                        <div class="team-label">
+                                            <span class="team-pos">QF2</span>
+                                            <span>Ganador QF2</span>
+                                        </div>
+                                        <span class="score-box">-</span>
+                                    </div>
+                                    <div class="match-team">
+                                        <div class="team-label">
+                                            <span class="team-pos">QF4</span>
+                                            <span>Ganador QF4</span>
+                                        </div>
+                                        <span class="score-box">-</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- COLUMNA 3: GRAN FINAL & 3º PUESTO -->
+                        <div>
+                            <div class="bracket-round-title">
+                                <span>🏆</span> Gran Final & Podio
+                            </div>
+                            <div class="matches-col" style="gap: 3.5rem;">
+                                <!-- GRAN FINAL -->
+                                <div class="match-card" style="border: 2px solid var(--copa-gold); box-shadow: 0 0 25px rgba(251, 191, 36, 0.25);">
+                                    <div class="match-card-header" style="background: rgba(251, 191, 36, 0.15); color: #fde047;">
+                                        <span>🏆 GRAN FINAL</span>
+                                        <span>Por el Título 2026</span>
+                                    </div>
+                                    <div class="match-team">
+                                        <div class="team-label">
+                                            <span class="team-pos" style="background: rgba(251, 191, 36, 0.25); color: #fef08a;">SF1</span>
+                                            <span>Ganador SF1</span>
+                                        </div>
+                                        <span class="score-box">-</span>
+                                    </div>
+                                    <div class="match-team">
+                                        <div class="team-label">
+                                            <span class="team-pos" style="background: rgba(251, 191, 36, 0.25); color: #fef08a;">SF2</span>
+                                            <span>Ganador SF2</span>
+                                        </div>
+                                        <span class="score-box">-</span>
+                                    </div>
+                                </div>
+
+                                <!-- 3º Y 4º PUESTO -->
+                                <div class="match-card">
+                                    <div class="match-card-header">
+                                        <span>🥉 3.º Y 4.º PUESTO</span>
+                                        <span>Consolación Semifinalistas</span>
+                                    </div>
+                                    <div class="match-team">
+                                        <div class="team-label">
+                                            <span class="team-pos">Perd. SF1</span>
+                                            <span>Perdedor SF1</span>
+                                        </div>
+                                        <span class="score-box">-</span>
+                                    </div>
+                                    <div class="match-team">
+                                        <div class="team-label">
+                                            <span class="team-pos">Perd. SF2</span>
+                                            <span>Perdedor SF2</span>
+                                        </div>
+                                        <span class="score-box">-</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 3: CUADRO DE CONSOLACIÓN -->
+        <section id="cuadro-consolacion" class="section-copa">
+            <div class="section-heading">
+                <span class="badge-pill" style="background: rgba(249, 115, 22, 0.15); color: #fb923c; border: 1px solid rgba(249, 115, 22, 0.3);">Lucha por el 9.º Puesto</span>
+                <h2 style="margin-top: 0.5rem;"><span>🥉</span> Cuadro de Consolación</h2>
+                <p>Reservado para los <strong>4 jugadores que finalicen en 3.ª posición</strong> de sus respectivos grupos. Dos semifinales y una final directa para definir al Campeón de Consolación.</p>
+            </div>
+
+            <div class="bracket-wrapper" style="max-width: 950px; margin: 0 auto;">
+                <div class="bracket-grid" style="grid-template-columns: repeat(2, minmax(280px, 1fr)); min-width: 600px;">
+                    <!-- SEMIFINALES CONSOLACIÓN -->
+                    <div>
+                        <div class="bracket-round-title" style="color: #fb923c; border-bottom-color: rgba(249, 115, 22, 0.25);">
+                            <span>⚡</span> Semifinales Consolación
+                        </div>
+                        <div class="matches-col">
+                            <!-- C1 -->
+                            <div class="match-card">
+                                <div class="match-card-header">
+                                    <span>Cruce C1</span>
+                                    <span>3º A vs 3º B</span>
+                                </div>
+                                <div class="match-team">
+                                    <div class="team-label">
+                                        <span class="team-pos">3º A</span>
+                                        <span>3.º Grupo A</span>
+                                    </div>
+                                    <span class="score-box">-</span>
+                                </div>
+                                <div class="match-team">
+                                    <div class="team-label">
+                                        <span class="team-pos">3º B</span>
+                                        <span>3.º Grupo B</span>
+                                    </div>
+                                    <span class="score-box">-</span>
+                                </div>
+                            </div>
+
+                            <!-- C2 -->
+                            <div class="match-card">
+                                <div class="match-card-header">
+                                    <span>Cruce C2</span>
+                                    <span>3º C vs 3º D</span>
+                                </div>
+                                <div class="match-team">
+                                    <div class="team-label">
+                                        <span class="team-pos">3º C</span>
+                                        <span>3.º Grupo C</span>
+                                    </div>
+                                    <span class="score-box">-</span>
+                                </div>
+                                <div class="match-team">
+                                    <div class="team-label">
+                                        <span class="team-pos">3º D</span>
+                                        <span>3.º Grupo D</span>
+                                    </div>
+                                    <span class="score-box">-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FINAL CONSOLACIÓN -->
+                    <div style="display: flex; flex-direction: column; justify-content: center;">
+                        <div class="bracket-round-title" style="color: #fb923c; border-bottom-color: rgba(249, 115, 22, 0.25);">
+                            <span>🎖️</span> Final de Consolación
+                        </div>
+                        <div class="match-card" style="border: 2px solid rgba(249, 115, 22, 0.4); box-shadow: 0 0 20px rgba(249, 115, 22, 0.15);">
+                            <div class="match-card-header" style="background: rgba(249, 115, 22, 0.15); color: #fed7aa;">
+                                <span>🏅 FINAL CONSOLACIÓN</span>
+                                <span>Por el 9.º Puesto</span>
+                            </div>
+                            <div class="match-team">
+                                <div class="team-label">
+                                    <span class="team-pos" style="background: rgba(249, 115, 22, 0.25); color: #ffedd5;">Gan. C1</span>
+                                    <span>Ganador C1</span>
+                                </div>
+                                <span class="score-box">-</span>
+                            </div>
+                            <div class="match-team">
+                                <div class="team-label">
+                                    <span class="team-pos" style="background: rgba(249, 115, 22, 0.25); color: #ffedd5;">Gan. C2</span>
+                                    <span>Ganador C2</span>
+                                </div>
+                                <span class="score-box">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CUADRO DE HONOR Y POSICIONES FINALES -->
+            <div class="trophy-banner">
+                <h3 style="color: #fde047; font-size: 1.8rem; font-weight: 800; margin: 0 0 1.25rem;">
+                    🏆 Cuadro de Honor del Torneo
+                </h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.25rem; max-width: 900px; margin: 0 auto; text-align: left;">
+                    <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 0.75rem; border: 1px solid rgba(251, 191, 36, 0.3);">
+                        <div style="font-size: 0.75rem; color: #fbbf24; font-weight: 800; text-transform: uppercase;">1.º Puesto</div>
+                        <div style="font-size: 1.15rem; font-weight: 800; color: white;">🏆 Campeón Oficial</div>
+                        <div style="font-size: 0.8rem; color: #94a3b8;">Ganador Gran Final</div>
+                    </div>
+                    <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 0.75rem; border: 1px solid rgba(255, 255, 255, 0.1);">
+                        <div style="font-size: 0.75rem; color: #cbd5e1; font-weight: 800; text-transform: uppercase;">2.º Puesto</div>
+                        <div style="font-size: 1.15rem; font-weight: 800; color: white;">🥈 Subcampeón</div>
+                        <div style="font-size: 0.8rem; color: #94a3b8;">Finalista del torneo</div>
+                    </div>
+                    <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 0.75rem; border: 1px solid rgba(255, 255, 255, 0.1);">
+                        <div style="font-size: 0.75rem; color: #fb923c; font-weight: 800; text-transform: uppercase;">3.º Puesto</div>
+                        <div style="font-size: 1.15rem; font-weight: 800; color: white;">🥉 Tercer Puesto</div>
+                        <div style="font-size: 0.8rem; color: #94a3b8;">Vencedor partido 3º/4º</div>
+                    </div>
+                    <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 0.75rem; border: 1px solid rgba(249, 115, 22, 0.3);">
+                        <div style="font-size: 0.75rem; color: #f97316; font-weight: 800; text-transform: uppercase;">9.º Puesto</div>
+                        <div style="font-size: 1.15rem; font-weight: 800; color: white;">🏅 Campeón Consolación</div>
+                        <div style="font-size: 0.8rem; color: #94a3b8;">Vencedor Cuadro 3.ºs</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 4: FORMATO Y REGLAS -->
+        <section id="formato" style="background: #020617; padding: 5rem 1.5rem; border-top: 1px solid var(--copa-border);">
+            <div style="max-width: 1100px; margin: 0 auto;">
+                <div class="section-heading">
+                    <span class="badge-pill badge-green">Reglamento de Competición</span>
+                    <h2 style="margin-top: 0.5rem;"><span>📜</span> Formato Oficial y Criterios</h2>
+                    <p>Normas aplicables para la Copa Catalana Match Play 2026 bajo reglamento de Footgolf Catalunya y la FIFG.</p>
+                </div>
+
+                <div class="rules-grid">
+                    <div class="rule-card">
+                        <h4><span>⛳</span> Modalidad Match Play</h4>
+                        <p>Los partidos se disputan hoyo a hoyo en enfrentamiento individual cara a cara. Quien complete el hoyo en menos golpes suma un punto de hoyo ("hoyo arriba"). Si ambos empatan en golpes, el hoyo queda empatado ("halved").</p>
+                    </div>
+
+                    <div class="rule-card">
+                        <h4><span>📊</span> Puntuación en Fase de Grupos</h4>
+                        <p>Victoria: <strong>3 puntos</strong>. Empate al término de los hoyos estipulados: <strong>1 punto</strong> para cada jugador. Derrota: <strong>0 puntos</strong>. Cada jugador jugará 2 partidos en su grupo.</p>
+                    </div>
+
+                    <div class="rule-card">
+                        <h4><span>⚖️</span> Criterios de Desempate en Grupo</h4>
+                        <p>En caso de empate a puntos entre jugadores al concluir la fase de grupos: 1º Enfrentamiento directo, 2º Diferencia de hoyos ganados/perdidos (hoyo average), 3º Mayor número de hoyos ganados a favor.</p>
+                    </div>
+
+                    <div class="rule-card">
+                        <h4><span>🎯</span> Eliminatorias Directas y Penaltis</h4>
+                        <p>En las rondas del Cuadro de Campeones y Cuadro de Consolación, los partidos no pueden terminar en empate. En caso de finalizar igualados, se procederá a una tanda de penalty putts (muerte súbita si continúa la igualdad).</p>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 3.5rem;">
+                    <a href="/src/pages/reglas.html" class="btn btn-secondary" style="color: white; border-color: rgba(255,255,255,0.2); padding: 0.75rem 2rem;">
+                        Consultar Reglamento Completo FIFG →
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <app-footer></app-footer>
+</body>
+
+</html>
