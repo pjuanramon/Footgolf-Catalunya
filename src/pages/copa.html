@@ -227,36 +227,18 @@
             background: rgba(255, 255, 255, 0.03);
         }
 
-        .seed-num {
-            width: 28px;
-            height: 28px;
+        .player-icon {
+            width: 34px;
+            height: 34px;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.06);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.85rem;
-            font-weight: 800;
+            font-size: 1rem;
             color: #94a3b8;
             flex-shrink: 0;
-        }
-
-        .player-row:nth-child(1) .seed-num {
-            background: rgba(251, 191, 36, 0.2);
-            color: #fde047;
-            border: 1px solid rgba(251, 191, 36, 0.4);
-        }
-
-        .player-row:nth-child(2) .seed-num {
-            background: rgba(148, 163, 184, 0.2);
-            color: #e2e8f0;
-            border: 1px solid rgba(148, 163, 184, 0.4);
-        }
-
-        .player-row:nth-child(3) .seed-num {
-            background: rgba(180, 83, 9, 0.2);
-            color: #fb923c;
-            border: 1px solid rgba(180, 83, 9, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .player-info {
@@ -279,24 +261,26 @@
             gap: 0.35rem;
         }
 
-        .destiny-tag {
-            font-size: 0.72rem;
+        .group-rule-footer {
+            padding: 0.75rem 1.25rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.75rem;
+            color: #94a3b8;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .match-badge-pending {
+            font-size: 0.68rem;
             font-weight: 700;
-            padding: 0.2rem 0.55rem;
-            border-radius: 6px;
+            padding: 0.15rem 0.45rem;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.06);
+            color: #94a3b8;
             text-transform: uppercase;
-        }
-
-        .tag-qf {
-            background: rgba(30, 143, 58, 0.2);
-            color: #4ade80;
-            border: 1px solid rgba(74, 222, 128, 0.3);
-        }
-
-        .tag-cons {
-            background: rgba(249, 115, 22, 0.15);
-            color: #fb923c;
-            border: 1px solid rgba(249, 115, 22, 0.3);
+            letter-spacing: 0.03em;
         }
 
         /* Match schedule preview in group */
@@ -575,8 +559,9 @@
         <!-- SECCIÓN 1: FASE DE GRUPOS -->
         <section id="grupos" class="section-copa">
             <div class="section-heading">
-                <h2><span>📊</span> Fase de Grupos — Sorteo Oficial</h2>
-                <p>12 jugadores repartidos en 4 grupos de 3. Cada jugador disputa <strong>2 partidos</strong>. Los dos primeros de cada grupo avanzan a Cuartos de Final (Cuadro de Campeones); los terceros pasan a Semifinales del Cuadro de Consolación.</p>
+                <span class="badge-pill badge-gold" style="margin-bottom: 0.75rem;">Sorteo Oficial · Partidos Pendientes de Disputa</span>
+                <h2 style="margin-top: 0.5rem;"><span>📊</span> Fase de Grupos</h2>
+                <p>12 jugadores encuadrados en 4 grupos de 3 tras el sorteo oficial. Cada jugador disputará <strong>2 partidos</strong> este fin de semana en Golf La Garriga. Al finalizar la fase, los dos primeros de cada grupo avanzarán al Cuadro de Campeones y el tercero disputará el Cuadro de Consolación.</p>
             </div>
 
             <div class="groups-grid">
@@ -588,28 +573,25 @@
                     </div>
                     <div class="player-list">
                         <div class="player-row">
-                            <div class="seed-num">1</div>
+                            <div class="player-icon">👤</div>
                             <div class="player-info">
                                 <div class="player-name">Iván Luengo</div>
                                 <div class="player-club">Apex FootGolf</div>
                             </div>
-                            <span class="destiny-tag tag-qf">Top 2 → QF</span>
                         </div>
                         <div class="player-row">
-                            <div class="seed-num">2</div>
+                            <div class="player-icon">👤</div>
                             <div class="player-info">
                                 <div class="player-name">Xavi Leiva</div>
                                 <div class="player-club">Apex FootGolf</div>
                             </div>
-                            <span class="destiny-tag tag-qf">Top 2 → QF</span>
                         </div>
                         <div class="player-row">
-                            <div class="seed-num">3</div>
+                            <div class="player-icon">👤</div>
                             <div class="player-info">
                                 <div class="player-name">Sergi Pahisa</div>
                                 <div class="player-club">AC Maktub FG</div>
                             </div>
-                            <span class="destiny-tag tag-cons">3.º → Consolación</span>
                         </div>
                     </div>
                     <div class="group-matches-box">
@@ -618,17 +600,23 @@
                             <span>Iván Luengo</span>
                             <span class="vs">VS</span>
                             <span>Xavi Leiva</span>
+                            <span class="match-badge-pending">Por jugar</span>
                         </div>
                         <div class="mini-match">
                             <span>Xavi Leiva</span>
                             <span class="vs">VS</span>
                             <span>Sergi Pahisa</span>
+                            <span class="match-badge-pending">Por jugar</span>
                         </div>
                         <div class="mini-match">
                             <span>Iván Luengo</span>
                             <span class="vs">VS</span>
                             <span>Sergi Pahisa</span>
+                            <span class="match-badge-pending">Por jugar</span>
                         </div>
+                    </div>
+                    <div class="group-rule-footer">
+                        <span>🎯</span> Pase: 1.º y 2.º → Cuadro Campeones · 3.º → Consolación
                     </div>
                 </div>
 
@@ -640,28 +628,25 @@
                     </div>
                     <div class="player-list">
                         <div class="player-row">
-                            <div class="seed-num">1</div>
+                            <div class="player-icon">👤</div>
                             <div class="player-info">
                                 <div class="player-name">Juan Ramón Pérez (JuanRa)</div>
                                 <div class="player-club">Apex FootGolf</div>
                             </div>
-                            <span class="destiny-tag tag-qf">Top 2 → QF</span>
                         </div>
                         <div class="player-row">
-                            <div class="seed-num">2</div>
+                            <div class="player-icon">👤</div>
                             <div class="player-info">
                                 <div class="player-name">Jordi Martín</div>
                                 <div class="player-club">Bunker Boys FootGolf</div>
                             </div>
-                            <span class="destiny-tag tag-qf">Top 2 → QF</span>
                         </div>
                         <div class="player-row">
-                            <div class="seed-num">3</div>
+                            <div class="player-icon">👤</div>
                             <div class="player-info">
                                 <div class="player-name">Daniel Abril</div>
                                 <div class="player-club">Apex FootGolf</div>
                             </div>
-                            <span class="destiny-tag tag-cons">3.º → Consolación</span>
                         </div>
                     </div>
                     <div class="group-matches-box">
@@ -670,17 +655,23 @@
                             <span>JuanRa Pérez</span>
                             <span class="vs">VS</span>
                             <span>Jordi Martín</span>
+                            <span class="match-badge-pending">Por jugar</span>
                         </div>
                         <div class="mini-match">
                             <span>Jordi Martín</span>
                             <span class="vs">VS</span>
                             <span>Daniel Abril</span>
+                            <span class="match-badge-pending">Por jugar</span>
                         </div>
                         <div class="mini-match">
                             <span>JuanRa Pérez</span>
                             <span class="vs">VS</span>
                             <span>Daniel Abril</span>
+                            <span class="match-badge-pending">Por jugar</span>
                         </div>
+                    </div>
+                    <div class="group-rule-footer">
+                        <span>🎯</span> Pase: 1.º y 2.º → Cuadro Campeones · 3.º → Consolación
                     </div>
                 </div>
 
@@ -692,28 +683,25 @@
                     </div>
                     <div class="player-list">
                         <div class="player-row">
-                            <div class="seed-num">1</div>
+                            <div class="player-icon">👤</div>
                             <div class="player-info">
                                 <div class="player-name">Jorge Santiago</div>
                                 <div class="player-club">Barcelona Footgolf · Vigente Campeón</div>
                             </div>
-                            <span class="destiny-tag tag-qf">Top 2 → QF</span>
                         </div>
                         <div class="player-row">
-                            <div class="seed-num">2</div>
+                            <div class="player-icon">👤</div>
                             <div class="player-info">
                                 <div class="player-name">Juan Medina</div>
                                 <div class="player-club">Independiente</div>
                             </div>
-                            <span class="destiny-tag tag-qf">Top 2 → QF</span>
                         </div>
                         <div class="player-row">
-                            <div class="seed-num">3</div>
+                            <div class="player-icon">👤</div>
                             <div class="player-info">
                                 <div class="player-name">Gustavo Verse</div>
                                 <div class="player-club">Jabalí Team Footgolf</div>
                             </div>
-                            <span class="destiny-tag tag-cons">3.º → Consolación</span>
                         </div>
                     </div>
                     <div class="group-matches-box">
@@ -722,17 +710,23 @@
                             <span>Jorge Santiago</span>
                             <span class="vs">VS</span>
                             <span>Juan Medina</span>
+                            <span class="match-badge-pending">Por jugar</span>
                         </div>
                         <div class="mini-match">
                             <span>Juan Medina</span>
                             <span class="vs">VS</span>
                             <span>Gustavo Verse</span>
+                            <span class="match-badge-pending">Por jugar</span>
                         </div>
                         <div class="mini-match">
                             <span>Jorge Santiago</span>
                             <span class="vs">VS</span>
                             <span>Gustavo Verse</span>
+                            <span class="match-badge-pending">Por jugar</span>
                         </div>
+                    </div>
+                    <div class="group-rule-footer">
+                        <span>🎯</span> Pase: 1.º y 2.º → Cuadro Campeones · 3.º → Consolación
                     </div>
                 </div>
 
@@ -744,28 +738,25 @@
                     </div>
                     <div class="player-list">
                         <div class="player-row">
-                            <div class="seed-num">1</div>
+                            <div class="player-icon">👤</div>
                             <div class="player-info">
                                 <div class="player-name">David Téllez</div>
                                 <div class="player-club">Apex FootGolf</div>
                             </div>
-                            <span class="destiny-tag tag-qf">Top 2 → QF</span>
                         </div>
                         <div class="player-row">
-                            <div class="seed-num">2</div>
+                            <div class="player-icon">👤</div>
                             <div class="player-info">
                                 <div class="player-name">Alberto Leiva</div>
                                 <div class="player-club">Apex FootGolf</div>
                             </div>
-                            <span class="destiny-tag tag-qf">Top 2 → QF</span>
                         </div>
                         <div class="player-row">
-                            <div class="seed-num">3</div>
+                            <div class="player-icon">👤</div>
                             <div class="player-info">
                                 <div class="player-name">Jesús Pizarro "Chechu"</div>
                                 <div class="player-club">Independiente</div>
                             </div>
-                            <span class="destiny-tag tag-cons">3.º → Consolación</span>
                         </div>
                     </div>
                     <div class="group-matches-box">
@@ -774,17 +765,23 @@
                             <span>David Téllez</span>
                             <span class="vs">VS</span>
                             <span>Alberto Leiva</span>
+                            <span class="match-badge-pending">Por jugar</span>
                         </div>
                         <div class="mini-match">
                             <span>Alberto Leiva</span>
                             <span class="vs">VS</span>
                             <span>Jesús Pizarro</span>
+                            <span class="match-badge-pending">Por jugar</span>
                         </div>
                         <div class="mini-match">
                             <span>David Téllez</span>
                             <span class="vs">VS</span>
                             <span>Jesús Pizarro</span>
+                            <span class="match-badge-pending">Por jugar</span>
                         </div>
+                    </div>
+                    <div class="group-rule-footer">
+                        <span>🎯</span> Pase: 1.º y 2.º → Cuadro Campeones · 3.º → Consolación
                     </div>
                 </div>
             </div>
