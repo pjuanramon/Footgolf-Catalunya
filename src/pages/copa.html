@@ -30,6 +30,42 @@
             font-family: 'Outfit', sans-serif;
         }
 
+        /* Navbar Dark Theme for Copa MP Page */
+        .navbar {
+            background: rgba(11, 15, 25, 0.95) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+        }
+
+        .navbar .nav-links a:not(.nav-copa-badge) {
+            color: #cbd5e1 !important;
+        }
+
+        .navbar .nav-links a:not(.nav-copa-badge):hover {
+            color: #fbbf24 !important;
+        }
+
+        .navbar .nav-copa-badge {
+            background: rgba(251, 191, 36, 0.2) !important;
+            color: #fde047 !important;
+            border: 1px solid rgba(251, 191, 36, 0.5) !important;
+        }
+
+        .navbar .nav-copa-badge:hover {
+            background: #fbbf24 !important;
+            color: #0b0f19 !important;
+        }
+
+        .menu-toggle {
+            color: #f1f5f9 !important;
+        }
+
+        @media (max-width: 768px) {
+            .navbar .nav-links {
+                background: #0f172a !important;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+        }
+
         .copa-hero {
             position: relative;
             background: radial-gradient(circle at 50% 20%, rgba(251, 191, 36, 0.15) 0%, transparent 60%),

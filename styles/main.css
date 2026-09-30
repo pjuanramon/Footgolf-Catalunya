@@ -168,6 +168,28 @@ ul {
     border-bottom-color: var(--primary-color);
 }
 
+.nav-copa-badge {
+    background: #fef3c7 !important;
+    color: #92400e !important;
+    padding: 0.35rem 0.85rem !important;
+    border-radius: 9999px !important;
+    border: 1px solid #fcd34d !important;
+    font-weight: 800 !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    line-height: 1;
+    transition: var(--transition);
+}
+
+.nav-copa-badge:hover {
+    background: #f59e0b !important;
+    color: #ffffff !important;
+    border-color: #d97706 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25);
+}
+
 .menu-toggle {
     display: none;
     font-size: 1.5rem;
@@ -375,10 +397,10 @@ ul {
 
 .event-card {
     display: flex;
-    background: white;
-    border-radius: 0.5rem;
+    background: var(--bg-dark);
+    border-radius: 0.75rem;
     overflow: hidden;
-    border: 1px solid var(--border-color);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     transition: var(--transition);
 }
 
@@ -388,7 +410,7 @@ ul {
 }
 
 .event-card:hover, .event-card.active {
-    background: rgba(255, 255, 255, 0.1);
+    background: #1e293b;
     transform: scale(1.02);
     border-color: rgba(255, 255, 255, 0.3);
 }
@@ -411,7 +433,7 @@ ul {
 }
 
 .event-info h4 {
-    color: white;
+    color: #ffffff;
     margin-bottom: 0.25rem;
 }
 

@@ -29,7 +29,7 @@ class Navbar extends HTMLElement {
                     <a href="${homeLink}">Inicio</a>
                     <a href="/src/pages/calendario.html">Calendario 2026</a>
                     <a href="/src/pages/clasificaciones.html">Clasificaciones</a>
-                    <a href="/src/pages/copa.html" style="color: #fbbf24; font-weight: 700;">🏆 Copa MP</a>
+                    <a href="/src/pages/copa.html" class="nav-copa-badge">🏆 Copa MP</a>
                     <a href="/src/pages/inscripciones.html">Inscripciones</a>
                     <a href="/src/pages/jugadores.html">Jugadores & Licencias</a>
                     <a href="/src/pages/institucional.html">Institucional</a>
