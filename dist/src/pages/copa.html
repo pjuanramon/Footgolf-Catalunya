@@ -23,10 +23,16 @@
             --copa-border: rgba(255, 255, 255, 0.1);
         }
 
-        body {
-            background-color: #0b0f19;
-            color: #f1f5f9;
+        html, body {
+            background-color: #0b0f19 !important;
+            background: #0b0f19 !important;
+            color: #f1f5f9 !important;
             font-family: 'Outfit', sans-serif;
+        }
+
+        main {
+            background-color: #0b0f19 !important;
+            color: #f1f5f9 !important;
         }
 
         /* Navbar Dark Theme for Copa MP Page */
@@ -165,6 +171,7 @@
 
         /* Section Containers */
         .section-copa {
+            background-color: #0b0f19;
             padding: 4rem 1.5rem;
             max-width: 1250px;
             margin: 0 auto;
@@ -517,7 +524,7 @@
 
         /* Estilos de Horarios Proyectados */
         .schedule-hero-banner {
-            background: linear-gradient(135deg, rgba(251, 191, 36, 0.12) 0%, rgba(217, 119, 6, 0.05) 100%);
+            background: #0f172a linear-gradient(135deg, rgba(251, 191, 36, 0.12) 0%, rgba(217, 119, 6, 0.05) 100%);
             border: 1px solid rgba(251, 191, 36, 0.35);
             border-radius: 1.25rem;
             padding: 1.5rem 2rem;
@@ -526,6 +533,16 @@
             align-items: flex-start;
             gap: 1.25rem;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .highlight-exact {
+            color: #4ade80 !important;
+            font-weight: 800;
+        }
+
+        .highlight-est {
+            color: #38bdf8 !important;
+            font-weight: 800;
         }
 
         .schedule-hero-icon {
@@ -811,7 +828,7 @@
         </header>
 
         <!-- SECCIÓN 0: HORARIOS PROYECTADOS SÁBADO -->
-        <section id="horarios" class="section-copa" style="padding-bottom: 2rem;">
+        <section id="horarios" class="section-copa" style="background: #0b0f19; padding-bottom: 2rem;">
             <div class="section-heading">
                 <span class="badge-pill badge-gold" style="margin-bottom: 0.75rem;">📅 Sábado 3 de Octubre · Golf La Garriga</span>
                 <h2 style="margin-top: 0.5rem;"><span>⏰</span> Horarios Previstos de los Partidos</h2>
@@ -1012,7 +1029,7 @@
         </section>
 
         <!-- SECCIÓN 1: FASE DE GRUPOS -->
-        <section id="grupos" class="section-copa">
+        <section id="grupos" class="section-copa" style="background: #0b0f19;">
 
             <div class="section-heading">
                 <span class="badge-pill badge-gold" style="margin-bottom: 0.75rem;">Sorteo Oficial · Partidos Pendientes de Disputa</span>
@@ -1459,7 +1476,7 @@
         </section>
 
         <!-- SECCIÓN 3: CUADRO DE CONSOLACIÓN -->
-        <section id="cuadro-consolacion" class="section-copa">
+        <section id="cuadro-consolacion" class="section-copa" style="background: #0b0f19;">
             <div class="section-heading">
                 <span class="badge-pill" style="background: rgba(249, 115, 22, 0.15); color: #fb923c; border: 1px solid rgba(249, 115, 22, 0.3);">Lucha por el 9.º Puesto</span>
                 <h2 style="margin-top: 0.5rem;"><span>🥉</span> Cuadro de Consolación</h2>
