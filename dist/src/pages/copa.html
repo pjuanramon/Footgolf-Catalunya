@@ -479,7 +479,233 @@
             margin: 0;
         }
 
+        /* Estilos de Horarios Proyectados */
+        .schedule-hero-banner {
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.12) 0%, rgba(217, 119, 6, 0.05) 100%);
+            border: 1px solid rgba(251, 191, 36, 0.35);
+            border-radius: 1.25rem;
+            padding: 1.5rem 2rem;
+            margin-bottom: 2.5rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 1.25rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .schedule-hero-icon {
+            font-size: 2.5rem;
+            line-height: 1;
+            flex-shrink: 0;
+        }
+
+        .schedule-hero-content h3 {
+            color: #fbbf24;
+            font-size: 1.3rem;
+            font-weight: 800;
+            margin: 0 0 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .schedule-hero-content p {
+            color: #cbd5e1;
+            font-size: 0.98rem;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .schedule-card {
+            background: var(--copa-card-bg);
+            border: 1px solid var(--copa-border);
+            border-radius: 1.25rem;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .schedule-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(251, 191, 36, 0.4);
+        }
+
+        .schedule-card.exact-round {
+            border-color: rgba(34, 197, 94, 0.4);
+        }
+
+        .schedule-card.est-round-1 {
+            border-color: rgba(56, 189, 248, 0.4);
+        }
+
+        .schedule-card.est-round-2 {
+            border-color: rgba(168, 85, 247, 0.4);
+        }
+
+        .schedule-card-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .schedule-card.exact-round .schedule-card-header {
+            background: linear-gradient(180deg, rgba(34, 197, 94, 0.15) 0%, rgba(34, 197, 94, 0.03) 100%);
+        }
+
+        .schedule-card.est-round-1 .schedule-card-header {
+            background: linear-gradient(180deg, rgba(56, 189, 248, 0.15) 0%, rgba(56, 189, 248, 0.03) 100%);
+        }
+
+        .schedule-card.est-round-2 .schedule-card-header {
+            background: linear-gradient(180deg, rgba(168, 85, 247, 0.15) 0%, rgba(168, 85, 247, 0.03) 100%);
+        }
+
+        .schedule-round-badge {
+            font-size: 0.72rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            padding: 0.25rem 0.65rem;
+            border-radius: 9999px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            white-space: nowrap;
+        }
+
+        .badge-exact {
+            background: rgba(34, 197, 94, 0.2);
+            color: #4ade80;
+            border: 1px solid rgba(34, 197, 94, 0.4);
+        }
+
+        .badge-estimated {
+            background: rgba(56, 189, 248, 0.18);
+            color: #38bdf8;
+            border: 1px solid rgba(56, 189, 248, 0.4);
+        }
+
+        .badge-estimated-purple {
+            background: rgba(168, 85, 247, 0.18);
+            color: #c084fc;
+            border: 1px solid rgba(168, 85, 247, 0.4);
+        }
+
+        .schedule-time-title {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: #ffffff;
+            margin: 0.35rem 0 0.15rem;
+            display: flex;
+            align-items: baseline;
+            gap: 0.5rem;
+        }
+
+        .schedule-time-sub {
+            font-size: 0.82rem;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        .schedule-matches-body {
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            flex: 1;
+        }
+
+        .schedule-hole-divider {
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #fbbf24;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.35rem;
+            padding-bottom: 0.25rem;
+            border-bottom: 1px solid rgba(251, 191, 36, 0.2);
+        }
+
+        .schedule-match-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 0.75rem;
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+        }
+
+        .match-group-tag {
+            font-size: 0.72rem;
+            font-weight: 800;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.08);
+            color: #cbd5e1;
+            flex-shrink: 0;
+        }
+
+        .match-players-vs {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: #ffffff;
+            text-align: center;
+            flex-wrap: wrap;
+        }
+
+        .match-players-vs .vs-badge {
+            font-size: 0.68rem;
+            font-weight: 900;
+            color: var(--copa-gold);
+            background: rgba(251, 191, 36, 0.15);
+            padding: 0.1rem 0.35rem;
+            border-radius: 3px;
+        }
+
+        .schedule-resting-box {
+            padding: 0.85rem 1.5rem;
+            background: rgba(0, 0, 0, 0.35);
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            font-size: 0.8rem;
+            color: #94a3b8;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            flex-wrap: wrap;
+        }
+
+        .resting-tag {
+            background: rgba(255, 255, 255, 0.06);
+            color: #e2e8f0;
+            padding: 0.15rem 0.45rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+        }
+
         /* Responsive tweaks */
+
         @media (max-width: 768px) {
             .copa-hero {
                 padding: 4rem 1rem 2.5rem;
@@ -539,6 +765,7 @@
 
                 <!-- Subnavigation Buttons -->
                 <div class="subnav-pills">
+                    <a href="#horarios" class="subnav-btn">⏰ Horarios Sábado</a>
                     <a href="#grupos" class="subnav-btn active">📊 Fase de Grupos</a>
                     <a href="#cuadro-campeones" class="subnav-btn">🥇 Cuadro de Campeones</a>
                     <a href="#cuadro-consolacion" class="subnav-btn">🥉 Cuadro de Consolación</a>
@@ -547,8 +774,210 @@
             </div>
         </header>
 
+        <!-- SECCIÓN 0: HORARIOS PROYECTADOS SÁBADO -->
+        <section id="horarios" class="section-copa" style="padding-bottom: 2rem;">
+            <div class="section-heading">
+                <span class="badge-pill badge-gold" style="margin-bottom: 0.75rem;">📅 Sábado 3 de Octubre · Golf La Garriga</span>
+                <h2 style="margin-top: 0.5rem;"><span>⏰</span> Horarios Previstos de los Partidos</h2>
+                <p>Proyección de los horarios para la disputa de la Fase de Grupos del sábado (sujetos a posibles ajustes según ritmo de juego). <strong>El primer horario de la 1:00 PM (13:00 h) es exacto</strong> y el resto son estimados, pero todos los jugadores deben estar listos a la hora prevista.</p>
+            </div>
+
+            <!-- Banner de Aviso de Salidas y Puntualidad -->
+            <div class="schedule-hero-banner">
+                <div class="schedule-hero-icon">⛳</div>
+                <div class="schedule-hero-content">
+                    <h3><span>Salidas Simultáneas y Organización del Sábado</span></h3>
+                    <p>
+                        El primer turno de juego iniciará a la <strong class="highlight-exact">1:00 PM (13:00 h) en punto</strong> con salidas simultáneas: <strong style="color:#fbbf24">2 partidos saldrán por el Hoyo 11</strong> y <strong style="color:#fbbf24">2 partidos saldrán por el Hoyo 12</strong>. Las rondas posteriores tienen horarios proyectados a las <strong class="highlight-est">~2:30 PM (14:30 h)</strong> y <strong style="color:#c084fc; font-weight:700;">~4:00 PM (16:00 h)</strong>. Rogamos a todos los participantes acudir con suficiente antelación y permanecer preparados para su salida.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Grid de Rondas del Sábado -->
+            <div class="schedule-grid">
+                <!-- RONDA 1 -->
+                <div class="schedule-card exact-round">
+                    <div class="schedule-card-header">
+                        <div>
+                            <span class="schedule-round-badge badge-exact">🟢 Ronda 1 · Horario Exacto</span>
+                            <div class="schedule-time-title">1:00 PM <span class="schedule-time-sub">(13:00 h)</span></div>
+                            <div style="font-size: 0.8rem; color: #4ade80; font-weight: 700;">Cabeza (1) 🆚 Segundo (2) de cada grupo</div>
+                        </div>
+                        <span style="font-size: 1.8rem;">🎯</span>
+                    </div>
+
+                    <div class="schedule-matches-body">
+                        <div class="schedule-hole-divider">
+                            <span>⛳ Hoyo 11 · 2 Partidos en Simultáneo</span>
+                        </div>
+                        <div class="schedule-match-item">
+                            <span class="match-group-tag">Grupo A</span>
+                            <div class="match-players-vs">
+                                <span>Iván Luengo</span>
+                                <span class="vs-badge">VS</span>
+                                <span>Xavi Leiva</span>
+                            </div>
+                        </div>
+                        <div class="schedule-match-item">
+                            <span class="match-group-tag">Grupo B</span>
+                            <div class="match-players-vs">
+                                <span>Juan Ramón Pérez</span>
+                                <span class="vs-badge">VS</span>
+                                <span>Jordi Martín</span>
+                            </div>
+                        </div>
+
+                        <div class="schedule-hole-divider">
+                            <span>⛳ Hoyo 12 · 2 Partidos en Simultáneo</span>
+                        </div>
+                        <div class="schedule-match-item">
+                            <span class="match-group-tag">Grupo C</span>
+                            <div class="match-players-vs">
+                                <span>Jorge Santiago</span>
+                                <span class="vs-badge">VS</span>
+                                <span>Juan Medina</span>
+                            </div>
+                        </div>
+                        <div class="schedule-match-item">
+                            <span class="match-group-tag">Grupo D</span>
+                            <div class="match-players-vs">
+                                <span>David Téllez</span>
+                                <span class="vs-badge">VS</span>
+                                <span>Alberto Leiva</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="schedule-resting-box">
+                        <span style="font-weight: 700; color: #cbd5e1;">🛌 Descansan en R1:</span>
+                        <span class="resting-tag">Sergi Pahisa (A)</span>
+                        <span class="resting-tag">Daniel Abril (B)</span>
+                        <span class="resting-tag">Gustavo Verse (C)</span>
+                        <span class="resting-tag">Jesús Pizarro (D)</span>
+                    </div>
+                </div>
+
+                <!-- RONDA 2 -->
+                <div class="schedule-card est-round-1">
+                    <div class="schedule-card-header">
+                        <div>
+                            <span class="schedule-round-badge badge-estimated">🔵 Ronda 2 · Estimado (~2:30 PM)</span>
+                            <div class="schedule-time-title">~2:30 PM <span class="schedule-time-sub">(~14:30 h)</span></div>
+                            <div style="font-size: 0.8rem; color: #38bdf8; font-weight: 700;">Cabeza (1) 🆚 Tercero (3) de cada grupo</div>
+                        </div>
+                        <span style="font-size: 1.8rem;">⚔️</span>
+                    </div>
+
+                    <div class="schedule-matches-body">
+                        <div class="schedule-hole-divider">
+                            <span>⛳ 4 Partidos de Grupos A, B, C y D</span>
+                        </div>
+                        <div class="schedule-match-item">
+                            <span class="match-group-tag">Grupo A</span>
+                            <div class="match-players-vs">
+                                <span>Iván Luengo</span>
+                                <span class="vs-badge">VS</span>
+                                <span>Sergi Pahisa</span>
+                            </div>
+                        </div>
+                        <div class="schedule-match-item">
+                            <span class="match-group-tag">Grupo B</span>
+                            <div class="match-players-vs">
+                                <span>Juan Ramón Pérez</span>
+                                <span class="vs-badge">VS</span>
+                                <span>Daniel Abril</span>
+                            </div>
+                        </div>
+                        <div class="schedule-match-item">
+                            <span class="match-group-tag">Grupo C</span>
+                            <div class="match-players-vs">
+                                <span>Jorge Santiago</span>
+                                <span class="vs-badge">VS</span>
+                                <span>Gustavo Verse</span>
+                            </div>
+                        </div>
+                        <div class="schedule-match-item">
+                            <span class="match-group-tag">Grupo D</span>
+                            <div class="match-players-vs">
+                                <span>David Téllez</span>
+                                <span class="vs-badge">VS</span>
+                                <span>Jesús Pizarro "Chechu"</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="schedule-resting-box">
+                        <span style="font-weight: 700; color: #cbd5e1;">🛌 Descansan en R2:</span>
+                        <span class="resting-tag">Xavi Leiva (A)</span>
+                        <span class="resting-tag">Jordi Martín (B)</span>
+                        <span class="resting-tag">Juan Medina (C)</span>
+                        <span class="resting-tag">Alberto Leiva (D)</span>
+                    </div>
+                </div>
+
+                <!-- RONDA 3 -->
+                <div class="schedule-card est-round-2">
+                    <div class="schedule-card-header">
+                        <div>
+                            <span class="schedule-round-badge badge-estimated-purple">🟣 Ronda 3 · Estimado (~4:00 PM)</span>
+                            <div class="schedule-time-title">~4:00 PM <span class="schedule-time-sub">(~16:00 h)</span></div>
+                            <div style="font-size: 0.8rem; color: #c084fc; font-weight: 700;">Segundo (2) 🆚 Tercero (3) de cada grupo</div>
+                        </div>
+                        <span style="font-size: 1.8rem;">🔥</span>
+                    </div>
+
+                    <div class="schedule-matches-body">
+                        <div class="schedule-hole-divider">
+                            <span>⛳ 4 Partidos Decisivos de Grupos</span>
+                        </div>
+                        <div class="schedule-match-item">
+                            <span class="match-group-tag">Grupo A</span>
+                            <div class="match-players-vs">
+                                <span>Xavi Leiva</span>
+                                <span class="vs-badge">VS</span>
+                                <span>Sergi Pahisa</span>
+                            </div>
+                        </div>
+                        <div class="schedule-match-item">
+                            <span class="match-group-tag">Grupo B</span>
+                            <div class="match-players-vs">
+                                <span>Jordi Martín</span>
+                                <span class="vs-badge">VS</span>
+                                <span>Daniel Abril</span>
+                            </div>
+                        </div>
+                        <div class="schedule-match-item">
+                            <span class="match-group-tag">Grupo C</span>
+                            <div class="match-players-vs">
+                                <span>Juan Medina</span>
+                                <span class="vs-badge">VS</span>
+                                <span>Gustavo Verse</span>
+                            </div>
+                        </div>
+                        <div class="schedule-match-item">
+                            <span class="match-group-tag">Grupo D</span>
+                            <div class="match-players-vs">
+                                <span>Alberto Leiva</span>
+                                <span class="vs-badge">VS</span>
+                                <span>Jesús Pizarro "Chechu"</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="schedule-resting-box">
+                        <span style="font-weight: 700; color: #cbd5e1;">🛌 Descansan en R3:</span>
+                        <span class="resting-tag">Iván Luengo (A)</span>
+                        <span class="resting-tag">Juan Ramón Pérez (B)</span>
+                        <span class="resting-tag">Jorge Santiago (C)</span>
+                        <span class="resting-tag">David Téllez (D)</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- SECCIÓN 1: FASE DE GRUPOS -->
         <section id="grupos" class="section-copa">
+
             <div class="section-heading">
                 <span class="badge-pill badge-gold" style="margin-bottom: 0.75rem;">Sorteo Oficial · Partidos Pendientes de Disputa</span>
                 <h2 style="margin-top: 0.5rem;"><span>📊</span> Fase de Grupos</h2>
@@ -583,23 +1012,26 @@
                         </div>
                     </div>
                     <div class="group-matches-box">
-                        <div class="group-matches-title"><span>⚔️</span> Enfrentamientos del Grupo</div>
+                        <div class="group-matches-title"><span>⚔️</span> Enfrentamientos y Horarios</div>
                         <div class="mini-match">
-                            <span>Iván Luengo</span>
-                            <span class="vs">VS</span>
-                            <span>Xavi Leiva</span>
+                            <div>
+                                <span style="display: block; font-size: 0.7rem; color: #4ade80; font-weight: 700;">R1 · 13:00 h (Exacto · Hoyo 11)</span>
+                                <span>Iván Luengo <strong style="color:var(--copa-gold); font-size:0.75rem;">VS</strong> Xavi Leiva</span>
+                            </div>
                             <span class="match-badge-pending">Por jugar</span>
                         </div>
                         <div class="mini-match">
-                            <span>Xavi Leiva</span>
-                            <span class="vs">VS</span>
-                            <span>Sergi Pahisa</span>
+                            <div>
+                                <span style="display: block; font-size: 0.7rem; color: #38bdf8; font-weight: 700;">R2 · ~14:30 h (Estimado)</span>
+                                <span>Iván Luengo <strong style="color:var(--copa-gold); font-size:0.75rem;">VS</strong> Sergi Pahisa</span>
+                            </div>
                             <span class="match-badge-pending">Por jugar</span>
                         </div>
                         <div class="mini-match">
-                            <span>Iván Luengo</span>
-                            <span class="vs">VS</span>
-                            <span>Sergi Pahisa</span>
+                            <div>
+                                <span style="display: block; font-size: 0.7rem; color: #c084fc; font-weight: 700;">R3 · ~16:00 h (Estimado)</span>
+                                <span>Xavi Leiva <strong style="color:var(--copa-gold); font-size:0.75rem;">VS</strong> Sergi Pahisa</span>
+                            </div>
                             <span class="match-badge-pending">Por jugar</span>
                         </div>
                     </div>
@@ -635,23 +1067,26 @@
                         </div>
                     </div>
                     <div class="group-matches-box">
-                        <div class="group-matches-title"><span>⚔️</span> Enfrentamientos del Grupo</div>
+                        <div class="group-matches-title"><span>⚔️</span> Enfrentamientos y Horarios</div>
                         <div class="mini-match">
-                            <span>JuanRa Pérez</span>
-                            <span class="vs">VS</span>
-                            <span>Jordi Martín</span>
+                            <div>
+                                <span style="display: block; font-size: 0.7rem; color: #4ade80; font-weight: 700;">R1 · 13:00 h (Exacto · Hoyo 11)</span>
+                                <span>JuanRa Pérez <strong style="color:var(--copa-gold); font-size:0.75rem;">VS</strong> Jordi Martín</span>
+                            </div>
                             <span class="match-badge-pending">Por jugar</span>
                         </div>
                         <div class="mini-match">
-                            <span>Jordi Martín</span>
-                            <span class="vs">VS</span>
-                            <span>Daniel Abril</span>
+                            <div>
+                                <span style="display: block; font-size: 0.7rem; color: #38bdf8; font-weight: 700;">R2 · ~14:30 h (Estimado)</span>
+                                <span>JuanRa Pérez <strong style="color:var(--copa-gold); font-size:0.75rem;">VS</strong> Daniel Abril</span>
+                            </div>
                             <span class="match-badge-pending">Por jugar</span>
                         </div>
                         <div class="mini-match">
-                            <span>JuanRa Pérez</span>
-                            <span class="vs">VS</span>
-                            <span>Daniel Abril</span>
+                            <div>
+                                <span style="display: block; font-size: 0.7rem; color: #c084fc; font-weight: 700;">R3 · ~16:00 h (Estimado)</span>
+                                <span>Jordi Martín <strong style="color:var(--copa-gold); font-size:0.75rem;">VS</strong> Daniel Abril</span>
+                            </div>
                             <span class="match-badge-pending">Por jugar</span>
                         </div>
                     </div>
@@ -687,23 +1122,26 @@
                         </div>
                     </div>
                     <div class="group-matches-box">
-                        <div class="group-matches-title"><span>⚔️</span> Enfrentamientos del Grupo</div>
+                        <div class="group-matches-title"><span>⚔️</span> Enfrentamientos y Horarios</div>
                         <div class="mini-match">
-                            <span>Jorge Santiago</span>
-                            <span class="vs">VS</span>
-                            <span>Juan Medina</span>
+                            <div>
+                                <span style="display: block; font-size: 0.7rem; color: #4ade80; font-weight: 700;">R1 · 13:00 h (Exacto · Hoyo 12)</span>
+                                <span>Jorge Santiago <strong style="color:var(--copa-gold); font-size:0.75rem;">VS</strong> Juan Medina</span>
+                            </div>
                             <span class="match-badge-pending">Por jugar</span>
                         </div>
                         <div class="mini-match">
-                            <span>Juan Medina</span>
-                            <span class="vs">VS</span>
-                            <span>Gustavo Verse</span>
+                            <div>
+                                <span style="display: block; font-size: 0.7rem; color: #38bdf8; font-weight: 700;">R2 · ~14:30 h (Estimado)</span>
+                                <span>Jorge Santiago <strong style="color:var(--copa-gold); font-size:0.75rem;">VS</strong> Gustavo Verse</span>
+                            </div>
                             <span class="match-badge-pending">Por jugar</span>
                         </div>
                         <div class="mini-match">
-                            <span>Jorge Santiago</span>
-                            <span class="vs">VS</span>
-                            <span>Gustavo Verse</span>
+                            <div>
+                                <span style="display: block; font-size: 0.7rem; color: #c084fc; font-weight: 700;">R3 · ~16:00 h (Estimado)</span>
+                                <span>Juan Medina <strong style="color:var(--copa-gold); font-size:0.75rem;">VS</strong> Gustavo Verse</span>
+                            </div>
                             <span class="match-badge-pending">Por jugar</span>
                         </div>
                     </div>
@@ -739,23 +1177,26 @@
                         </div>
                     </div>
                     <div class="group-matches-box">
-                        <div class="group-matches-title"><span>⚔️</span> Enfrentamientos del Grupo</div>
+                        <div class="group-matches-title"><span>⚔️</span> Enfrentamientos y Horarios</div>
                         <div class="mini-match">
-                            <span>David Téllez</span>
-                            <span class="vs">VS</span>
-                            <span>Alberto Leiva</span>
+                            <div>
+                                <span style="display: block; font-size: 0.7rem; color: #4ade80; font-weight: 700;">R1 · 13:00 h (Exacto · Hoyo 12)</span>
+                                <span>David Téllez <strong style="color:var(--copa-gold); font-size:0.75rem;">VS</strong> Alberto Leiva</span>
+                            </div>
                             <span class="match-badge-pending">Por jugar</span>
                         </div>
                         <div class="mini-match">
-                            <span>Alberto Leiva</span>
-                            <span class="vs">VS</span>
-                            <span>Jesús Pizarro</span>
+                            <div>
+                                <span style="display: block; font-size: 0.7rem; color: #38bdf8; font-weight: 700;">R2 · ~14:30 h (Estimado)</span>
+                                <span>David Téllez <strong style="color:var(--copa-gold); font-size:0.75rem;">VS</strong> Jesús Pizarro</span>
+                            </div>
                             <span class="match-badge-pending">Por jugar</span>
                         </div>
                         <div class="mini-match">
-                            <span>David Téllez</span>
-                            <span class="vs">VS</span>
-                            <span>Jesús Pizarro</span>
+                            <div>
+                                <span style="display: block; font-size: 0.7rem; color: #c084fc; font-weight: 700;">R3 · ~16:00 h (Estimado)</span>
+                                <span>Alberto Leiva <strong style="color:var(--copa-gold); font-size:0.75rem;">VS</strong> Jesús Pizarro</span>
+                            </div>
                             <span class="match-badge-pending">Por jugar</span>
                         </div>
                     </div>
