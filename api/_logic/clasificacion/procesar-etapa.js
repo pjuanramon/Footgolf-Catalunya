@@ -46,7 +46,8 @@ module.exports = async function handler(req, res) {
             const isMatarrubia = rawName.toLowerCase().includes('matarrubia');
             const isAlvarez = rawName.toLowerCase().includes('alvarez');
             const isFerrari = rawName.toLowerCase().includes('ferrari') || rawName.toLowerCase().includes('ferrama');
-            if (isSalazar || isAbril || isMatarrubia || isAlvarez || isFerrari) logs.push(`DEBUG DEBUG: Encontrado en fila: "${rawName}"`);
+            const isCorrea = rawName.toLowerCase().includes('correa') || rawName.trim().toLowerCase() === 'alexis';
+            if (isSalazar || isAbril || isMatarrubia || isAlvarez || isFerrari || isCorrea) logs.push(`DEBUG DEBUG: Encontrado en fila: "${rawName}"`);
 
             const match = matchPlayerToDb(rawName, dbPlayers || []);
             let p = match.player;
@@ -71,6 +72,10 @@ module.exports = async function handler(req, res) {
             if (isFerrari) {
                 p = dbPlayers.find(x => x.id === '90e077fc-37e0-4a62-93b5-a39f3d971d31') || p;
                 logs.push(`[DEBUG] Forzado Marco Ferrari ID: ${p?.id}`);
+            }
+            if (isCorrea) {
+                p = dbPlayers.find(x => x.id === 'ca86c5c8-e4e5-4f07-8c4b-b85af2d98335') || p;
+                logs.push(`[DEBUG] Forzado Alexis Correa ID: ${p?.id}`);
             }
 
             // PRIORIDAD 1: Si lo encontramos en la DB y tiene licencia, LO INCLUIMOS.
