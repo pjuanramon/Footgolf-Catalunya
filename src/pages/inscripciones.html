@@ -97,15 +97,16 @@
                     <h3>Paso 1: Identifícate</h3>
                     <p style="margin-bottom: 1.2rem; color: var(--text-light);">Introduce tus datos para vincular tu inscripción.</p>
                     
-                    <div style="background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 0.8rem; padding: 1rem 1.2rem; margin-bottom: 1.5rem; text-align: left; font-size: 0.85rem; line-height: 1.5;">
-                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.4rem; color: #60a5fa; font-weight: 700; font-size: 0.95rem;">
-                            <span>📱</span> <span>Requisito previo para nuevos jugadores</span>
+                    <div style="background-color: #f0fdf4; border: 2px solid #22c55e; border-radius: 0.8rem; padding: 1.1rem 1.3rem; margin-bottom: 1.5rem; text-align: left; font-size: 0.9rem; line-height: 1.6; color: #0f172a; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; color: #166534; font-weight: 800; font-size: 1rem;">
+                            <span style="font-size: 1.2rem;">📱</span> <span>Aviso obligatorio para nuevos jugadores:</span>
                         </div>
-                        <p style="margin: 0 0 0.4rem 0; color: #e2e8f0;">
-                            <strong>1. Crea tu cuenta en la app:</strong> Antes de inscribirte debes tener cuenta en la app oficial <strong>Footgolf World</strong> (disponible en App Store y Google Play).
+                        <p style="margin: 0 0 0.5rem 0; color: #0f172a;">
+                            <strong>1. Cuenta previa en la app:</strong> Antes de inscribirte debes tener cuenta creada en la app oficial <strong>Footgolf World</strong> (iOS / Android).
                         </p>
-                        <p style="margin: 0; color: #e2e8f0;">
-                            <strong>2. Nombre y Apellido oficial:</strong> Escribe abajo <strong>exactamente tu Nombre y Apellido</strong> como aparece en tu perfil de Footgolf World (ejemplo: <em>Marco Ferrari</em>). <span style="color: #fca5a5; font-weight: 600;">NO uses iniciales ni nombres de usuario abreviados</span> (evita cosas como <em>ferrama</em> o <em>M. Ferrari</em>), para que tus resultados y puntos computen correctamente en el torneo.
+                        <p style="margin: 0; color: #0f172a;">
+                            <strong>2. Nombre y Apellidos (como en tu perfil):</strong> Escribe en la casilla de abajo tu <strong>Nombre y Apellido completo</strong> tal como figura en Footgolf World (ejemplo ficticio: <strong style="color: #15803d; background: #dcfce7; padding: 2px 6px; border-radius: 4px; border: 1px solid #86efac;">Carlos Gómez Ramos</strong>).<br>
+                            <span style="color: #b91c1c; font-weight: 700;">⚠️ NO uses alias cortos ni iniciales</span> (evita cosas como <span style="text-decoration: line-through; color: #64748b;">carlos99</span> o <span style="text-decoration: line-through; color: #64748b;">C. Gómez</span>), para que tus resultados y puntos computen automáticamente.
                         </p>
                     </div>
 
@@ -113,13 +114,13 @@
                         <input type="email" id="email-input" placeholder="Tu Email *" required style="margin-bottom: 0;">
                         <div>
                             <input type="text" id="nickname-input" placeholder="Nombre y Apellido (como en Footgolf World) *" required style="margin-bottom: 0; width: 100%;">
-                            <div id="nickname-hint" style="display: none; font-size: 0.78rem; color: #fbbf24; margin-top: 0.35rem; line-height: 1.3; text-align: left;">
-                                ⚠️ Escribe tu <strong>Nombre y Apellido</strong> (ej: <em>Marco Ferrari</em>). No uses alias cortos ni iniciales.
+                            <div id="nickname-hint" style="display: none; font-size: 0.8rem; color: #92400e; background: #fef3c7; border: 1px solid #fde68a; border-radius: 0.4rem; padding: 0.35rem 0.6rem; margin-top: 0.4rem; line-height: 1.3; text-align: left; font-weight: 600;">
+                                ⚠️ Escribe tu <strong>Nombre y Apellido</strong> (ej: Carlos Gómez Ramos). No uses alias cortos ni iniciales.
                             </div>
                         </div>
                     </div>
                     
-                    <p style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 1rem; text-align: center; line-height: 1.4;">
+                    <p style="font-size: 0.85rem; color: #475569; margin-bottom: 1rem; text-align: center; line-height: 1.4; font-weight: 600;">
                          ⚠️ <strong>El nombre debe coincidir con Footgolf World</strong> para asignar tus resultados en el ranking.
                     </p>
                     
@@ -404,7 +405,7 @@
                         
                         // Mostrar mensaje de éxito
                         const msg = document.createElement('div');
-                        msg.style.cssText = 'font-size: 0.85rem; color: #4ade80; margin-top: -0.2rem; margin-bottom: 0.8rem; text-align: left; background: rgba(74, 222, 128, 0.08); border: 1px solid rgba(74, 222, 128, 0.2); padding: 0.6rem 0.8rem; border-radius: 0.6rem;';
+                        msg.style.cssText = 'font-size: 0.9rem; color: #166534; margin-top: -0.2rem; margin-bottom: 0.8rem; text-align: left; background: #dcfce7; border: 1px solid #86efac; padding: 0.7rem 0.9rem; border-radius: 0.6rem; font-weight: 600;';
                         msg.textContent = `✅ Jugador encontrado: ${data.nickname}. ¡Bienvenido de nuevo!`;
                         msg.classList.add('player-msg');
                         emailInput.parentElement.insertAdjacentElement('afterend', msg);
@@ -414,8 +415,8 @@
                         playerIsJuanRa = false;
                         playerIsKnown = false;
                         const msg = document.createElement('div');
-                        msg.style.cssText = 'font-size: 0.85rem; color: #fbbf24; margin-top: -0.2rem; margin-bottom: 0.8rem; text-align: left; background: rgba(251, 191, 36, 0.08); border: 1px solid rgba(251, 191, 36, 0.25); border-radius: 0.6rem; padding: 0.75rem 1rem; line-height: 1.45;';
-                        msg.innerHTML = `👋 <strong>¡Jugador nuevo!</strong> Debes estar registrado previamente en la app oficial <strong>Footgolf World</strong>.<br>Escribe aquí tu <strong>Nombre y Apellido completo</strong> tal como aparece en tu perfil (ej: <em>Marco Ferrari</em>, <u>no pongas nombres cortos ni iniciales</u>). <a href="/src/pages/licencias.html" style="color:white; text-decoration:underline; font-weight: 600;">¿Quieres sacarte la licencia?</a>`;
+                        msg.style.cssText = 'font-size: 0.88rem; color: #78350f; margin-top: -0.2rem; margin-bottom: 0.8rem; text-align: left; background: #fef3c7; border: 1px solid #fcd34d; border-radius: 0.6rem; padding: 0.8rem 1rem; line-height: 1.5;';
+                        msg.innerHTML = `👋 <strong>¡Jugador nuevo!</strong> Debes tener usuario creado previamente en la app oficial <strong>Footgolf World</strong>.<br>Escribe aquí tu <strong>Nombre y Apellido completo</strong> tal como aparece en tu perfil de la app (ejemplo: <em>Carlos Gómez Ramos</em>, <u>no pongas nombres cortos ni iniciales</u>). <a href="/src/pages/licencias.html" style="color: #1e40af; text-decoration: underline; font-weight: 700; margin-left: 5px;">¿Quieres sacarte la licencia?</a>`;
                         msg.classList.add('player-msg');
                         emailInput.parentElement.insertAdjacentElement('afterend', msg);
                     }
@@ -456,7 +457,7 @@
                     const proceed = confirm(
                         `Has indicado como nombre: "${nicknameValue}".\n\n` +
                         `⚠️ REQUISITO FOOTGOLF WORLD:\n` +
-                        `Debes tener cuenta en la app Footgolf World y usar exactamente tu Nombre y Apellido completo (ej: "Marco Ferrari", NO alias cortos como "ferrama" ni iniciales como "M. Ferrari").\n\n` +
+                        `Debes tener cuenta en la app Footgolf World y usar exactamente tu Nombre y Apellido completo (ej: "Carlos Gómez Ramos", NO alias cortos como "carlos99" ni iniciales como "C. Gómez").\n\n` +
                         `¿Confirmas que "${nicknameValue}" es tu nombre tal como figura en tu perfil de Footgolf World?`
                     );
                     if (!proceed) {

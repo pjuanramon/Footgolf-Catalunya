@@ -120,10 +120,10 @@
 
                 <form id="licencia-form" class="form-grid">
                     <div class="form-group">
-                        <label for="nickname">Nickname (Identificador oficial) *</label>
-                        <input type="text" id="nickname" name="nickname" required placeholder="Ej: JUAN_RAMON">
-                        <p style="font-size: 0.8rem; color: #fbbf24; margin-top: 0.5rem; line-height: 1.4;">
-                            ⚠️ <strong>IMPORTANTE:</strong> Debe coincidir exactamente con tu nickname en <strong>Footgolf World</strong> para que el sistema reconozca tus resultados automáticamente.
+                        <label for="nickname">Nombre y Apellido en Footgolf World (Identificador oficial) *</label>
+                        <input type="text" id="nickname" name="nickname" required placeholder="Ej: Carlos Gómez Ramos">
+                        <p style="font-size: 0.85rem; color: #78350f; background: #fef3c7; border: 1px solid #fcd34d; border-radius: 0.6rem; padding: 0.7rem 0.9rem; margin-top: 0.5rem; line-height: 1.5;">
+                            ⚠️ <strong>IMPORTANTE:</strong> Debes tener cuenta previa en la app oficial <strong>Footgolf World</strong> y poner aquí exactamente tu Nombre y Apellido tal como figura en tu perfil (ejemplo ficticio: <strong>Carlos Gómez Ramos</strong>, <u>NO uses iniciales ni nombres abreviados</u> como 'carlos99') para que el sistema reconozca tus resultados automáticamente.
                         </p>
                     </div>
 
@@ -326,6 +326,25 @@
             const formData = new FormData(form);
             const data = Object.fromEntries(formData.entries());
             
+            // Validación Footgolf World: prevenir nicks cortos o iniciales
+            const nickTrim = (data.nickname || '').trim();
+            const isSingleWord = !nickTrim.includes(' ');
+            const hasInitial = /^[A-Za-z]\.?\s+/.test(nickTrim);
+            if (isSingleWord || hasInitial) {
+                const proceed = confirm(
+                    `Has indicado como identificador: "${nickTrim}".\n\n` +
+                    `⚠️ REQUISITO FOOTGOLF WORLD:\n` +
+                    `Debes tener cuenta en la app Footgolf World y usar exactamente tu Nombre y Apellido completo (ej: "Carlos Gómez Ramos", NO alias cortos como "carlos99" ni iniciales como "C. Gómez").\n\n` +
+                    `¿Confirmas que "${nickTrim}" es tu nombre tal como figura en tu perfil de Footgolf World?`
+                );
+                if (!proceed) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = originalText;
+                    document.getElementById('nickname').focus();
+                    return;
+                }
+            }
+
             // Forzamos ya_pagado a 'no' para el backend
             data.ya_pagado = 'no';
 

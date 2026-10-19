@@ -95,15 +95,33 @@
             <div class="container">
                 <div class="search-container">
                     <h3>Paso 1: Identifícate</h3>
-                    <p style="margin-bottom: 1.5rem; color: var(--text-light);">Introduce tus datos para vincular tu inscripción.</p>
+                    <p style="margin-bottom: 1.2rem; color: var(--text-light);">Introduce tus datos para vincular tu inscripción.</p>
                     
+                    <div style="background-color: #f0fdf4; border: 2px solid #22c55e; border-radius: 0.8rem; padding: 1.1rem 1.3rem; margin-bottom: 1.5rem; text-align: left; font-size: 0.9rem; line-height: 1.6; color: #0f172a; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; color: #166534; font-weight: 800; font-size: 1rem;">
+                            <span style="font-size: 1.2rem;">📱</span> <span>Aviso obligatorio para nuevos jugadores:</span>
+                        </div>
+                        <p style="margin: 0 0 0.5rem 0; color: #0f172a;">
+                            <strong>1. Cuenta previa en la app:</strong> Antes de inscribirte debes tener cuenta creada en la app oficial <strong>Footgolf World</strong> (iOS / Android).
+                        </p>
+                        <p style="margin: 0; color: #0f172a;">
+                            <strong>2. Nombre y Apellidos (como en tu perfil):</strong> Escribe en la casilla de abajo tu <strong>Nombre y Apellido completo</strong> tal como figura en Footgolf World (ejemplo ficticio: <strong style="color: #15803d; background: #dcfce7; padding: 2px 6px; border-radius: 4px; border: 1px solid #86efac;">Carlos Gómez Ramos</strong>).<br>
+                            <span style="color: #b91c1c; font-weight: 700;">⚠️ NO uses alias cortos ni iniciales</span> (evita cosas como <span style="text-decoration: line-through; color: #64748b;">carlos99</span> o <span style="text-decoration: line-through; color: #64748b;">C. Gómez</span>), para que tus resultados y puntos computen automáticamente.
+                        </p>
+                    </div>
+
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 0.5rem;">
                         <input type="email" id="email-input" placeholder="Tu Email *" required style="margin-bottom: 0;">
-                        <input type="text" id="nickname-input" placeholder="Nickname (identificador oficial) *" required style="margin-bottom: 0;">
+                        <div>
+                            <input type="text" id="nickname-input" placeholder="Nombre y Apellido (como en Footgolf World) *" required style="margin-bottom: 0; width: 100%;">
+                            <div id="nickname-hint" style="display: none; font-size: 0.8rem; color: #92400e; background: #fef3c7; border: 1px solid #fde68a; border-radius: 0.4rem; padding: 0.35rem 0.6rem; margin-top: 0.4rem; line-height: 1.3; text-align: left; font-weight: 600;">
+                                ⚠️ Escribe tu <strong>Nombre y Apellido</strong> (ej: Carlos Gómez Ramos). No uses alias cortos ni iniciales.
+                            </div>
+                        </div>
                     </div>
                     
-                    <p style="font-size: 0.8rem; color: #fbbf24; margin-bottom: 1rem; text-align: center; line-height: 1.4;">
-                         ⚠️ <strong>El Nickname debe coincidir con Footgolf World</strong> para puntuar en el ranking.
+                    <p style="font-size: 0.85rem; color: #475569; margin-bottom: 1rem; text-align: center; line-height: 1.4; font-weight: 600;">
+                         ⚠️ <strong>El nombre debe coincidir con Footgolf World</strong> para asignar tus resultados en el ranking.
                     </p>
                     
                     <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1rem; text-align: left;">
@@ -348,6 +366,24 @@
 
         // Búsqueda automática por email
         let debounceTimer;
+        let playerIsKnown = false;
+        const nicknameHint = document.getElementById('nickname-hint');
+
+        nicknameInput.addEventListener('input', () => {
+            const val = nicknameInput.value.trim();
+            if (!val || playerIsKnown) {
+                if (nicknameHint) nicknameHint.style.display = 'none';
+                return;
+            }
+            const isSingleWord = !val.includes(' ') && val.length > 2;
+            const hasInitial = /^[A-Za-z]\.?\s+/.test(val);
+            if (isSingleWord || hasInitial) {
+                if (nicknameHint) nicknameHint.style.display = 'block';
+            } else {
+                if (nicknameHint) nicknameHint.style.display = 'none';
+            }
+        });
+
         emailInput.addEventListener('input', () => {
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(async () => {
@@ -356,31 +392,31 @@
 
                 try {
                     const res = await fetch(`/api/jugadores/buscar?email=${encodeURIComponent(email)}`);
+                    const container = emailInput.closest('.search-container') || emailInput.parentElement;
+                    const prevMsg = container.querySelector('.player-msg');
+                    if (prevMsg) prevMsg.remove();
+
                     if (res.ok) {
                         const data = await res.json();
                         nicknameInput.value = data.nickname;
                         playerIsJuanRa = data.isJuanRa;
+                        playerIsKnown = true;
+                        if (nicknameHint) nicknameHint.style.display = 'none';
                         
                         // Mostrar mensaje de éxito
                         const msg = document.createElement('div');
-                        msg.style.cssText = 'grid-column: span 2; font-size: 0.8rem; color: #4ade80; margin-top: -0.5rem; margin-bottom: 0.5rem;';
+                        msg.style.cssText = 'font-size: 0.9rem; color: #166534; margin-top: -0.2rem; margin-bottom: 0.8rem; text-align: left; background: #dcfce7; border: 1px solid #86efac; padding: 0.7rem 0.9rem; border-radius: 0.6rem; font-weight: 600;';
                         msg.textContent = `✅ Jugador encontrado: ${data.nickname}. ¡Bienvenido de nuevo!`;
-                        
-                        // Limpiar mensajes anteriores
-                        const prevMsg = emailInput.parentElement.querySelector('.player-msg');
-                        if (prevMsg) prevMsg.remove();
                         msg.classList.add('player-msg');
                         emailInput.parentElement.insertAdjacentElement('afterend', msg);
 
                     } else {
                         // Jugador Nuevo
                         playerIsJuanRa = false;
+                        playerIsKnown = false;
                         const msg = document.createElement('div');
-                        msg.style.cssText = 'grid-column: span 2; font-size: 0.8rem; color: #fbbf24; margin-top: -0.5rem; margin-bottom: 0.5rem;';
-                        msg.innerHTML = `👋 ¡Jugador nuevo! Asegúrate de poner tu nickname igual que en Footgolf World. <a href="/src/pages/licencias.html" style="color:white; text-decoration:underline">¿Quieres sacarte la licencia?</a>`;
-                        
-                        const prevMsg = emailInput.parentElement.querySelector('.player-msg');
-                        if (prevMsg) prevMsg.remove();
+                        msg.style.cssText = 'font-size: 0.88rem; color: #78350f; margin-top: -0.2rem; margin-bottom: 0.8rem; text-align: left; background: #fef3c7; border: 1px solid #fcd34d; border-radius: 0.6rem; padding: 0.8rem 1rem; line-height: 1.5;';
+                        msg.innerHTML = `👋 <strong>¡Jugador nuevo!</strong> Debes tener usuario creado previamente en la app oficial <strong>Footgolf World</strong>.<br>Escribe aquí tu <strong>Nombre y Apellido completo</strong> tal como aparece en tu perfil de la app (ejemplo: <em>Carlos Gómez Ramos</em>, <u>no pongas nombres cortos ni iniciales</u>). <a href="/src/pages/licencias.html" style="color: #1e40af; text-decoration: underline; font-weight: 700; margin-left: 5px;">¿Quieres sacarte la licencia?</a>`;
                         msg.classList.add('player-msg');
                         emailInput.parentElement.insertAdjacentElement('afterend', msg);
                     }
@@ -407,10 +443,28 @@
             }
 
             if (!emailValue || !nicknameValue) {
-                alert('Por favor, introduce tu Email y Nickname.');
+                alert('Por favor, introduce tu Email y Nombre/Nickname.');
                 if (!emailValue) emailInput.focus();
                 else nicknameInput.focus();
                 return;
+            }
+
+            // Validación Footgolf World: prevenir nicks cortos o iniciales en nuevos jugadores
+            if (!playerIsKnown) {
+                const isSingleWord = !nicknameValue.includes(' ');
+                const hasInitial = /^[A-Za-z]\.?\s+/.test(nicknameValue);
+                if (isSingleWord || hasInitial) {
+                    const proceed = confirm(
+                        `Has indicado como nombre: "${nicknameValue}".\n\n` +
+                        `⚠️ REQUISITO FOOTGOLF WORLD:\n` +
+                        `Debes tener cuenta en la app Footgolf World y usar exactamente tu Nombre y Apellido completo (ej: "Carlos Gómez Ramos", NO alias cortos como "carlos99" ni iniciales como "C. Gómez").\n\n` +
+                        `¿Confirmas que "${nicknameValue}" es tu nombre tal como figura en tu perfil de Footgolf World?`
+                    );
+                    if (!proceed) {
+                        nicknameInput.focus();
+                        return;
+                    }
+                }
             }
 
             const rgpdCheck = document.getElementById('rgpd-insc');
