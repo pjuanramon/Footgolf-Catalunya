@@ -3,6 +3,7 @@ name: Tournament Automation
 on:
   schedule:
     - cron: '0 16 * * *' # Cada día a las 16:00 UTC (18:00 hora España)
+    - cron: '0 22 * * *' # Cierre a las 22:00 UTC (00:00 hora España / 23:59)
   workflow_dispatch: # Permite ejecución manual desde GitHub
 
 jobs:

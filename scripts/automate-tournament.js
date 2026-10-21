@@ -21,8 +21,14 @@ async function runAutomation() {
     const domingo = new Date(hoy);
     domingo.setDate(hoy.getDate() + (7 - hoy.getDay() + 7) % 7);
     
-    const fechaSabadoStr = sabado.toISOString().split('T')[0];
-    const fechaDomingoStr = domingo.toISOString().split('T')[0];
+    function toDateStr(d) {
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+    const fechaSabadoStr = toDateStr(sabado);
+    const fechaDomingoStr = toDateStr(domingo);
     
     console.log(`Buscando torneo para el fin de semana: Sábado ${fechaSabadoStr} o Domingo ${fechaDomingoStr}`);
 
@@ -41,10 +47,22 @@ async function runAutomation() {
 
     console.log(`Torneo detectado: ${etapa.nombre} (${etapa.fecha})`);
 
-    // Validar si hoy es miércoles
-    if (hoy.getDay() !== 3 && !process.env.FORCE_AUTOMATION) {
-        console.log(`Hoy no es miércoles (es día ${hoy.getDay()}).`);
-        return;
+    // Validar fecha límite de cierre si está configurada
+    const fechaCierre = etapa.fecha_cierre_inscripcion 
+        ? new Date(etapa.fecha_cierre_inscripcion) 
+        : null;
+
+    if (fechaCierre) {
+        if (hoy < fechaCierre && !process.env.FORCE_AUTOMATION) {
+            console.log(`Aún no se ha alcanzado la fecha límite de cierre (${fechaCierre.toISOString()}). El registro continúa abierto.`);
+            return;
+        }
+    } else {
+        // Por defecto, validar si hoy es miércoles
+        if (hoy.getDay() !== 3 && !process.env.FORCE_AUTOMATION) {
+            console.log(`Hoy no es miércoles (es día ${hoy.getDay()}).`);
+            return;
+        }
     }
 
     console.log(`¡Iniciando cierre y generación de hits para el torneo del ${etapa.fecha}!`);
