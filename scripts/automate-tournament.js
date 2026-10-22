@@ -167,7 +167,7 @@ async function runAutomation() {
 
     const hitData = [];
     const footgolferData = [];
-    let currentStartTime = new Date(`${fechaTorneoStr}T17:00:00`);
+    let currentStartTime = new Date(`${fechaTorneoStr}T14:00:00`);
 
     hitGroups.forEach((group, index) => {
         const hitNumber = index + 1;
