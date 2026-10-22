@@ -85,7 +85,7 @@ async function runAutomation() {
     // Obtener jugadores inscritos (solo pagados)
     const { data: inscritos, error: insError } = await supabase
         .from('inscripciones')
-        .select('jugador:jugadores(nombre_completo)')
+        .select('nombre_manual, jugador:jugadores(nombre_completo, nickname)')
         .eq('etapa_id', etapa.id)
         .eq('estado', 'pagada');
 
@@ -94,7 +94,9 @@ async function runAutomation() {
         return;
     }
 
-    const jugadoresArr = inscritos.map(i => i.jugador.nombre_completo).filter(n => n);
+    const jugadoresArr = inscritos.map(i => {
+        return (i.jugador && (i.jugador.nombre_completo || i.jugador.nickname)) || i.nombre_manual || '';
+    }).filter(n => n.trim() !== '');
     console.log(`Jugadores inscritos: ${jugadoresArr.length}`);
 
     if (jugadoresArr.length === 0) {
@@ -235,6 +237,10 @@ function formatFootgolferName(fullName) {
         'David Rojo Demgra': 'D. Rojo',
         'David Tellez Viana': 'D. Tellez',
         'Eduardo Martin Rodriguez': 'E. MartinRdz',
+        'Eduardo martin rodriguez': 'E. MartinRdz',
+        'Alexis Correa': 'A. Correa',
+        'Gustavo Alejandro Verse': 'G. Verse',
+        'Marco Ferrari': 'M. Ferrari',
         'Erik Matarrubia Galera': 'E. Matarrubia',
         'Giacomo Bonacini': 'G. Bonacini',
         'Gastón Masuck Cardozo': 'G. Masuck',
@@ -270,6 +276,10 @@ function formatFootgolferName(fullName) {
     
     if (manualMap[cleanName]) {
         return manualMap[cleanName];
+    }
+    const lowerKey = Object.keys(manualMap).find(k => k.toLowerCase() === cleanName.toLowerCase());
+    if (lowerKey) {
+        return manualMap[lowerKey];
     }
     
     // Fallback automatic formatting
