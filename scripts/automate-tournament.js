@@ -126,16 +126,17 @@ async function runAutomation() {
     const templatePath = path.resolve(__dirname, '../Excel_ImportHitsTournamentRound983_Export-2026-04-02 09_41_53.xlsx');
     const workbook = xlsx.readFile(templatePath);
 
-    // Jugadores designados para el último grupo (p.ej. Jorge Santiago e Iván Luengo)
-    const lastGroupVIPs = playerObjs.filter(p => {
-        const lower = p.rawName.toLowerCase();
-        return lower.includes('santiago') || lower.includes('luengo');
-    });
+    // Jugadores designados para el último grupo (Partida estelar: Jorge Santiago, Iván Luengo, Xavi Leiva y Gustavo Verse)
+    const isLastGroupVIP = (name) => {
+        const lower = name.toLowerCase();
+        return lower.includes('santiago') || 
+               lower.includes('luengo') || 
+               (lower.includes('xavi') && lower.includes('leiva')) || 
+               lower.includes('verse');
+    };
 
-    const otherPlayers = playerObjs.filter(p => {
-        const lower = p.rawName.toLowerCase();
-        return !lower.includes('santiago') && !lower.includes('luengo');
-    });
+    const lastGroupVIPs = playerObjs.filter(p => isLastGroupVIP(p.rawName));
+    const otherPlayers = playerObjs.filter(p => !isLastGroupVIP(p.rawName));
 
     const shuffledOthers = [...otherPlayers].sort(() => Math.random() - 0.5);
     const distribution = calculateHitDistribution(playerObjs.length);
