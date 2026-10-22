@@ -85,7 +85,7 @@ async function runAutomation() {
     // Obtener jugadores inscritos (solo pagados)
     const { data: inscritos, error: insError } = await supabase
         .from('inscripciones')
-        .select('nombre_manual, jugador:jugadores(nombre_completo, nickname)')
+        .select('nombre_manual, jugador:jugadores(id, nombre_completo, nickname)')
         .eq('etapa_id', etapa.id)
         .eq('estado', 'pagada');
 
@@ -94,12 +94,30 @@ async function runAutomation() {
         return;
     }
 
-    const jugadoresArr = inscritos.map(i => {
-        return (i.jugador && (i.jugador.nombre_completo || i.jugador.nickname)) || i.nombre_manual || '';
-    }).filter(n => n.trim() !== '');
-    console.log(`Jugadores inscritos: ${jugadoresArr.length}`);
+    // Obtener resultados de etapas anteriores para detectar debutantes (primera jornada)
+    const { data: previousResults } = await supabase
+        .from('resultados_etapas')
+        .select('jugador_id')
+        .lt('etapa_id', etapa.id);
 
-    if (jugadoresArr.length === 0) {
+    const veteranPlayerIds = new Set((previousResults || []).map(r => r.jugador_id));
+
+    const playerObjs = inscritos.map(i => {
+        const jId = i.jugador ? i.jugador.id : null;
+        const name = (i.jugador && (i.jugador.nombre_completo || i.jugador.nickname)) || i.nombre_manual || '';
+        const isDebutante = !jId || !veteranPlayerIds.has(jId);
+        return {
+            id: jId,
+            rawName: name.trim(),
+            formattedName: formatFootgolferName(name),
+            isDebutante: isDebutante
+        };
+    }).filter(p => p.rawName !== '');
+
+    console.log(`Jugadores inscritos: ${playerObjs.length}`);
+    console.log('Debutantes detectados (nunca serán marcadores):', playerObjs.filter(p => p.isDebutante).map(p => p.formattedName));
+
+    if (playerObjs.length === 0) {
         console.log('No hay jugadores inscritos. No se genera Excel.');
         return;
     }
@@ -107,18 +125,50 @@ async function runAutomation() {
     // 3. Generación del archivo Excel
     const templatePath = path.resolve(__dirname, '../Excel_ImportHitsTournamentRound983_Export-2026-04-02 09_41_53.xlsx');
     const workbook = xlsx.readFile(templatePath);
-    
-    // Aleatorizar jugadores de la base de datos
-    const players = [...jugadoresArr].sort(() => Math.random() - 0.5);
-    const distribution = calculateHitDistribution(players.length);
+
+    // Jugadores designados para el último grupo (p.ej. Jorge Santiago e Iván Luengo)
+    const lastGroupVIPs = playerObjs.filter(p => {
+        const lower = p.rawName.toLowerCase();
+        return lower.includes('santiago') || lower.includes('luengo');
+    });
+
+    const otherPlayers = playerObjs.filter(p => {
+        const lower = p.rawName.toLowerCase();
+        return !lower.includes('santiago') && !lower.includes('luengo');
+    });
+
+    const shuffledOthers = [...otherPlayers].sort(() => Math.random() - 0.5);
+    const distribution = calculateHitDistribution(playerObjs.length);
     console.log(`Distribución de hits (menores primero):`, distribution);
+
+    // Construir los grupos de salida
+    const hitGroups = [];
+    const lastHitSize = distribution[distribution.length - 1];
+
+    // Para el último hit: los VIPs + los que falten de los demás jugadores
+    const lastHitPlayers = [...lastGroupVIPs];
+    const neededForLast = lastHitSize - lastHitPlayers.length;
+    for (let i = 0; i < neededForLast; i++) {
+        lastHitPlayers.push(shuffledOthers.pop());
+    }
+    // Mezclar el último grupo para orden natural
+    lastHitPlayers.sort(() => Math.random() - 0.5);
+
+    // Para los primeros hits (del 0 al penúltimo):
+    let currentIdx = 0;
+    for (let i = 0; i < distribution.length - 1; i++) {
+        const size = distribution[i];
+        hitGroups.push(shuffledOthers.slice(currentIdx, currentIdx + size));
+        currentIdx += size;
+    }
+    // Añadir el último grupo
+    hitGroups.push(lastHitPlayers);
 
     const hitData = [];
     const footgolferData = [];
-    let playerIndex = 0;
     let currentStartTime = new Date(`${fechaTorneoStr}T17:00:00`);
 
-    distribution.forEach((size, index) => {
+    hitGroups.forEach((group, index) => {
         const hitNumber = index + 1;
         
         hitData.push({
@@ -128,19 +178,19 @@ async function runAutomation() {
             'Hora de Salida \r\n HH:mm': formatTimeHHmm(currentStartTime)
         });
 
-        const hitPlayers = players.slice(playerIndex, playerIndex + size);
-        // Designar 1 calificador aleatorio por hit
-        const caliIdx = Math.floor(Math.random() * size);
-        
-        hitPlayers.forEach((playerName, pIdx) => {
+        // REGLA OBLIGATORIA: Un jugador debutante NUNCA debe ser marcador/calificador
+        const eligibleCalificadores = group.filter(p => !p.isDebutante);
+        const pool = eligibleCalificadores.length > 0 ? eligibleCalificadores : group;
+        const chosenCalificador = pool[Math.floor(Math.random() * pool.length)];
+
+        group.forEach(p => {
             footgolferData.push({
                 'Número de Hit': hitNumber,
-                'Footgolfer': formatFootgolferName(playerName),
-                '¿Es Calificador? \r\n 1=Sí \r\n 0=No': pIdx === caliIdx ? 1 : 0
+                'Footgolfer': p.formattedName,
+                '¿Es Calificador? \r\n 1=Sí \r\n 0=No': (p === chosenCalificador) ? 1 : 0
             });
         });
-        
-        playerIndex += size;
+
         currentStartTime.setMinutes(currentStartTime.getMinutes() + 7);
     });
 
