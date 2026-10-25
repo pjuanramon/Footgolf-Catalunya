@@ -106,19 +106,26 @@
 
     <main>
         <header class="page-header">
-            <h1 class="gradient-text">Licencia 2026</h1>
-            <p>Obtén tu licencia oficial de la Asociación Catalana de Footgolf para la temporada 2026.</p>
+            <h1 class="gradient-text">Licencia Oficial 2027</h1>
+            <p>Obtén tu licencia oficial de la Asociación Catalana de Footgolf para la temporada 2027 (¡Tarifa reducida Pronto Pago de 25€ hasta el 31 de diciembre!).</p>
         </header>
 
         <div class="container">
             <div class="form-container">
                 <div class="price-display">
-                    <span style="font-size: 0.9rem; opacity: 0.9; text-transform: uppercase; letter-spacing: 1px;">Importe Licencia Actual</span>
-                    <span class="price-value" id="price-value">--€</span>
-                    <p style="margin: 0; font-size: 0.9rem; opacity: 0.8;">* El precio se calcula según las etapas restantes para nuevos jugadores.</p>
+                    <span id="price-badge-label" style="font-size: 0.9rem; opacity: 0.95; text-transform: uppercase; letter-spacing: 1px; font-weight: 700;">✨ Tarifa Pronto Pago Licencias 2027</span>
+                    <span class="price-value" id="price-value">25€</span>
+                    <p id="price-sub-label" style="margin: 0; font-size: 0.9rem; opacity: 0.9;">* Cuota bonificada de 25€ abonando antes del 31 de diciembre de 2026 (30€ a partir del 1 de enero).</p>
                 </div>
 
                 <form id="licencia-form" class="form-grid">
+                    <div class="form-group full-width">
+                        <label for="anio">Temporada de la Licencia *</label>
+                        <select id="anio" name="anio" required onchange="updateUI()" style="border: 2px solid var(--primary-color); font-weight: 700;">
+                            <option value="2027" selected>✨ Temporada 2027 — Pronto Pago 25€ (Válida todo 2027)</option>
+                            <option value="2026">Temporada 2026 (Etapas restantes de 2026)</option>
+                        </select>
+                    </div>
                     <div class="form-group">
                         <label for="nickname">Nombre y Apellido en Footgolf World (Identificador oficial) *</label>
                         <input type="text" id="nickname" name="nickname" required placeholder="Ej: Carlos Gómez Ramos">
@@ -184,7 +191,7 @@
                     </div>
 
                     <div id="group-es-renovacion" class="form-group">
-                        <label for="es_renovacion">¿Ya tenías licencia en 2025 o antes? *</label>
+                        <label for="es_renovacion">¿Ya tenías licencia en temporadas anteriores? *</label>
                         <select id="es_renovacion" name="es_renovacion" required onchange="updateUI()">
                             <option value="si" selected>Sí, es una renovación</option>
                             <option value="no">No, es mi primera licencia</option>
@@ -193,7 +200,7 @@
 
                     <div id="group-anio-primera" class="form-group" style="display: none;">
                         <label for="anio_primera_licencia">¿En qué año te sacaste tu primera licencia? *</label>
-                        <input type="number" id="anio_primera_licencia" name="anio_primera_licencia" min="2010" max="2025" placeholder="Ej: 2024">
+                        <input type="number" id="anio_primera_licencia" name="anio_primera_licencia" min="2010" max="2026" placeholder="Ej: 2025">
                         <p style="font-size: 0.8rem; color: var(--text-light); margin-top: 0.5rem;">Indica el año aproximado si no lo recuerdas con exactitud.</p>
                     </div>
 
@@ -230,13 +237,13 @@
                     </div>
 
                     <button type="submit" class="btn btn-primary btn-block" id="submit-btn" style="width: 100%;">
-                        Sacar mi licencia 2026 →
+                        Sacar mi licencia 2027 (25€) →
                     </button>
                 </form>
 
-                <!-- Listado de Licenciados 2026 -->
+                <!-- Listado de Licenciados -->
                 <div id="roster-2026" style="margin-top: 4rem;">
-                    <h2 class="gradient-text" style="font-size: 2rem; margin-bottom: 2rem; text-align: center;">🛡️ Jugadores con Licencia 2026</h2>
+                    <h2 class="gradient-text" style="font-size: 2rem; margin-bottom: 2rem; text-align: center;">🛡️ Jugadores con Licencia Oficial</h2>
                     <div class="admin-card" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 1.5rem; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
                         <table style="width: 100%; border-collapse: collapse; font-size: 0.95rem;">
                             <thead>
@@ -268,8 +275,8 @@
         const submitBtn = document.getElementById('submit-btn');
 
         function updateUI() {
-            // Ya no hay pregunta de pago, forzamos a 'no' (todos deben pagar)
-            const yaPagado = false; 
+            const anioSelect = document.getElementById('anio');
+            const anio = anioSelect ? anioSelect.value : '2027';
             const esRenovacionSelect = document.getElementById('es_renovacion');
             const esRenovacion = esRenovacionSelect.value === 'si';
             const groupRenovacion = document.getElementById('group-es-renovacion');
@@ -286,41 +293,57 @@
             } else {
                 groupAnioPrimera.style.display = 'none';
                 inputAnio.required = false;
-                // Al forzar yaPagado=false, siempre mostramos la etapa para nuevos
-                groupEtapa.style.display = 'block';
+                // Para 2027 antes de empezar la temporada, la tarifa pronto pago es única (25€) desde la Jornada 1
+                groupEtapa.style.display = (anio === '2027') ? 'none' : 'block';
             }
 
             calcPrice();
         }
 
         function calcPrice() {
-            const yaPagado = false; // Forzado
+            const anioSelect = document.getElementById('anio');
+            const anio = anioSelect ? anioSelect.value : '2027';
             const esRenovacion = document.getElementById('es_renovacion').value === 'si';
             const etapaInicio = parseInt(document.getElementById('etapa_inicio').value);
             
             const display = document.getElementById('price-display');
             const mainPriceDisplay = document.getElementById('price-value');
+            const badgeLabel = document.getElementById('price-badge-label');
+            const subLabel = document.getElementById('price-sub-label');
 
             let finalPrice = 0;
             let text = '';
 
-            if (esRenovacion) {
-                finalPrice = 30;
-                text = 'Total a pagar: 30€';
+            if (anio === '2027') {
+                finalPrice = 25;
+                text = 'Total a pagar (Pronto Pago 2027): 25€';
+                if (badgeLabel) badgeLabel.textContent = '✨ Tarifa Pronto Pago Licencia 2027';
+                if (subLabel) subLabel.textContent = '* Cuota bonificada de 25€ abonando antes del 31 de diciembre de 2026 (30€ a partir del 1 de enero).';
             } else {
-                finalPrice = Math.max(5, Math.round(30 - ((etapaInicio - 1) / 12) * 30));
-                text = `Total a pagar: ${finalPrice}€`;
+                if (esRenovacion) {
+                    finalPrice = 30;
+                    text = 'Total a pagar (2026): 30€';
+                } else {
+                    finalPrice = Math.max(5, Math.round(30 - ((etapaInicio - 1) / 12) * 30));
+                    text = `Total a pagar (2026): ${finalPrice}€`;
+                }
+                if (badgeLabel) badgeLabel.textContent = 'Importe Licencia 2026';
+                if (subLabel) subLabel.textContent = '* El precio de 2026 se calcula según las etapas restantes para nuevos jugadores.';
             }
 
             display.innerText = text;
             mainPriceDisplay.innerText = `${finalPrice}€`;
+            if (submitBtn) {
+                submitBtn.textContent = `Sacar mi licencia ${anio} (${finalPrice}€) →`;
+            }
         }
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             
+            const anioVal = document.getElementById('anio') ? document.getElementById('anio').value : '2027';
             submitBtn.disabled = true;
-            const originalText = 'Sacar mi licencia 2026 →';
+            const originalText = submitBtn.textContent;
             submitBtn.textContent = 'Procesando...';
 
             const formData = new FormData(form);

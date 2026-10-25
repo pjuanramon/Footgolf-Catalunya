@@ -10,7 +10,7 @@
     <script src="/js/Footer.js" defer></script>
     <style>
         .leaderboard-table th:nth-child(1),
-        .leaderboard-table td:nth-child(1) {
+        .leaderboard-table tr:not(.division-row) td:nth-child(1) {
             position: sticky;
             left: 0;
             z-index: 10;
@@ -19,12 +19,12 @@
             width: 60px;
         }
 
-        .leaderboard-table td:nth-child(1) {
+        .leaderboard-table tr:not(.division-row) td:nth-child(1) {
             background: white;
         }
 
         .leaderboard-table th:nth-child(2),
-        .leaderboard-table td:nth-child(2) {
+        .leaderboard-table tr:not(.division-row) td:nth-child(2) {
             position: sticky;
             left: 60px;
             z-index: 10;
@@ -38,18 +38,18 @@
 
         @media (min-width: 768px) {
             .leaderboard-table th:nth-child(2),
-            .leaderboard-table td:nth-child(2) {
+            .leaderboard-table tr:not(.division-row) td:nth-child(2) {
                 max-width: none;
             }
         }
 
-        .leaderboard-table td:nth-child(2) {
+        .leaderboard-table tr:not(.division-row) td:nth-child(2) {
             background: white;
         }
 
         /* Shadow effect for sticky columns */
         .leaderboard-table th:nth-child(2)::after,
-        .leaderboard-table td:nth-child(2)::after {
+        .leaderboard-table tr:not(.division-row) td:nth-child(2)::after {
             content: '';
             position: absolute;
             top: 0;
@@ -105,6 +105,23 @@
                     </div>
                 </div>
 
+                    <div id="division-legend" style="display: none; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 1rem; padding: 1rem 1.25rem; margin-bottom: 1.5rem; font-size: 0.9rem; color: #0f172a; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+                        <div style="font-weight: 800; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; color: #0f172a;">
+                            <span>🔮 Proyección de Divisiones — Liga Match Play 2027 (Simulación según ranking actual):</span>
+                        </div>
+                        <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center;">
+                            <span style="display: inline-flex; align-items: center; gap: 0.4rem; background: #dcfce7; color: #14532d; border: 1px solid #86efac; padding: 0.25rem 0.75rem; border-radius: 999px; font-weight: 700; font-size: 0.82rem;">
+                                🥇 1ª División: Puestos 1º al 10º
+                            </span>
+                            <span style="display: inline-flex; align-items: center; gap: 0.4rem; background: #e0f2fe; color: #0c4a6e; border: 1px solid #7dd3fc; padding: 0.25rem 0.75rem; border-radius: 999px; font-weight: 700; font-size: 0.82rem;">
+                                🥈 2ª División: Puestos 11º al 20º
+                            </span>
+                            <span style="display: inline-flex; align-items: center; gap: 0.4rem; background: #fef3c7; color: #78350f; border: 1px solid #fcd34d; padding: 0.25rem 0.75rem; border-radius: 999px; font-weight: 700; font-size: 0.82rem;">
+                                🥉 3ª División: Puesto 21º en adelante
+                            </span>
+                        </div>
+                    </div>
+
                     <div class="scroll-hint">
                         <span>↔️ Desliza lateralmente para ver todas las jornadas</span>
                     </div>
@@ -135,6 +152,8 @@
                                 <th class="stage-header" style="display:none">J8</th>
                                 <th class="stage-header" style="display:none">J9</th>
                                 <th class="stage-header" style="display:none">J10</th>
+                                <th class="stage-header" style="display:none">J11</th>
+                                <th class="stage-header" style="display:none">J12</th>
                             </tr>
                         </thead>
                         <tbody id="ranking-body">
@@ -240,8 +259,55 @@
 
                         body.innerHTML = '';
                         const filteredData = data.filter(player => player.total >= 0 && !player.isUnlicensed);
+                        const totalCols = 3 + maxStage;
+                        const isAbsoluta = category === 'Absoluta';
 
-                        filteredData.forEach((player) => {
+                        const legendEl = document.getElementById('division-legend');
+                        if (legendEl) {
+                            legendEl.style.display = isAbsoluta ? 'block' : 'none';
+                        }
+
+                        function createSeparatorRow(title, subtitle, bgStyle, borderColor, textColor) {
+                            const sepTr = document.createElement('tr');
+                            sepTr.className = 'division-row';
+                            sepTr.innerHTML = `
+                                <td colspan="${totalCols}" style="background: ${bgStyle}; border-top: 2px dashed ${borderColor}; border-bottom: 2px solid ${borderColor}; padding: 0.7rem 1.25rem; color: ${textColor}; font-weight: 800; font-size: 0.85rem; letter-spacing: 0.3px;">
+                                    <div style="position: sticky; left: 1rem; display: inline-flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
+                                        <span>${title}</span>
+                                        <span style="font-weight: 600; opacity: 0.85; font-size: 0.8rem;">${subtitle}</span>
+                                    </div>
+                                </td>
+                            `;
+                            return sepTr;
+                        }
+
+                        filteredData.forEach((player, idx) => {
+                            if (isAbsoluta && idx === 0) {
+                                body.appendChild(createSeparatorRow(
+                                    '🥇 ZONA PRIMERA DIVISIÓN — MATCH PLAY 2027',
+                                    '(Puestos 1º al 10º • Clasificación proyectada a 1ª División)',
+                                    'linear-gradient(90deg, #dcfce7 0%, #f0fdf4 100%)',
+                                    '#16a34a',
+                                    '#14532d'
+                                ));
+                            } else if (isAbsoluta && idx === 10) {
+                                body.appendChild(createSeparatorRow(
+                                    '✂️ LÍNEA DE CORTE 1ª / 2ª DIVISIÓN  ───  🥈 ZONA SEGUNDA DIVISIÓN — MATCH PLAY 2027',
+                                    '(Puestos 11º al 20º • Clasificación proyectada a 2ª División)',
+                                    'linear-gradient(90deg, #e0f2fe 0%, #f0f9ff 100%)',
+                                    '#0284c7',
+                                    '#0c4a6e'
+                                ));
+                            } else if (isAbsoluta && idx === 20) {
+                                body.appendChild(createSeparatorRow(
+                                    '✂️ LÍNEA DE CORTE 2ª / 3ª DIVISIÓN  ───  🥉 ZONA TERCERA DIVISIÓN — MATCH PLAY 2027',
+                                    '(Puesto 21º en adelante • Clasificación proyectada a 3ª División)',
+                                    'linear-gradient(90deg, #fef3c7 0%, #fffbeb 100%)',
+                                    '#d97706',
+                                    '#78350f'
+                                ));
+                            }
+
                             const tr = document.createElement('tr');
                             tr.style.borderBottom = '1px solid #f1f5f9';
                             tr.style.transition = 'background 0.2s ease';
@@ -250,6 +316,21 @@
 
                             const posColor = player.pos === 1 ? '#d97706' : player.pos === 2 ? '#475569' : player.pos === 3 ? '#92400e' : 'var(--text-main)';
                             const posWeight = player.pos <= 3 ? '800' : '500';
+
+                            let divBadge = '';
+                            let leftBorder = '';
+                            if (isAbsoluta) {
+                                if (idx < 10) {
+                                    leftBorder = 'border-left: 4px solid #16a34a;';
+                                    divBadge = '<span style="margin-left: 0.5rem; font-size: 0.68rem; font-weight: 800; background: #dcfce7; color: #15803d; border: 1px solid #86efac; padding: 1px 6px; border-radius: 999px; vertical-align: middle;">1ª DIV</span>';
+                                } else if (idx < 20) {
+                                    leftBorder = 'border-left: 4px solid #0284c7;';
+                                    divBadge = '<span style="margin-left: 0.5rem; font-size: 0.68rem; font-weight: 800; background: #e0f2fe; color: #0369a1; border: 1px solid #7dd3fc; padding: 1px 6px; border-radius: 999px; vertical-align: middle;">2ª DIV</span>';
+                                } else {
+                                    leftBorder = 'border-left: 4px solid #d97706;';
+                                    divBadge = '<span style="margin-left: 0.5rem; font-size: 0.68rem; font-weight: 800; background: #fef3c7; color: #b45309; border: 1px solid #fcd34d; padding: 1px 6px; border-radius: 999px; vertical-align: middle;">3ª DIV</span>';
+                                }
+                            }
 
                             let stagesHtml = '';
                             for (let i = 1; i <= maxStage; i++) {
@@ -261,8 +342,8 @@
                             }
 
                             tr.innerHTML = `
-                                <td style="padding: 1.25rem 1.5rem; font-weight: ${posWeight}; color: ${posColor}; text-align: center;">#${player.pos}</td>
-                                <td style="padding: 1.25rem 1.5rem; font-weight: 600; color: var(--text-main);">${player.name}</td>
+                                <td style="padding: 1.25rem 1rem; font-weight: ${posWeight}; color: ${posColor}; text-align: center; ${leftBorder}">#${player.pos}</td>
+                                <td style="padding: 1.25rem 1.5rem; font-weight: 600; color: var(--text-main);">${player.name}${divBadge}</td>
                                 <td style="padding: 1.25rem 1.5rem; text-align: center; font-weight: 700; color: var(--primary-color);">${player.total} pts</td>
                                 ${stagesHtml}
                             `;

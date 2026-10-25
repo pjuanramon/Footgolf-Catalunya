@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Temporada 2027 - Footgolf Catalunya</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <script src="/js/Navbar.js" defer></script>
+    <script src="/js/Footer.js" defer></script>
+    <style>
+        .cta-grid-2027 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.25rem;
+            max-width: 980px;
+            margin: -4rem auto 3rem;
+            position: relative;
+            z-index: 15;
+        }
+
+        .cta-card-2027 {
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: 1.25rem;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .cta-card-2027:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .cta-card-2027.highlight-green {
+            border-color: var(--primary-color);
+            background: linear-gradient(180deg, #f0fdf4 0%, #ffffff 100%);
+        }
+
+        .cta-card-2027.highlight-amber {
+            border-color: var(--secondary-color);
+            background: linear-gradient(180deg, #fffbeb 0%, #ffffff 100%);
+        }
+
+        .document-content {
+            background: white;
+            border-radius: 1.25rem;
+            padding: 3rem;
+            box-shadow: var(--shadow-xl);
+            max-width: 980px;
+            margin: 0 auto 4rem;
+            position: relative;
+            z-index: 10;
+            border: 1px solid var(--border-color);
+        }
+
+        .document-content h1 {
+            color: var(--primary-color);
+            text-align: center;
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+            line-height: 1.2;
+        }
+
+        .document-content h2 {
+            color: var(--text-main);
+            font-size: 1.45rem;
+            font-weight: 800;
+            margin-top: 2.25rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .document-content h3 {
+            color: var(--text-main);
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-top: 1.5rem;
+            margin-bottom: 0.6rem;
+        }
+
+        .document-content p {
+            margin-bottom: 1rem;
+            color: var(--text-main);
+        }
+
+        .document-content ul,
+        .document-content ol {
+            margin-bottom: 1.25rem;
+            padding-left: 1.5rem;
+            list-style: disc;
+        }
+
+        .document-content li {
+            margin-bottom: 0.5rem;
+            color: var(--text-main);
+        }
+
+        .document-content strong {
+            color: #0f172a;
+        }
+
+        .callout-box {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-left: 5px solid var(--primary-color);
+            border-radius: 0.75rem;
+            padding: 1.25rem 1.5rem;
+            margin: 1.25rem 0;
+        }
+
+        .callout-box.amber {
+            background: #fffbeb;
+            border-color: #fde68a;
+            border-left-color: var(--secondary-color);
+        }
+
+        @media (max-width: 768px) {
+            .cta-grid-2027 {
+                margin-top: -2rem;
+            }
+            .document-content {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+    <link rel="icon" type="image/png" href="/favicon.png?v=1">
+</head>
+
+<body>
+    <app-navbar></app-navbar>
+
+    <main>
+        <header class="page-header" style="padding-bottom: 7rem;">
+            <span style="display: inline-block; background: rgba(34, 197, 94, 0.2); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.4); padding: 0.35rem 1rem; border-radius: 999px; font-weight: 800; font-size: 0.85rem; margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 1px;">✨ Nueva Temporada Oficial</span>
+            <h1 class="gradient-text">Temporada 2027</h1>
+            <p>Circular Oficial 1/2027, Liga Match Play Anual, Campeonato por Equipos y Licencias 2027.</p>
+        </header>
+
+        <section class="section" style="padding-top: 0;">
+            <div class="container">
+                <!-- Accesos rápidos 2027 -->
+                <div class="cta-grid-2027">
+                    <div class="cta-card-2027 highlight-green">
+                        <div>
+                            <span style="font-size: 0.75rem; font-weight: 800; color: #15803d; text-transform: uppercase; letter-spacing: 0.5px;">🏆 Novedad 2027 • Cierre 1 Dic</span>
+                            <h3 style="margin: 0.4rem 0; font-size: 1.25rem; color: #0f172a;">Liga Match Play 2027</h3>
+                            <p style="font-size: 0.88rem; color: #475569; margin-bottom: 1.2rem;">Inscripción a MPI Individual + Parejas. Abono de 1ª jornada (22€) como fianza de compromiso.</p>
+                        </div>
+                        <a href="/src/pages/inscripciones.html?temporada=2027" class="btn btn-primary" style="text-align: center; font-weight: 800; width: 100%;">Inscribirme al MP (22€) →</a>
+                    </div>
+
+                    <div class="cta-card-2027 highlight-amber">
+                        <div>
+                            <span style="font-size: 0.75rem; font-weight: 800; color: #b45309; text-transform: uppercase; letter-spacing: 0.5px;">🛡️ Clubes • Cierre 1 Dic</span>
+                            <h3 style="margin: 0.4rem 0; font-size: 1.25rem; color: #0f172a;">Campeonato Equipos 2027</h3>
+                            <p style="font-size: 0.88rem; color: #475569; margin-bottom: 1.2rem;">Registra la plaza de tu equipo (4 a 8 jugadores) para el Campeonato por Equipos 2027.</p>
+                        </div>
+                        <a href="/src/pages/inscripciones.html?temporada=2027" class="btn btn-primary" style="background: var(--secondary-color); text-align: center; font-weight: 800; width: 100%;">Inscribir Equipo (100€) →</a>
+                    </div>
+
+                    <div class="cta-card-2027 highlight-green">
+                        <div>
+                            <span style="font-size: 0.75rem; font-weight: 800; color: #15803d; text-transform: uppercase; letter-spacing: 0.5px;">✨ Pronto Pago hasta 31 Dic</span>
+                            <h3 style="margin: 0.4rem 0; font-size: 1.25rem; color: #0f172a;">Licencia Oficial 2027</h3>
+                            <p style="font-size: 0.88rem; color: #475569; margin-bottom: 1.2rem;">Obtén o renueva tu licencia 2027 con tarifa reducida de 25€ abonando antes de fin de año.</p>
+                        </div>
+                        <a href="/src/pages/licencias.html" class="btn btn-primary" style="text-align: center; font-weight: 800; width: 100%;">Sacar Licencia 2027 (25€) →</a>
+                    </div>
+
+                    <div class="cta-card-2027">
+                        <div>
+                            <span style="font-size: 0.75rem; font-weight: 800; color: #475569; text-transform: uppercase; letter-spacing: 0.5px;">📄 Documento Oficial</span>
+                            <h3 style="margin: 0.4rem 0; font-size: 1.25rem; color: #0f172a;">Circular 1/2027 en PDF</h3>
+                            <p style="font-size: 0.88rem; color: #475569; margin-bottom: 1.2rem;">Descarga el documento oficial aprobado por la Junta Directiva para compartir o consultar.</p>
+                        </div>
+                        <a href="/docs/Circular 1-2027_Campeonato.pdf" download class="btn btn-primary" style="background: #0f172a; text-align: center; font-weight: 800; width: 100%;">📥 Descargar PDF Oficial</a>
+                    </div>
+                </div>
+
+                <!-- Contenido íntegro de la Circular 1/2027 -->
+                <div class="document-content">
+                    <div style="text-align: center; margin-bottom: 2rem;">
+                        <span style="display: inline-block; background: #dcfce7; color: #15803d; font-weight: 800; font-size: 0.8rem; padding: 0.25rem 0.9rem; border-radius: 999px; text-transform: uppercase; margin-bottom: 0.5rem;">Documento Aprobado por la Junta Directiva</span>
+                        <h1>Circular 1/2027<br>Campeonato Catalán de Footgolf 2027</h1>
+                        <p style="color: var(--text-light); text-align: center; margin-bottom: 0;">Reglamento, código de conducta y sistema de competición oficial para la temporada 2027</p>
+                    </div>
+
+                    <h2>1. Objetivo y Filosofía</h2>
+                    <p>Promover, desarrollar y consolidar la práctica del Footgolf en Cataluña, construyendo un marco competitivo inclusivo, riguroso y atractivo para todas las edades, niveles y géneros. Para la temporada 2027, la competición se articula en tres grandes formatos complementarios: la regularidad individual de la <strong>Liga Stroke Play</strong>, la intensidad estratégica de la nueva <strong>Liga Match Play Anual</strong> (Individual y Parejas) y el espíritu de club del <strong>Campeonato por Equipos</strong>.</p>
+
+                    <h2>2. Política de Comunicación Oficial</h2>
+                    <p>Para asegurar un ambiente positivo, ordenado y ágil, los grupos generales de WhatsApp serán exclusivamente informativos. Queda prohibido plantear quejas, reclamaciones de reglas o debates en los grupos abiertos. El <strong>canal oficial y privado</strong> para consultas reglamentarias o resolución de incidencias deportivas es el contacto directo con <strong>Juan Ramón</strong>.</p>
+
+                    <h2>3. Calendario y Sedes Oficiales</h2>
+                    <p>La sede oficial principal seguirá siendo <strong>Golf La Garriga</strong>, con posibilidad de sumar campos adicionales tras la publicación del calendario de la FEFG.</p>
+                    <ul>
+                        <li><strong>1. Liga Catalana Stroke Play:</strong> Constará de <strong>10 etapas</strong> regulares, puntuando las <strong>7 mejores</strong> tarjetas.</li>
+                        <li><strong>2. Liga Catalana Match Play:</strong> Constará de <strong>8 a 9 jornadas</strong> a lo largo del año (24 hoyos por jornada: 12 MPI + 12 Parejas).</li>
+                        <li><strong>3. Campeonato por Equipos:</strong> El calendario oficial <strong>intentará hacer coincidir sus fechas con las de los Matchs</strong> con el fin de optimizar traslados, convocatorias y disponibilidad de los jugadores.</li>
+                    </ul>
+
+                    <h2>4. Licencias y Cuotas de Asociación 2027</h2>
+                    <p>La posesión de la <strong>Licencia Catalana 2027</strong> es obligatoria para disputar las competiciones oficiales, puntuar en rankings y optar a trofeos y premios.</p>
+                    <ul>
+                        <li><strong>Cuota Bonificada (Pronto Pago):</strong> <strong>25 €</strong> abonando antes del 31 de diciembre de 2026.</li>
+                        <li><strong>Cuota Estándar:</strong> <strong>30 €</strong> a partir del 1 de enero de 2027.</li>
+                        <li><strong>Prorrateo:</strong> Exclusivo para debutantes absolutos sin licencia previa en la Asociación. Las renovaciones abonan la anualidad completa.</li>
+                    </ul>
+
+                    <h2>5. Periodo de Inscripción y Previsión de Temporada</h2>
+                    <div class="callout-box">
+                        <p style="margin-bottom: 0.75rem;">Con el objetivo de dimensionar con exactitud el número de personas y equipos participantes para estructurar el calendario oficial y los cuadros de competición, se establece como <strong>fecha límite improrrogable de registro el 1 de diciembre de 2026 a las 23:59</strong>:</p>
+                        <ul style="margin-bottom: 0;">
+                            <li><strong>Inscripción a la Liga Match Play (Individual y Parejas):</strong> Abono de <strong>22 €</strong> (correspondiente al anticipo de una sola jornada) en concepto de fianza de compromiso deportivo (no reembolsable).</li>
+                            <li><strong>Inscripción al Campeonato por Equipos:</strong> Abono de <strong>100 € por equipo</strong> para confirmar la inscripción y plaza del club en la competición.</li>
+                        </ul>
+                    </div>
+
+                    <h2>6. Liga Catalana Match Play Anual (Novedad 2027)</h2>
+                    <p>Competición de liga regular durante toda la temporada, aunando la modalidad individual y de parejas integradas.</p>
+
+                    <h3>6.1. Estructura y Divisiones Individuales (MPI)</h3>
+                    <p>Sobre una base estimada de 20 jugadores inscritos, la competición individual se organiza en dos niveles:</p>
+                    <ul>
+                        <li><strong>Primera División:</strong> 10 jugadores.</li>
+                        <li><strong>Segunda División:</strong> 10 jugadores.</li>
+                    </ul>
+                    <p><em>*La asignación inicial para el arranque de 2027 se determinará en base a la clasificación final de la Liga Stroke 2026. (Puedes consultar la simulación en vivo en la sección de <a href="/src/pages/clasificaciones.html" style="color: var(--primary-color); font-weight: 700; text-decoration: underline;">Clasificaciones</a>).</em></p>
+                    <p>Al término de la temporada regular:</p>
+                    <ul>
+                        <li>Los <strong>2 últimos clasificados de Primera División descienden</strong> a Segunda División.</li>
+                        <li>Los <strong>2 primeros clasificados de Segunda División ascienden</strong> a Primera División para 2028.</li>
+                    </ul>
+
+                    <h3>6.2. Competición de Parejas y Sorteo Puro Oficial</h3>
+                    <ul>
+                        <li><strong>Clasificación Única:</strong> La competición de parejas se disputa en una sola tabla general sin divisiones.</li>
+                        <li><strong>Composición Equilibrada Obligatoria:</strong> Cada pareja estará conformada obligatoriamente por <strong>un jugador de Primera División y un jugador de Segunda División</strong>.</li>
+                        <li><strong>Sorteo Puro Oficial (2 al 6 de Diciembre de 2026):</strong> Se dividirá a los 20 jugadores en dos bombos (Bombo 1: 1ª División; Bombo 2: 2ª División). Se extraerá por azar un jugador de cada bombo para conformar cada una de las 10 parejas fijas de la temporada.</li>
+                        <li>Las parejas resultantes permanecerán fijas e invariables durante todo el año.</li>
+                    </ul>
+
+                    <h3>6.3. Dinámica de la Jornada</h3>
+                    <div class="callout-box">
+                        <p style="margin-bottom: 0.5rem;">En cada jornada de competición se disputarán un total de <strong>24 hoyos</strong>:</p>
+                        <ul style="margin-bottom: 0.4rem;">
+                            <li><strong>12 hoyos:</strong> Partido de Match Play Individual (MPI).</li>
+                            <li><strong>12 hoyos:</strong> Partido de Parejas.</li>
+                        </ul>
+                        <p style="margin-bottom: 0;"><em>Preferiblemente ambos partidos se jugarán el mismo día.</em></p>
+                    </div>
+
+                    <h3>6.4. Formatos de Parejas: Elección de la Pareja Local</h3>
+                    <p>En cada jornada, la pareja que figure como <strong>Local</strong> en el calendario oficial podrá escoger el formato para sus 12 hoyos de pareja entre tres modalidades oficiales:</p>
+                    <ul>
+                        <li><strong>1. Fourball (Mejor Bola):</strong> Cada jugador disputa su bola todo el hoyo. Computa el score más bajo de la pareja.</li>
+                        <li><strong>2. Foursome (Golpes Alternos):</strong> Bola compartida. Un jugador sale en hoyos impares y el otro en pares, alternando golpes.</li>
+                        <li><strong>3. Scramble / A Gogó:</strong> Ambos salen del tee; se elige y marca la mejor bola; ambos patean desde ese punto (a menos de 1 m / 1 tarjeta, sin ganar distancia) y así sucesivamente hasta embocar.</li>
+                    </ul>
+                    <p><em>Preaviso:</em> La pareja local deberá notificar formalmente el formato elegido con un mínimo de <strong>48 horas de antelación</strong>.</p>
+
+                    <h3>6.5. Política de Aplazamientos y «Regla del Jugador Solitario»</h3>
+                    <div class="callout-box amber">
+                        <p><strong>Aplazamiento de Mutuo Acuerdo:</strong> Si un jugador o pareja no puede acudir a la fecha oficial, podrá pactar con el rival una fecha alternativa antes de la siguiente jornada oficial.</p>
+                        <p style="margin-bottom: 0;"><strong>Incomparecencia sin Acuerdo:</strong> De no haber acuerdo, quien no comparezca perderá el partido por incomparecencia (W.O.).</p>
+                    </div>
+                    <div class="callout-box">
+                        <p><strong>Regla del Jugador Solitario en Parejas (2 vs. 1):</strong> Si uno de los dos integrantes de una pareja no puede acudir y no se pactó aplazamiento, <strong>el compañero asistente tiene pleno derecho a jugar en solitario contra la pareja rival</strong>.</p>
+                        <ul style="margin-bottom: 0;">
+                            <li><strong>Formato Obligatorio:</strong> En este supuesto, <strong>se jugará OBLIGATORIAMENTE en formato Fourball</strong>, sin importar quién sea local (el derecho del jugador solitario prevalece sobre la localía).</li>
+                            <li>El jugador solitario compite con su bola frente a la mejor bola de los dos rivales.</li>
+                        </ul>
+                    </div>
+
+                    <h3>6.6. Sistema de Puntuación en Match Play</h3>
+                    <ul>
+                        <li><strong>Victoria:</strong> 3 puntos.</li>
+                        <li><strong>Empate:</strong> 1 punto.</li>
+                        <li><strong>Derrota:</strong> 0 puntos.</li>
+                        <li><strong>Incomparecencia (W.O.):</strong> 3-0 oficial (+3 diferencial al compareciente).</li>
+                        <li><strong>Criterios de Desempate:</strong> 1º Mayor cantidad de puntos; 2º Enfrentamiento directo; 3º Diferencia neta de hoyos (<em>Holes Up</em>); 4º Mayor cantidad total de hoyos ganados.</li>
+                    </ul>
+
+                    <h2>7. Campeonato por Equipos 2027</h2>
+                    <ul>
+                        <li><strong>Inscripción previa obligatoria:</strong> <strong>100 € por equipo</strong> (fecha límite: 1 de diciembre de 2026 a las 23:59).</li>
+                        <li><strong>Coordinación de Calendario:</strong> La organización <strong>intentará hacer coincidir las fechas de equipos con las jornadas de Match Play</strong>, facilitando la convocatoria grupal y minimizando desplazamientos innecesarios.</li>
+                        <li><strong>Composición de Equipos:</strong> Mínimo de 4 y máximo de 8 jugadores registrados por equipo.</li>
+                        <li><strong>Estructura de Partidos:</strong> Cada enfrentamiento entre clubes constará de tres partidos oficiales:
+                            <ul>
+                                <li>Un partido <strong>Individual vs. Individual</strong>.</li>
+                                <li>Una pareja en formato <strong>Fourball vs. Fourball</strong>.</li>
+                                <li>Una pareja en formato <strong>Foursome vs. Foursome</strong>.</li>
+                            </ul>
+                        </li>
+                        <li><strong>Puntuación y Desempates:</strong> Cada partido ganado suma 1 punto para el equipo. En rondas eliminatorias con empate, el pase se decidirá por diferencia de hoyos y posterior tanda de penalties.</li>
+                    </ul>
+
+                    <h2>8. Liga Catalana Stroke Play 2027</h2>
+                    <ul>
+                        <li><strong>Calendario Oficial:</strong> 10 etapas regulares (puntuando las 7 mejores tarjetas).</li>
+                        <li><strong>Inscripción por Etapa:</strong> <strong>22 €</strong> (17 € green fee del campo + 5 € organización y premios).</li>
+                        <li><strong>Cierre de Inscripciones:</strong> El miércoles anterior a cada etapa a las <strong>18:00 h</strong>.</li>
+                        <li><strong>Categorías Oficiales:</strong> Absoluta, Senior (nacidos en 1981 o anterior), Senior Plus (nacidos en 1971 o anterior), Femenil, Rookie (licencia 2026 o 2027) y Liga de Plata (reenganche en la segunda mitad del año).</li>
+                    </ul>
+
+                    <h2>9. Código de Conducta, Normas y Marcaje</h2>
+                    <ul>
+                        <li><strong>Reglamento Oficial:</strong> Normativa internacional FIFG y Reglas Locales del campo.</li>
+                        <li><strong>Código de Vestimenta:</strong> Obligatorio polo con cuello, bermudas o pantalones estilo golf, calcetines altos y calzado multitaco (turf). Totalmente prohibidas las botas con tacos de fútbol.</li>
+                        <li><strong>Ritmo de Juego:</strong> Mantener fluidez constante. El juego lento reiterado acarreará advertencias y sanciones reglamentarias.</li>
+                        <li><strong>Barras de Salida:</strong> Por estricta normativa de la FIFG, <strong>todas las salidas en todas las competiciones se realizarán exclusivamente desde las barras de la categoría absoluta</strong>, sin excepción por género o categoría.</li>
+                        <li><strong>Live Scoring:</strong> Registro obligatorio en vivo a través de la aplicación oficial. Los 4 integrantes de la partida comparten la responsabilidad deportiva sobre la tarjeta final.</li>
+                    </ul>
+
+                    <div style="margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color); text-align: right; color: var(--text-light);">
+                        <p style="margin-bottom: 0.25rem; text-align: right;">En Castelldefels / Barcelona, a 20 de octubre de 2026</p>
+                        <p style="margin-bottom: 0; text-align: right;"><strong>La Junta Directiva y Comité de Competición de Footgolf Catalunya</strong></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <app-footer></app-footer>
+</body>
+
+</html>

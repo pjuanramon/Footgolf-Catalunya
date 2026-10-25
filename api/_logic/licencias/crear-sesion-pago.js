@@ -32,7 +32,7 @@ module.exports = async function handler(req, res) {
 
         if (!supabase) return res.status(500).json({ error: 'Falta configuración en el servidor.' });
 
-        const anioActual = new Date().getFullYear();
+        const anioActual = parseInt(req.body.anio) || 2027;
         const esAntiguo = es_renovacion === 'si';
         const etapaInic = parseInt(etapa_inicio) || 1;
         const yaFuePagado = ya_pagado === 'si';
@@ -106,7 +106,7 @@ module.exports = async function handler(req, res) {
         }
 
         // Calcular precio
-        const precio = calcularPrecioLicencia(jugadorExistente, esAntiguo, etapaInic, yaFuePagado);
+        const precio = calcularPrecioLicencia(jugadorExistente, esAntiguo, etapaInic, yaFuePagado, anioActual);
 
         // CASO 0€: Registro directo
         if (precio === 0) {
