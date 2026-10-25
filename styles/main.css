@@ -32,12 +32,13 @@
     padding: 0;
 }
 
-body {
+html, body {
     font-family: var(--font-family);
     background-color: var(--bg-color);
     color: var(--text-main);
     line-height: 1.6;
     overflow-x: hidden;
+    max-width: 100%;
 }
 
 a {
@@ -54,6 +55,7 @@ ul {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 2rem;
+    width: 100%;
 }
 
 /* Typography */
@@ -153,7 +155,8 @@ ul {
 
 .nav-links {
     display: flex;
-    gap: 1.5rem;
+    gap: 1.25rem;
+    align-items: center;
 }
 
 .nav-links a {
@@ -161,6 +164,7 @@ ul {
     color: var(--text-main);
     padding: 0.5rem 0;
     border-bottom: 2px solid transparent;
+    white-space: nowrap;
 }
 
 .nav-links a:hover {
@@ -192,10 +196,12 @@ ul {
 
 .menu-toggle {
     display: none;
-    font-size: 1.5rem;
+    font-size: 1.75rem;
     cursor: pointer;
     background: none;
     border: none;
+    color: var(--text-main);
+    padding: 0.25rem 0.5rem;
 }
 
 /* Hero Section */
@@ -224,6 +230,7 @@ ul {
 
 .hero-content {
     max-width: 800px;
+    width: 100%;
     z-index: 2;
 }
 
@@ -246,14 +253,16 @@ ul {
 
 .hero-buttons {
     display: flex;
+    flex-wrap: wrap;
     gap: 1rem;
     justify-content: center;
+    align-items: center;
 }
 
 /* About / Cards Grid */
 .about-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
     gap: 2rem;
 }
 
@@ -336,6 +345,8 @@ ul {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
 }
 
 .link-more {
@@ -391,7 +402,7 @@ ul {
 /* Calendar Grid */
 .calendar-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
     gap: 1.5rem;
 }
 
@@ -425,11 +436,11 @@ ul {
     justify-content: center;
     font-weight: 800;
     text-align: center;
-    min-width: 90px;
+    min-width: 85px;
 }
 
 .event-info {
-    padding: 1.25rem;
+    padding: 1.15rem;
 }
 
 .event-info h4 {
@@ -451,7 +462,7 @@ ul {
 
 .footer-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
     gap: 2rem;
     max-width: 1200px;
     margin: 0 auto;
@@ -499,6 +510,7 @@ ul {
 .social-btn {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 0.5rem;
     padding: 0.75rem 1.5rem;
     border-radius: 9999px;
@@ -528,25 +540,21 @@ ul {
 }
 
 /* Responsive */
-@media (max-width: 768px) {
-    .hero h1 {
-        font-size: 2.5rem;
-    }
-
-    .layout-split {
-        grid-template-columns: 1fr;
-    }
-
+@media (max-width: 1200px) {
     .nav-links {
         display: none;
         flex-direction: column;
+        align-items: flex-start;
+        gap: 0.6rem;
         position: absolute;
         top: 100%;
         left: 0;
         width: 100%;
         background: white;
-        padding: 1rem;
-        box-shadow: var(--shadow-md);
+        padding: 1.25rem 1.5rem;
+        box-shadow: var(--shadow-lg);
+        max-height: calc(100vh - 80px);
+        overflow-y: auto;
     }
 
     .nav-links.active {
@@ -555,5 +563,80 @@ ul {
 
     .menu-toggle {
         display: block;
+    }
+}
+
+@media (max-width: 768px) {
+    .navbar {
+        padding: 0.5rem 1.15rem;
+    }
+
+    .container {
+        padding: 0 1.15rem;
+    }
+
+    .section {
+        padding: 3.25rem 0;
+    }
+
+    .section-title {
+        font-size: 1.85rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .hero {
+        min-height: auto;
+        padding: 7.25rem 1.15rem 3.5rem;
+        background-size: cover;
+        background-position: center top;
+    }
+
+    .hero h1 {
+        font-size: 2.3rem;
+        margin-bottom: 1rem;
+    }
+
+    .hero .subtitle {
+        font-size: 1.1rem;
+        margin-bottom: 1.75rem;
+    }
+
+    .hero-buttons {
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+        max-width: 340px;
+        margin: 0 auto;
+        gap: 0.75rem;
+    }
+
+    .hero-buttons .btn {
+        width: 100%;
+        padding: 0.85rem 1.25rem;
+        font-size: 0.95rem;
+    }
+
+    .layout-split {
+        grid-template-columns: 1fr;
+    }
+
+    .section-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 1rem;
+    }
+
+    .calendar-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .about-grid {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+    }
+
+    .page-header {
+        padding: 6.5rem 1.15rem 2.5rem;
     }
 }

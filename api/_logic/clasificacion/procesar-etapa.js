@@ -101,9 +101,18 @@ module.exports = async function handler(req, res) {
                 logs.push(`Desempate detectado para: ${p.nickname}`);
             }
 
+            let finalScore = Number(row['Y'] || 0);
+            if (Number(etapa_id) === 9 && p) {
+                // Penalizaciones Hit 3 Etapa 9 (Grupo de Eduardo):
+                if (p.id === 'a4756f84-e6fa-46e8-b349-c9bcac7a819a' && finalScore === -3) finalScore = -1; // Eduardo Martin (+2)
+                if (p.id === '623e8adf-1b33-430c-8ee1-c1363b660f08' && finalScore === -1) finalScore = 0;  // Alberto Salazar (+1)
+                if (p.id === 'fd33030a-9b8f-444e-8fe3-cb2c02d784f3' && finalScore === 4) finalScore = 5;   // Erik Matarrubia (+1)
+                if (p.id === '76a071d1-3237-45a4-a727-ea8fcd938a13' && finalScore === 11) finalScore = 12; // David Tellez (+1)
+            }
+
             resultadosBrutos.push({
                 rawName,
-                score: Number(row['Y'] || 0),
+                score: finalScore,
                 wonTie: wonTie,
                 dbPlayer: p
             });

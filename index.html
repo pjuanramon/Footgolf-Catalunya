@@ -12,6 +12,41 @@
     <link rel="stylesheet" href="styles/main.css">
     <script src="/js/Navbar.js" defer></script>
     <script src="/js/Footer.js" defer></script>
+    <style>
+        /* Mobile overrides specific to homepage components */
+        @media (max-width: 768px) {
+            .course-card-img {
+                height: 230px !important;
+            }
+            .course-card-body {
+                padding: 1.5rem !important;
+            }
+            .course-card-body h3 {
+                font-size: 1.45rem !important;
+            }
+            .copa-honor-box {
+                padding: 1.15rem !important;
+            }
+            .copa-final-item {
+                flex-direction: column;
+                align-items: flex-start !important;
+                gap: 0.5rem;
+            }
+            .cta-btn-mobile {
+                width: 100%;
+                max-width: 340px;
+                padding: 0.9rem 1.25rem !important;
+                font-size: 1rem !important;
+            }
+            .social-buttons-wrap {
+                flex-direction: column;
+                align-items: stretch;
+                max-width: 280px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -64,23 +99,23 @@
         <!-- Nuestros Campos -->
         <section class="section courses dark-section" style="background: var(--bg-dark); position: relative;">
             <div class="container">
-                <h2 class="section-title" style="color: white; margin-bottom: 3rem;">Campos de Footgolf en Catalunya
+                <h2 class="section-title" style="color: white; margin-bottom: 1.5rem;">Campos de Footgolf en Catalunya
                 </h2>
-                <p style="text-align: center; max-width: 800px; margin: 0 auto 4rem; color: #cbd5e1;">Catalunya cuenta
+                <p style="text-align: center; max-width: 800px; margin: 0 auto 3rem; color: #cbd5e1;">Catalunya cuenta
                     con el prestigioso recorrido de <strong>Golf La Garriga</strong> como sede principal, donde se desarrollan la mayoría de las competiciones oficiales. Un entorno
                     espectacular con un diseño técnico que ofrece todas las facilidades para jugadores de cualquier nivel.</p>
 
-                <div style="display: flex; justify-content: center; gap: 3rem;">
+                <div style="display: flex; justify-content: center;">
                     <!-- Golf La Garriga -->
                     <div class="course-card"
-                        style="background: rgba(255,255,255,0.05); border-radius: 1.5rem; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); transition: transform 0.3s ease; max-width: 500px;">
-                        <div
+                        style="background: rgba(255,255,255,0.05); border-radius: 1.5rem; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); transition: transform 0.3s ease; max-width: 500px; width: 100%;">
+                        <div class="course-card-img"
                             style="height: 350px; background: url('/images/LaGarriga_Golf.jpg') center/cover; position: relative;">
                             <span
                                 style="position: absolute; bottom: 1rem; left: 1rem; background: var(--primary-color); color: white; padding: 0.4rem 1rem; border-radius: 2rem; font-size: 0.8rem; font-weight: 700;">📍
                                 LA GARRIGA</span>
                         </div>
-                        <div style="padding: 2.5rem;">
+                        <div class="course-card-body" style="padding: 2.5rem;">
                             <h3 style="color: white; font-size: 1.8rem; margin-bottom: 1rem;">Golf La Garriga</h3>
                             <p style="color: #94a3b8; font-size: 1rem; line-height: 1.6;">Sede central del Footgolf
                                 en Catalunya. Ubicado en un entorno natural idílico a los pies del
@@ -92,22 +127,22 @@
         </section>
 
         <!-- COPA CATALANA MATCH PLAY 2026 - EVENTO DESTACADO -->
-        <section class="section" style="padding: 4.5rem 0; background: radial-gradient(circle at 50% 15%, rgba(251, 191, 36, 0.14) 0%, transparent 65%), linear-gradient(180deg, #020617 0%, #0f172a 100%); border-top: 1px solid rgba(251, 191, 36, 0.25); border-bottom: 1px solid rgba(251, 191, 36, 0.25); position: relative; overflow: hidden;">
+        <section class="section" style="padding: 4rem 0; background: radial-gradient(circle at 50% 15%, rgba(251, 191, 36, 0.14) 0%, transparent 65%), linear-gradient(180deg, #020617 0%, #0f172a 100%); border-top: 1px solid rgba(251, 191, 36, 0.25); border-bottom: 1px solid rgba(251, 191, 36, 0.25); position: relative; overflow: hidden;">
             <div class="container">
-                <div style="text-align: center; max-width: 800px; margin: 0 auto 3rem;">
-                    <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(251, 191, 36, 0.2); color: #fde047; padding: 0.4rem 1.1rem; border-radius: 9999px; font-size: 0.85rem; font-weight: 800; text-transform: uppercase; border: 1px solid rgba(251, 191, 36, 0.5); box-shadow: 0 0 20px rgba(251, 191, 36, 0.25); margin-bottom: 1rem;">
+                <div style="text-align: center; max-width: 800px; margin: 0 auto 2.5rem;">
+                    <div style="display: inline-flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 0.4rem; background: rgba(251, 191, 36, 0.2); color: #fde047; padding: 0.4rem 1rem; border-radius: 9999px; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; border: 1px solid rgba(251, 191, 36, 0.5); box-shadow: 0 0 20px rgba(251, 191, 36, 0.25); margin-bottom: 1rem; max-width: 100%;">
                         🏆 ¡Tenemos Campeón! · Copa Catalana Match Play 2026
                     </div>
-                    <h2 style="font-size: clamp(2rem, 4.5vw, 3.2rem); font-weight: 900; color: white; margin-bottom: 1rem; line-height: 1.15;">
+                    <h2 style="font-size: clamp(1.85rem, 4.5vw, 3.2rem); font-weight: 900; color: white; margin-bottom: 1rem; line-height: 1.15;">
                         ¡Jorge Santiago revalida el título!
                     </h2>
-                    <p style="color: #cbd5e1; font-size: 1.15rem; line-height: 1.6;">
+                    <p style="color: #cbd5e1; font-size: 1.05rem; line-height: 1.6;">
                         Una edición inolvidable en Golf La Garriga. <strong>Jorge Santiago</strong> se corona Bicampeón histórico tras vencer a <strong>David Téllez</strong> (5-4) en una espectacular Gran Final.
                     </p>
                 </div>
 
                 <!-- Preview Rápido de Grupos y Clasificación R1 -->
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; margin-bottom: 2.5rem;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: 1.25rem; margin-bottom: 2.5rem;">
                     <!-- Grupo A -->
                     <div style="background: rgba(17, 24, 39, 0.85); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1rem; padding: 1.25rem; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
                         <div style="font-weight: 800; color: #fbbf24; font-size: 1.1rem; margin-bottom: 0.75rem; display: flex; justify-content: space-between; align-items: center;">
@@ -115,20 +150,20 @@
                             <span style="font-size: 0.7rem; color: #4ade80; background: rgba(34,197,94,0.15); padding: 0.15rem 0.5rem; border-radius: 4px; border: 1px solid rgba(34,197,94,0.3);">Finalizado</span>
                         </div>
                         <ul style="list-style: none; padding: 0; margin: 0; font-size: 0.9rem; display: flex; flex-direction: column; gap: 0.4rem; color: white;">
-                            <li style="display: flex; justify-content: space-between; align-items: center; background: rgba(34,197,94,0.1); padding: 0.25rem 0.5rem; border-radius: 6px;">
+                            <li style="display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; background: rgba(34,197,94,0.1); padding: 0.25rem 0.5rem; border-radius: 6px;">
                                 <span><strong>1º Iván Luengo</strong> <small style="color: #4ade80;">(2 PJ · Dif +2 · QF1)</small></span>
-                                <strong style="color: #fbbf24;">3 pts</strong>
+                                <strong style="color: #fbbf24; white-space: nowrap;">3 pts</strong>
                             </li>
-                            <li style="display: flex; justify-content: space-between; align-items: center; background: rgba(56,189,248,0.1); padding: 0.25rem 0.5rem; border-radius: 6px;">
+                            <li style="display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; background: rgba(56,189,248,0.1); padding: 0.25rem 0.5rem; border-radius: 6px;">
                                 <span><strong>2º Xavi Leiva</strong> <small style="color: #38bdf8;">(2 PJ · Dif 0 · QF2)</small></span>
-                                <strong style="color: #fbbf24;">3 pts</strong>
+                                <strong style="color: #fbbf24; white-space: nowrap;">3 pts</strong>
                             </li>
-                            <li style="display: flex; justify-content: space-between; align-items: center; padding: 0.25rem 0.5rem;">
+                            <li style="display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; padding: 0.25rem 0.5rem;">
                                 <span>3º Sergi Pahisa <small style="color: #fb923c;">(2 PJ · Dif -2 · C1)</small></span>
-                                <span style="color: #cbd5e1;">3 pts</span>
+                                <span style="color: #cbd5e1; white-space: nowrap;">3 pts</span>
                             </li>
                         </ul>
-                        <div style="margin-top: 0.75rem; padding-top: 0.6rem; border-top: 1px solid rgba(255,255,255,0.08); font-size: 0.78rem; color: #cbd5e1; display: flex; justify-content: space-between;">
+                        <div style="margin-top: 0.75rem; padding-top: 0.6rem; border-top: 1px solid rgba(255,255,255,0.08); font-size: 0.78rem; color: #cbd5e1; display: flex; justify-content: space-between; gap: 0.5rem;">
                             <span>R3: Xavi 5 - 1 Sergi</span>
                             <strong style="color: #4ade80;">Xavi 4 UP</strong>
                         </div>
@@ -140,20 +175,20 @@
                             <span style="font-size: 0.7rem; color: #4ade80; background: rgba(34,197,94,0.15); padding: 0.15rem 0.5rem; border-radius: 4px; border: 1px solid rgba(34,197,94,0.3);">Finalizado</span>
                         </div>
                         <ul style="list-style: none; padding: 0; margin: 0; font-size: 0.9rem; display: flex; flex-direction: column; gap: 0.4rem; color: white;">
-                            <li style="display: flex; justify-content: space-between; align-items: center; background: rgba(34,197,94,0.1); padding: 0.25rem 0.5rem; border-radius: 6px;">
+                            <li style="display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; background: rgba(34,197,94,0.1); padding: 0.25rem 0.5rem; border-radius: 6px;">
                                 <span><strong>1º Daniel Abril</strong> <small style="color: #4ade80;">(2 PJ · QF2)</small></span>
-                                <strong style="color: #fbbf24;">6 pts</strong>
+                                <strong style="color: #fbbf24; white-space: nowrap;">6 pts</strong>
                             </li>
-                            <li style="display: flex; justify-content: space-between; align-items: center; background: rgba(56,189,248,0.1); padding: 0.25rem 0.5rem; border-radius: 6px;">
+                            <li style="display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; background: rgba(56,189,248,0.1); padding: 0.25rem 0.5rem; border-radius: 6px;">
                                 <span><strong>2º JuanRa Pérez</strong> <small style="color: #38bdf8;">(2 PJ · QF1)</small></span>
-                                <strong style="color: #fbbf24;">3 pts</strong>
+                                <strong style="color: #fbbf24; white-space: nowrap;">3 pts</strong>
                             </li>
-                            <li style="display: flex; justify-content: space-between; align-items: center; padding: 0.25rem 0.5rem;">
+                            <li style="display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; padding: 0.25rem 0.5rem;">
                                 <span>3º Jordi Martín <small style="color: #fb923c;">(2 PJ · C1)</small></span>
-                                <span style="color: #94a3b8;">0 pts</span>
+                                <span style="color: #94a3b8; white-space: nowrap;">0 pts</span>
                             </li>
                         </ul>
-                        <div style="margin-top: 0.75rem; padding-top: 0.6rem; border-top: 1px solid rgba(255,255,255,0.08); font-size: 0.78rem; color: #cbd5e1; display: flex; justify-content: space-between;">
+                        <div style="margin-top: 0.75rem; padding-top: 0.6rem; border-top: 1px solid rgba(255,255,255,0.08); font-size: 0.78rem; color: #cbd5e1; display: flex; justify-content: space-between; gap: 0.5rem;">
                             <span>R3: Jordi 1 - 3 Daniel</span>
                             <strong style="color: #4ade80;">Daniel 2 UP</strong>
                         </div>
@@ -165,20 +200,20 @@
                             <span style="font-size: 0.7rem; color: #4ade80; background: rgba(34,197,94,0.15); padding: 0.15rem 0.5rem; border-radius: 4px; border: 1px solid rgba(34,197,94,0.3);">Finalizado</span>
                         </div>
                         <ul style="list-style: none; padding: 0; margin: 0; font-size: 0.9rem; display: flex; flex-direction: column; gap: 0.4rem; color: white;">
-                            <li style="display: flex; justify-content: space-between; align-items: center; background: rgba(34,197,94,0.1); padding: 0.25rem 0.5rem; border-radius: 6px;">
+                            <li style="display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; background: rgba(34,197,94,0.1); padding: 0.25rem 0.5rem; border-radius: 6px;">
                                 <span><strong>1º Jorge Santiago</strong> <small style="color: #4ade80;">(2 PJ · QF3)</small></span>
-                                <strong style="color: #fbbf24;">6 pts</strong>
+                                <strong style="color: #fbbf24; white-space: nowrap;">6 pts</strong>
                             </li>
-                            <li style="display: flex; justify-content: space-between; align-items: center; background: rgba(56,189,248,0.1); padding: 0.25rem 0.5rem; border-radius: 6px;">
+                            <li style="display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; background: rgba(56,189,248,0.1); padding: 0.25rem 0.5rem; border-radius: 6px;">
                                 <span><strong>2º Gustavo Verse</strong> <small style="color: #38bdf8;">(2 PJ · QF4)</small></span>
-                                <strong style="color: #fbbf24;">3 pts</strong>
+                                <strong style="color: #fbbf24; white-space: nowrap;">3 pts</strong>
                             </li>
-                            <li style="display: flex; justify-content: space-between; align-items: center; padding: 0.25rem 0.5rem;">
+                            <li style="display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; padding: 0.25rem 0.5rem;">
                                 <span>3º Juan Montesinos <small style="color: #fb923c;">(2 PJ · C2)</small></span>
-                                <span style="color: #94a3b8;">0 pts</span>
+                                <span style="color: #94a3b8; white-space: nowrap;">0 pts</span>
                             </li>
                         </ul>
-                        <div style="margin-top: 0.75rem; padding-top: 0.6rem; border-top: 1px solid rgba(255,255,255,0.08); font-size: 0.78rem; color: #cbd5e1; display: flex; justify-content: space-between;">
+                        <div style="margin-top: 0.75rem; padding-top: 0.6rem; border-top: 1px solid rgba(255,255,255,0.08); font-size: 0.78rem; color: #cbd5e1; display: flex; justify-content: space-between; gap: 0.5rem;">
                             <span>R3: Joan 0 - 5 Gustavo</span>
                             <strong style="color: #4ade80;">Gustavo 5 UP</strong>
                         </div>
@@ -190,20 +225,20 @@
                             <span style="font-size: 0.7rem; color: #4ade80; background: rgba(34,197,94,0.15); padding: 0.15rem 0.5rem; border-radius: 4px; border: 1px solid rgba(34,197,94,0.3);">Finalizado</span>
                         </div>
                         <ul style="list-style: none; padding: 0; margin: 0; font-size: 0.9rem; display: flex; flex-direction: column; gap: 0.4rem; color: white;">
-                            <li style="display: flex; justify-content: space-between; align-items: center; background: rgba(34,197,94,0.1); padding: 0.25rem 0.5rem; border-radius: 6px;">
+                            <li style="display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; background: rgba(34,197,94,0.1); padding: 0.25rem 0.5rem; border-radius: 6px;">
                                 <span><strong>1º David Téllez</strong> <small style="color: #4ade80;">(2 PJ · QF4)</small></span>
-                                <strong style="color: #fbbf24;">4 pts</strong>
+                                <strong style="color: #fbbf24; white-space: nowrap;">4 pts</strong>
                             </li>
-                            <li style="display: flex; justify-content: space-between; align-items: center; background: rgba(56,189,248,0.1); padding: 0.25rem 0.5rem; border-radius: 6px;">
+                            <li style="display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; background: rgba(56,189,248,0.1); padding: 0.25rem 0.5rem; border-radius: 6px;">
                                 <span><strong>2º Jesús Pizarro</strong> <small style="color: #38bdf8;">(2 PJ · QF3)</small></span>
-                                <strong style="color: #fbbf24;">2 pts</strong>
+                                <strong style="color: #fbbf24; white-space: nowrap;">2 pts</strong>
                             </li>
-                            <li style="display: flex; justify-content: space-between; align-items: center; padding: 0.25rem 0.5rem;">
+                            <li style="display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; padding: 0.25rem 0.5rem;">
                                 <span>3º Alberto Leiva <small style="color: #fb923c;">(2 PJ · C2)</small></span>
-                                <span style="color: #94a3b8;">1 pt</span>
+                                <span style="color: #94a3b8; white-space: nowrap;">1 pt</span>
                             </li>
                         </ul>
-                        <div style="margin-top: 0.75rem; padding-top: 0.6rem; border-top: 1px solid rgba(255,255,255,0.08); font-size: 0.78rem; color: #cbd5e1; display: flex; justify-content: space-between;">
+                        <div style="margin-top: 0.75rem; padding-top: 0.6rem; border-top: 1px solid rgba(255,255,255,0.08); font-size: 0.78rem; color: #cbd5e1; display: flex; justify-content: space-between; gap: 0.5rem;">
                             <span>R3: Alberto 2 - 2 Chechu</span>
                             <strong style="color: #c084fc;">Empate (AS)</strong>
                         </div>
@@ -211,12 +246,12 @@
                 </div>
 
                 <!-- Resumen de Finales, Campeón y Podio Oficial -->
-                <div style="background: rgba(15, 23, 42, 0.95); border: 2px solid rgba(251, 191, 36, 0.4); border-radius: 1.25rem; padding: 1.75rem; margin-bottom: 2rem; box-shadow: 0 10px 35px rgba(0,0,0,0.5);">
+                <div class="copa-honor-box" style="background: rgba(15, 23, 42, 0.95); border: 2px solid rgba(251, 191, 36, 0.4); border-radius: 1.25rem; padding: 1.75rem; margin-bottom: 2rem; box-shadow: 0 10px 35px rgba(0,0,0,0.5);">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 0.85rem; flex-wrap: wrap; gap: 0.75rem;">
                         <div style="display: flex; align-items: center; gap: 0.75rem;">
                             <span style="font-size: 1.8rem;">🏆</span>
                             <div>
-                                <span style="font-weight: 900; color: #fde047; font-size: 1.25rem; display: block;">Cuadro de Honor & Podio Oficial 2026</span>
+                                <span style="font-weight: 900; color: #fde047; font-size: 1.2rem; display: block;">Cuadro de Honor & Podio Oficial 2026</span>
                                 <span style="font-size: 0.85rem; color: #cbd5e1;">Resultados finales y proclamación del Campeón</span>
                             </div>
                         </div>
@@ -226,7 +261,7 @@
                     </div>
 
                     <!-- Podio Grid 4 clasificados -->
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
                         <div style="background: linear-gradient(135deg, rgba(251, 191, 36, 0.15) 0%, rgba(34, 197, 94, 0.1) 100%); border: 2px solid rgba(251, 191, 36, 0.5); border-radius: 0.85rem; padding: 1rem 1.15rem; text-align: center;">
                             <span style="font-size: 0.72rem; color: #fbbf24; font-weight: 800; text-transform: uppercase;">1.º Puesto · CAMPEÓN</span>
                             <div style="font-size: 1.3rem; font-weight: 900; color: #fde047; margin: 0.25rem 0;">🏆 Jorge Santiago</div>
@@ -250,20 +285,20 @@
                     </div>
 
                     <!-- Resultados de las Finales y Semifinales -->
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 0.85rem; margin-bottom: 1.25rem;">
-                        <div style="background: rgba(251, 191, 36, 0.08); border: 1px solid rgba(251, 191, 36, 0.3); border-radius: 0.75rem; padding: 0.75rem 1rem; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 0.85rem; margin-bottom: 1.25rem;">
+                        <div class="copa-final-item" style="background: rgba(251, 191, 36, 0.08); border: 1px solid rgba(251, 191, 36, 0.3); border-radius: 0.75rem; padding: 0.75rem 1rem; display: flex; justify-content: space-between; align-items: center; gap: 0.5rem;">
                             <div>
                                 <span style="font-size: 0.7rem; color: #fbbf24; font-weight: 800; text-transform: uppercase; display: block;">🏆 GRAN FINAL</span>
                                 <span style="font-size: 0.92rem; font-weight: 800; color: #fff;">David Téllez (4) - <strong style="color: #fde047;">Jorge Santiago (5)</strong></span>
                             </div>
-                            <span style="font-size: 0.75rem; font-weight: 900; color: #000; background: #fbbf24; padding: 0.2rem 0.5rem; border-radius: 4px;">Jorge 1 UP</span>
+                            <span style="font-size: 0.75rem; font-weight: 900; color: #000; background: #fbbf24; padding: 0.2rem 0.5rem; border-radius: 4px; white-space: nowrap;">Jorge 1 UP</span>
                         </div>
-                        <div style="background: rgba(251, 146, 60, 0.06); border: 1px solid rgba(251, 146, 60, 0.25); border-radius: 0.75rem; padding: 0.75rem 1rem; display: flex; justify-content: space-between; align-items: center;">
+                        <div class="copa-final-item" style="background: rgba(251, 146, 60, 0.06); border: 1px solid rgba(251, 146, 60, 0.25); border-radius: 0.75rem; padding: 0.75rem 1rem; display: flex; justify-content: space-between; align-items: center; gap: 0.5rem;">
                             <div>
                                 <span style="font-size: 0.7rem; color: #fb923c; font-weight: 800; text-transform: uppercase; display: block;">🥉 3.º Y 4.º PUESTO</span>
                                 <span style="font-size: 0.92rem; font-weight: 800; color: #fff;"><strong style="color: #fb923c;">Iván Luengo (4)</strong> - Daniel Abril (3)</span>
                             </div>
-                            <span style="font-size: 0.75rem; font-weight: 800; color: #fb923c; background: rgba(251, 146, 60, 0.15); padding: 0.2rem 0.5rem; border-radius: 4px;">Iván 1 UP</span>
+                            <span style="font-size: 0.75rem; font-weight: 800; color: #fb923c; background: rgba(251, 146, 60, 0.15); padding: 0.2rem 0.5rem; border-radius: 4px; white-space: nowrap;">Iván 1 UP</span>
                         </div>
                     </div>
 
@@ -279,7 +314,7 @@
                 </div>
 
                 <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
-                    <a href="/src/pages/copa.html" class="btn btn-primary" style="background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%); color: #000; font-weight: 800; padding: 1rem 2.5rem; font-size: 1.1rem; border: none; box-shadow: 0 0 25px rgba(251, 191, 36, 0.35);">
+                    <a href="/src/pages/copa.html" class="btn btn-primary cta-btn-mobile" style="background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%); color: #000; font-weight: 800; padding: 1rem 2.5rem; font-size: 1.1rem; border: none; box-shadow: 0 0 25px rgba(251, 191, 36, 0.35);">
                         🏆 Ver Sección Oficial de la Copa MP →
                     </a>
                 </div>
@@ -289,9 +324,9 @@
         <!-- Call to Action: Próxima Etapa -->
         <section class="section" style="padding: 3rem 0; background: linear-gradient(90deg, #1e293b 0%, #0f172a 100%); border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05);">
             <div class="container" style="display: flex; flex-direction: column; align-items: center; text-align: center;">
-                <h2 style="color: white; font-size: 2rem; margin-bottom: 1rem;">🔥 ¡Inscríbete ya a la próxima etapa!</h2>
+                <h2 style="color: white; font-size: clamp(1.5rem, 4vw, 2rem); margin-bottom: 1rem;">🔥 ¡Inscríbete ya a la próxima etapa!</h2>
                 <p style="color: #94a3b8; margin-bottom: 2rem; max-width: 600px;">No te quedes fuera de la competición oficial. Asegura tu plaza ahora y compite por el ranking 2026.</p>
-                <a href="/src/pages/inscripciones.html" class="btn btn-primary" style="padding: 1rem 3rem; font-size: 1.2rem; box-shadow: 0 0 30px rgba(30, 143, 58, 0.4);">
+                <a href="/src/pages/inscripciones.html" class="btn btn-primary cta-btn-mobile" style="padding: 1rem 3rem; font-size: 1.2rem; box-shadow: 0 0 30px rgba(30, 143, 58, 0.4);">
                     Inscribirme ahora →
                 </a>
             </div>
@@ -369,7 +404,7 @@
                 <h2 class="section-title">Síguenos en Redes</h2>
                 <p class="subtitle" style="margin-bottom: 2rem; color: var(--text-light);">Únete a la comunidad de
                     Footgolf Catalunya y no te pierdas nada.</p>
-                <div style="display: flex; justify-content: center; gap: 1rem; margin-bottom: 3rem;">
+                <div class="social-buttons-wrap" style="display: flex; justify-content: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
                     <a href="https://www.instagram.com/footgolf_catalunya/" target="_blank" class="social-btn"
                         style="background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);">
                         <span style="font-size: 1.5rem; color: white;">📸</span> <span
@@ -381,7 +416,6 @@
                             style="color: white; font-weight: 600;">Facebook</span>
                     </a>
                 </div>
-            </div>
             </div>
         </section>
     </main>
