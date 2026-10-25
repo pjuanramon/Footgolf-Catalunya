@@ -76,6 +76,20 @@
                 display: flex;
             }
         }
+
+        .stage-discarded {
+            text-decoration: line-through;
+            text-decoration-color: #94a3b8;
+            text-decoration-thickness: 1.5px;
+            color: #94a3b8 !important;
+            opacity: 0.55;
+            background-color: rgba(241, 245, 249, 0.45);
+            transition: opacity 0.2s ease;
+        }
+
+        .stage-discarded:hover {
+            opacity: 0.9;
+        }
     </style>
     <link rel="icon" type="image/png" href="/favicon.png?v=1">
 </head>
@@ -164,6 +178,7 @@
 
                 <script>
                     let rankingsData = {};
+                    let currentJornada = 9;
 
                     async function loadRankings() {
                         try {
@@ -181,11 +196,7 @@
                             const ultimaEtapa = etapas[etapas.length - 1];
                             const json = JSON.parse(ultimaEtapa.archivo_excel);
                             rankingsData = json.categorias;
-
-                            const jornadaText = document.getElementById('jornada-text');
-                            if (jornadaText) {
-                                jornadaText.textContent = `Clasificación oficial de la temporada tras la Etapa ${json.jornada}.`;
-                            }
+                            currentJornada = json.jornada || 9;
 
                             const btnContainer = document.getElementById('category-buttons');
                             btnContainer.innerHTML = '';
@@ -234,6 +245,12 @@
                         if (activeBtn) {
                             activeBtn.style.background = 'var(--primary-color)';
                             activeBtn.style.color = 'white';
+                        }
+
+                        const numMejores = category === 'Liga Plata' ? 4 : 8;
+                        const jornadaText = document.getElementById('jornada-text');
+                        if (jornadaText) {
+                            jornadaText.innerHTML = `Clasificación oficial de la temporada tras la Etapa ${currentJornada}. <span style="display: block; font-size: 0.85rem; color: #64748b; margin-top: 0.35rem;">ℹ️ Computan las mejores <strong>${numMejores}</strong> etapas de cada jugador. Las puntuaciones tachadas (<span style="text-decoration: line-through; text-decoration-color: #94a3b8; color: #94a3b8; opacity: 0.65;">120</span>) son descartes y no suman al total general.</span>`;
                         }
 
                         // Determine how many stages we have in this category
@@ -332,13 +349,45 @@
                                 }
                             }
 
+                            // Identificar qué etapas se descartan (no suman)
+                            const playedStages = (player.etapas && player.etapas.length > 0)
+                                ? player.etapas
+                                : Object.keys(player)
+                                    .filter(k => k.startsWith('e') && !isNaN(parseInt(k.substring(1))) && player[k] !== undefined)
+                                    .map(k => ({ etapa_id: parseInt(k.substring(1)), puntos: player[k] }));
+
+                            const discardedStageIds = new Set();
+                            if (playedStages.length > numMejores) {
+                                const sorted = [...playedStages].sort((a, b) => {
+                                    if (b.puntos !== a.puntos) return b.puntos - a.puntos;
+                                    return a.etapa_id - b.etapa_id;
+                                });
+                                for (let i = numMejores; i < sorted.length; i++) {
+                                    discardedStageIds.add(sorted[i].etapa_id);
+                                }
+                            }
+
                             let stagesHtml = '';
                             for (let i = 1; i <= maxStage; i++) {
                                 const pts = player[`e${i}`];
-                                stagesHtml += `
-                                    <td style="padding: 1.25rem 1.5rem; text-align: center; color: var(--text-light); font-size: 0.9rem;">
-                                        ${pts !== undefined ? pts : '-'}
-                                    </td>`;
+                                if (pts !== undefined) {
+                                    if (discardedStageIds.has(i)) {
+                                        stagesHtml += `
+                                            <td class="stage-discarded" style="padding: 1.25rem 1.5rem; text-align: center; font-size: 0.9rem;" title="Etapa ${i}: ${pts} pts (descarte: no suma al total por computarse solo las mejores ${numMejores} etapas)">
+                                                ${pts}
+                                            </td>`;
+                                    } else {
+                                        stagesHtml += `
+                                            <td style="padding: 1.25rem 1.5rem; text-align: center; color: var(--text-light); font-size: 0.9rem;">
+                                                ${pts}
+                                            </td>`;
+                                    }
+                                } else {
+                                    stagesHtml += `
+                                        <td style="padding: 1.25rem 1.5rem; text-align: center; color: #cbd5e1; font-size: 0.9rem;">
+                                            -
+                                        </td>`;
+                                }
                             }
 
                             tr.innerHTML = `
