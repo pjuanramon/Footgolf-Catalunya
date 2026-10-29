@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ven a Probar el Footgolf en Catalunya · Temporada 2027</title>
+    <meta name="description"
+        content="¿Sabes ponerla al pie a 50 metros o sabes jugar al fútbol? Ven a probar el Footgolf en una jornada de la Liga Catalana en Golf La Garriga. No se necesita experiencia previa. Todos los jugadores nuevos son bienvenidos.">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="/favicon.png?v=1">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <script src="/js/Navbar.js" defer></script>
+    <script src="/js/Footer.js" defer></script>
+    <style>
+        .landing-hero {
+            background: radial-gradient(circle at 20% 20%, rgba(22, 163, 74, 0.28) 0%, transparent 55%),
+                radial-gradient(circle at 80% 10%, rgba(250, 204, 21, 0.18) 0%, transparent 50%),
+                linear-gradient(180deg, #040d1a 0%, #0f172a 100%);
+            color: white;
+            padding: 8.5rem 0 4.5rem;
+            position: relative;
+            overflow: hidden;
+            border-bottom: 1px solid rgba(74, 222, 128, 0.25);
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1.15fr 0.85fr;
+            gap: 2.5rem;
+            align-items: center;
+        }
+
+        .pill-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(34, 197, 94, 0.18);
+            border: 1px solid rgba(74, 222, 128, 0.5);
+            color: #86efac;
+            font-weight: 800;
+            font-size: 0.85rem;
+            padding: 0.45rem 1rem;
+            border-radius: 999px;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin-bottom: 1.1rem;
+        }
+
+        .challenger-title {
+            font-size: clamp(2rem, 4.4vw, 3.35rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 1rem;
+            color: #ffffff;
+        }
+
+        .challenger-title span.gold {
+            color: #facc15;
+            display: block;
+            margin-top: 0.25rem;
+        }
+
+        .inclusive-subbox {
+            background: rgba(255, 255, 255, 0.06);
+            border-left: 4px solid #4ade80;
+            padding: 1rem 1.25rem;
+            border-radius: 0.75rem;
+            margin: 1.25rem 0;
+            color: #e2e8f0;
+            font-size: 1.05rem;
+            line-height: 1.55;
+        }
+
+        .trust-pills {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 0.75rem;
+            margin: 1.5rem 0 2rem;
+        }
+
+        .trust-pill {
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 0.85rem;
+            padding: 0.8rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            font-weight: 700;
+            font-size: 0.93rem;
+            color: #f8fafc;
+        }
+
+        .wa-btn-giant {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+            color: white;
+            font-weight: 900;
+            font-size: 1.12rem;
+            padding: 1.1rem 1.85rem;
+            border-radius: 999px;
+            text-decoration: none;
+            box-shadow: 0 10px 25px rgba(22, 163, 74, 0.45);
+            border: 2px solid rgba(255, 255, 255, 0.85);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .wa-btn-giant:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 14px 30px rgba(22, 163, 74, 0.6);
+        }
+
+        .video-showcase-card {
+            background: #091326;
+            border: 2px solid rgba(250, 204, 21, 0.45);
+            border-radius: 1.5rem;
+            padding: 0.85rem;
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.55);
+            max-width: 360px;
+            margin: 0 auto;
+        }
+
+        .video-showcase-card video {
+            width: 100%;
+            border-radius: 1.1rem;
+            display: block;
+            aspect-ratio: 9 / 16;
+            object-fit: cover;
+            background: #000;
+        }
+
+        .angles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .angle-card {
+            background: white;
+            border-radius: 1.5rem;
+            overflow: hidden;
+            box-shadow: var(--shadow-xl);
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .angle-card img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .angle-card-body {
+            padding: 1.75rem;
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2.5rem;
+        }
+
+        .step-card {
+            background: #ffffff;
+            border: 2px solid #e2e8f0;
+            border-radius: 1.25rem;
+            padding: 1.75rem;
+            position: relative;
+            box-shadow: var(--shadow-md);
+        }
+
+        .step-number {
+            width: 44px;
+            height: 44px;
+            border-radius: 999px;
+            background: var(--primary-color);
+            color: white;
+            font-weight: 900;
+            font-size: 1.2rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .floating-wa {
+            position: fixed;
+            bottom: 1.25rem;
+            right: 1.25rem;
+            z-index: 999;
+            background: #16a34a;
+            color: white;
+            font-weight: 800;
+            padding: 0.85rem 1.35rem;
+            border-radius: 999px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.55rem;
+            border: 2px solid white;
+            font-size: 0.95rem;
+        }
+
+        @media (max-width: 860px) {
+            .landing-hero {
+                padding: 7rem 0 3.5rem;
+            }
+            .hero-grid {
+                grid-template-columns: 1fr;
+            }
+            .wa-btn-giant {
+                width: 100%;
+                text-align: center;
+                font-size: 1rem;
+                padding: 1rem 1.2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <app-navbar></app-navbar>
+
+    <main>
+        <!-- HERO DE CAPTACIÓN -->
+        <section class="landing-hero">
+            <div class="container">
+                <div class="hero-grid">
+                    <div>
+                        <span class="pill-badge">⚽⛳ Captación de Nuevos Jugadores · Temporada 2027</span>
+                        <h1 class="challenger-title">
+                            ¿Sabes ponerla al pie de alguien a 50 metros?
+                            <span class="gold">Ven a probar si en el Footgolf también puedes hacerlo.</span>
+                        </h1>
+
+                        <div class="inclusive-subbox">
+                            <strong>¿Sabes jugar al fútbol? Entonces ya sabes jugar al Footgolf.</strong><br>
+                            Te invitamos a venir a probar en una de las <strong>jornadas oficiales de la Liga Catalana</strong> en <strong>Golf La Garriga</strong>. ¡No se necesita experiencia previa y todos los jugadores nuevos son bienvenidos!
+                        </div>
+
+                        <div class="trust-pills">
+                            <div class="trust-pill">
+                                <span>✅</span>
+                                <span>Sin experiencia previa necesaria</span>
+                            </div>
+                            <div class="trust-pill">
+                                <span>🤝</span>
+                                <span>Todos los nuevos son bienvenidos</span>
+                            </div>
+                            <div class="trust-pill">
+                                <span>🏅</span>
+                                <span>Categoría ROOKIE 2027 (solo debutantes)</span>
+                            </div>
+                            <div class="trust-pill">
+                                <span>✨</span>
+                                <span>Licencia Anual 2027: 25€ (Pronto Pago)</span>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; flex-wrap: wrap; gap: 1rem; align-items: center;">
+                            <a href="https://wa.me/34660310877?text=Hola%2C%20he%20visto%20la%20campa%C3%B1a%20de%20Footgolf%20Catalunya%20y%20me%20gustar%C3%ADa%20recibir%20informaci%C3%B3n%20para%20venir%20a%20probar%20a%20una%20jornada%20de%20la%20Liga%20Catalana"
+                                target="_blank" rel="noopener" class="wa-btn-giant">
+                                💬 Ven a Probar · WhatsApp 660 31 08 77
+                            </a>
+                            <a href="/src/pages/licencias.html" class="btn btn-secondary"
+                                style="color: white; border-color: rgba(255,255,255,0.6); font-weight: 700; padding: 0.95rem 1.4rem; border-radius: 999px;">
+                                Sacar Licencia 2027 (25€) →
+                            </a>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="video-showcase-card">
+                            <video controls playsinline preload="metadata" poster="/images/campana2027/banner_retador.jpg">
+                                <source src="/images/campana2027/reel_reto_50m.mp4" type="video/mp4">
+                                Tu navegador no soporta vídeo HTML5.
+                            </video>
+                            <p style="text-align: center; color: #fde047; font-size: 0.85rem; font-weight: 700; margin: 0.65rem 0 0.15rem;">
+                                ▶ Mira cómo se vive el reto en Golf La Garriga
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CÓMO VENIR A PROBAR EN 3 PASOS -->
+        <section class="section" style="background: #f8fafc;">
+            <div class="container">
+                <div style="text-align: center; max-width: 780px; margin: 0 auto;">
+                    <span style="color: var(--primary-color); font-weight: 800; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px;">Fácil, directo y sin barreras</span>
+                    <h2 class="section-title" style="margin-top: 0.35rem;">¿Cómo venir a probar a una jornada de la Liga Catalana?</h2>
+                    <p style="color: #475569; font-size: 1.05rem;">
+                        No hacemos jornadas sueltas de puertas abiertas: <strong>te invitamos directamente a vivir el ambiente real de una etapa de la Liga Catalana</strong> acompañado de jugadores veteranos que te guiarán hoyo a hoyo.
+                    </p>
+                </div>
+
+                <div class="steps-grid">
+                    <div class="step-card">
+                        <div class="step-number">1</div>
+                        <h3 style="font-size: 1.3rem; margin-bottom: 0.6rem; color: #0f172a;">Escríbenos por WhatsApp</h3>
+                        <p style="color: #475569; font-size: 0.95rem; line-height: 1.6;">
+                            Mándanos un mensaje directo al <strong>660 31 08 77</strong>. Te contamos cuándo es la próxima jornada oficial en <strong>Golf La Garriga</strong> y resolvemos todas tus dudas al instante.
+                        </p>
+                    </div>
+
+                    <div class="step-card">
+                        <div class="step-number">2</div>
+                        <h3 style="font-size: 1.3rem; margin-bottom: 0.6rem; color: #0f172a;">Ven a Probar sin Experiencia Previa</h3>
+                        <p style="color: #475569; font-size: 0.95rem; line-height: 1.6;">
+                            <strong>No se necesita experiencia previa</strong>. Solo necesitas un balón de fútbol talla 5 y zapatillas deportivas o multitaco (sin tacos de fútbol 11). Te asignamos en un grupo con jugadores experimentados para que aprendas disfrutando.
+                        </p>
+                    </div>
+
+                    <div class="step-card">
+                        <div class="step-number">3</div>
+                        <h3 style="font-size: 1.3rem; margin-bottom: 0.6rem; color: #0f172a;">Compite en Categoría Rookie 2027</h3>
+                        <p style="color: #475569; font-size: 0.95rem; line-height: 1.6;">
+                            Todos los jugadores nuevos que se incorporan en 2027 compiten en la nueva <strong>Categoría Rookie</strong> (exclusiva para debutantes) además de su categoría por edad. Y tu licencia anual cuesta solo <strong>25€ en Pronto Pago</strong>.
+                        </p>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 2.5rem;">
+                    <a href="https://wa.me/34660310877?text=Hola%2C%20quiero%20venir%20a%20probar%20a%20una%20jornada%20de%20la%20Liga%20Catalana%20de%20Footgolf.%20%C2%BFMe%20das%20informaci%C3%B3n%3F"
+                        target="_blank" rel="noopener" class="wa-btn-giant">
+                        📲 Escribir ahora por WhatsApp (660 31 08 77)
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- LOS DOS RETOS DE LA CAMPAÑA 2027 -->
+        <section class="section">
+            <div class="container">
+                <div style="text-align: center; max-width: 780px; margin: 0 auto 2rem;">
+                    <h2 class="section-title">Tanto si buscas un reto de precisión como disfrutar con amigos</h2>
+                    <p style="color: #475569; font-size: 1.05rem;">
+                        En <strong>Footgolf Catalunya</strong> conviven futboleros competitivos que quieren medir su golpeo de 50 metros y jugadores de todas las edades que buscan deporte, naturaleza y buen ambiente sin riesgo de lesiones.
+                    </p>
+                </div>
+
+                <div class="angles-grid">
+                    <!-- Ángulo Retador -->
+                    <div class="angle-card">
+                        <img src="/images/campana2027/banner_retador.jpg" alt="Reto 50 metros al pie - Footgolf Catalunya">
+                        <div class="angle-card-body">
+                            <span style="display: inline-block; background: #fee2e2; color: #b91c1c; font-weight: 800; font-size: 0.78rem; padding: 0.25rem 0.75rem; border-radius: 999px; text-transform: uppercase; margin-bottom: 0.6rem;">🎯 El Reto de Precisión</span>
+                            <h3 style="font-size: 1.4rem; margin-bottom: 0.6rem; color: #0f172a;">¿Tienes un guante en el pie a 50 metros?</h3>
+                            <p style="color: #475569; font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.25rem;">
+                                Cambiar de orientación en un campo de fútbol parece fácil hasta que tienes que sortear bunkers, desniveles y clavar el balón en un hoyo de 53 cm en Golf La Garriga. Ven a demostrar tu toque en una jornada de la Liga Catalana.
+                            </p>
+                            <a href="https://wa.me/34660310877?text=Hola%2C%20acepto%20el%20reto%20de%20los%2050%20metros%20y%20quiero%20venir%20a%20probar%20a%20una%20jornada%20de%20la%20Liga%20Catalana"
+                                target="_blank" rel="noopener" class="btn btn-primary" style="width: 100%; text-align: center; font-weight: 800;">
+                                Acepto el Reto · WhatsApp 660 31 08 77
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Ángulo Inclusivo -->
+                    <div class="angle-card">
+                        <img src="/images/campana2027/banner_inclusivo.jpg" alt="Si sabes jugar al fútbol ya sabes jugar al Footgolf">
+                        <div class="angle-card-body">
+                            <span style="display: inline-block; background: #dcfce7; color: #15803d; font-weight: 800; font-size: 0.78rem; padding: 0.25rem 0.75rem; border-radius: 999px; text-transform: uppercase; margin-bottom: 0.6rem;">🤝 100% Inclusivo · Sin Experiencia Previa</span>
+                            <h3 style="font-size: 1.4rem; margin-bottom: 0.6rem; color: #0f172a;">¿Sabes jugar al fútbol? Ya sabes jugar al Footgolf</h3>
+                            <p style="color: #475569; font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.25rem;">
+                                Todos los jugadores nuevos son bienvenidos. Sin choques, sin lesiones y en un entorno natural espectacular a los pies del Montseny. Con la nueva <strong>Categoría Rookie 2027</strong> compites de tú a tú con otros debutantes desde el primer día.
+                            </p>
+                            <a href="https://wa.me/34660310877?text=Hola%2C%20soy%20nuevo%20jugador%20y%20me%20gustar%C3%ADa%20venir%20a%20probar%20a%20una%20jornada%20de%20la%20Liga%20Catalana"
+                                target="_blank" rel="noopener" class="btn btn-primary" style="width: 100%; text-align: center; font-weight: 800;">
+                                Quiero Venir a Probar · 660 31 08 77
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <a href="https://wa.me/34660310877?text=Hola%2C%20he%20visto%20la%20web%20de%20Footgolf%20Catalunya%20y%20quiero%20venir%20a%20probar%20a%20una%20jornada%20de%20la%20Liga%20Catalana"
+        target="_blank" rel="noopener" class="floating-wa">
+        <span>💬</span>
+        <span>WhatsApp Directo: 660 31 08 77</span>
+    </a>
+
+    <app-footer></app-footer>
+</body>
+
+</html>

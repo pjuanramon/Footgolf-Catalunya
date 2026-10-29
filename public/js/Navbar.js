@@ -27,6 +27,7 @@ class Navbar extends HTMLElement {
                 <button class="menu-toggle" aria-label="Toggle menu">☰</button>
                 <div class="nav-links">
                     <a href="${homeLink}">Inicio</a>
+                    <a href="/src/pages/unete-2027.html" style="background: linear-gradient(135deg, #facc15 0%, #eab308 100%); color: #0f172a; padding: 0.35rem 0.85rem; border-radius: 999px; font-weight: 800; box-shadow: 0 2px 6px rgba(234, 179, 8, 0.35);">⚽ ¿Nuevo? Ven a Probar</a>
                     <a href="/src/pages/temporada-2027.html" style="background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: white; padding: 0.35rem 0.85rem; border-radius: 999px; font-weight: 800; box-shadow: 0 2px 6px rgba(22, 163, 74, 0.3);">✨ 2027</a>
                     <a href="/src/pages/calendario.html">Calendario 2026</a>
                     <a href="/src/pages/clasificaciones.html">Clasificaciones</a>
