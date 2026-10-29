@@ -1,10 +1,10 @@
 // ============================================================
 // POST /api/inscripciones/crear-sesion-pago
-// Crea una sesión de Stripe Checkout para inscribirse a una etapa
+// Crea una sesión de Stripe Checkout / Redsys para inscribirse a una etapa
 // ============================================================
 const { supabase } = require('../../../lib/supabase');
 const paymentGateway = require('../../../lib/payment-gateway');
-const { calcularPrecioInscripcion } = require('../../../lib/pricing');
+const { calcularPrecioInscripcion, esJuanRa } = require('../../../lib/pricing');
 
 module.exports = async function handler(req, res) {
     if (req.method !== 'POST') {
@@ -19,6 +19,7 @@ module.exports = async function handler(req, res) {
         }
 
         const emailNorm = email.trim().toLowerCase();
+        const nickClean = nickname.trim();
 
         // 1. Verificar Etapa
         const { data: etapa } = await supabase.from('etapas').select('*').eq('id', etapa_id).single();
@@ -31,10 +32,7 @@ module.exports = async function handler(req, res) {
         // Si es Copa Catalana, por defecto NO incluye balón salvo que se marque la casilla explícitamente
         const conBalon = isCopa ? (incluye_balon === true || incluye_balon === 'true') : false;
 
-        // 2. Calcular Precio
-        const precio = calcularPrecioInscripcion(etapa, emailNorm, conBalon);
-
-        // 3. Buscar o crear jugador
+        // 2. Buscar o crear jugador
         let jugador;
         const { data: jugadorExistente } = await supabase.from('jugadores').select('*').eq('email', emailNorm).single();
 
@@ -42,13 +40,21 @@ module.exports = async function handler(req, res) {
             jugador = jugadorExistente;
         } else {
             const { data: newPlayer, error: pErr } = await supabase.from('jugadores').insert({
-                nickname: nickname.trim(),
+                nickname: nickClean,
                 email: emailNorm,
                 tiene_licencia: false
             }).select('*').single();
             if (pErr) throw pErr;
             jugador = newPlayer;
         }
+
+        // 3. Calcular Precio (verifica tanto email como nickname del jugador para aplicar los 5€ de Juan Ramón Pérez)
+        const precio = calcularPrecioInscripcion(
+            etapa,
+            emailNorm,
+            conBalon,
+            jugador.nickname || jugador.nombre_completo || nickClean
+        );
 
         // 4. Verificar inscripción previa
         const { data: yaInscrito } = await supabase.from('inscripciones')
@@ -64,13 +70,17 @@ module.exports = async function handler(req, res) {
             concepto += ` - Equipo: ${equipo_nombre}`;
         } else if (isCopa) {
             concepto += conBalon ? ' (con balón oficial)' : ' (sin balón)';
+        } else if (Number(etapa.id) === 301) {
+            concepto = 'Inscripción Liga Match Play 2027 (Cubre 1ª Etapa MP 2027)';
         }
 
         const paymentSession = await paymentGateway.crearSesionPago({
             orderId,
             amount: precio,
             concept: concepto,
-            description: `Inscripción para ${jugador.nickname}`,
+            description: Number(etapa.id) === 301
+                ? `Inscripción y 1ª Etapa Liga Match Play 2027 para ${jugador.nickname}`
+                : `Inscripción para ${jugador.nickname}`,
             metadata: {
                 tipo: 'inscripcion',
                 jugador_id: jugador.id,
@@ -78,7 +88,8 @@ module.exports = async function handler(req, res) {
                 nickname: jugador.nickname,
                 email: jugador.email,
                 equipo_nombre: equipo_nombre || '',
-                incluye_balon: conBalon ? 'true' : 'false'
+                incluye_balon: conBalon ? 'true' : 'false',
+                cubre_primera_etapa_mp_2027: Number(etapa_id) === 301 ? 'true' : 'false'
             },
             successUrl: `${process.env.APP_URL}/src/pages/inscripciones.html?resultado=exito&etapa=${etapa_id}`,
             cancelUrl: `${process.env.APP_URL}/src/pages/inscripciones.html?resultado=cancelado`

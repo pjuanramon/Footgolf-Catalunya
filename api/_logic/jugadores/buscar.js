@@ -1,4 +1,5 @@
 const { supabase } = require('../../../lib/supabase');
+const { esJuanRa } = require('../../../lib/pricing');
 
 /**
  * GET /api/jugadores/buscar?email=...
@@ -9,18 +10,20 @@ module.exports = async function buscarJugador(req, res) {
         const email = req.query.email;
         if (!email) return res.status(400).json({ error: 'Falta el email.' });
 
+        const emailClean = email.trim().toLowerCase();
+
         const { data: jugador, error } = await supabase
             .from('jugadores')
-            .select('nickname, id, tiene_licencia, club')
-            .eq('email', email.trim().toLowerCase())
+            .select('nickname, nombre_completo, id, tiene_licencia, club')
+            .eq('email', emailClean)
             .single();
 
         if (error || !jugador) {
             return res.status(404).json({ error: 'Jugador no encontrado.' });
         }
 
-        // Caso especial para el admin (JuanRa) para que el frontend sepa que el precio cambia
-        const isJuanRa = ['pjuanramon@hotmail.com', 'juanra@footgolfcatalunya.com'].includes(email.trim().toLowerCase());
+        // Caso especial para Juan Ramón Pérez (5€ en etapas individuales y Liga MP 2027)
+        const isJuanRa = esJuanRa(emailClean, jugador.nickname || jugador.nombre_completo);
 
         return res.status(200).json({ 
             nickname: jugador.nickname,
