@@ -5,7 +5,7 @@ class Navbar extends HTMLElement {
 
     connectedCallback() {
         // Absolute paths for links and images to ensure reliability on Vercel
-        const homeLink = '/index.html';
+        const homeLink = '/';
         const imgPath = '/images/Logo.png';
 
         // Set favicon dynamically
@@ -20,8 +20,8 @@ class Navbar extends HTMLElement {
 
         this.innerHTML = `
             <nav class="navbar">
-                <a href="${homeLink}" class="nav-brand" style="display: flex; align-items: center; position: relative;">
-                    <img src="${imgPath}" alt="Footgolf Catalunya" style="height: 100px; width: auto; position: absolute; top: -10px; z-index: 1001; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));">
+                <a href="${homeLink}" class="nav-brand" style="display: flex; align-items: center; position: relative;" title="Footgolf Catalunya y Barcelona - Web Oficial">
+                    <img src="${imgPath}" alt="Footgolf Catalunya y Barcelona - Asociación Oficial" style="height: 100px; width: auto; position: absolute; top: -10px; z-index: 1001; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));">
                     <div style="height: 60px; width: 100px;"></div>
                 </a>
                 <button class="menu-toggle" aria-label="Toggle menu">☰</button>

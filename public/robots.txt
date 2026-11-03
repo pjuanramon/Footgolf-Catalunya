@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /src/pages/admin.html
+Disallow: /src/pages/pago-resultado.html
+Disallow: /inspect.html
+Disallow: /process_jornada.html
+
+Sitemap: https://www.footgolfcatalunya.com/sitemap.xml

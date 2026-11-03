@@ -11,8 +11,13 @@
       "schedule": "0 13 * * *"
     }
   ],
+  "redirects": [
+    { "source": "/index.html", "destination": "/", "permanent": true }
+  ],
   "rewrites": [
     { "source": "/directo", "destination": "/src/pages/directo.html" },
+    { "source": "/barcelona", "destination": "/src/pages/unete-2027.html" },
+    { "source": "/jugar-footgolf-barcelona", "destination": "/src/pages/unete-2027.html" },
     { "source": "/api/:path*", "destination": "/api/main" }
   ]
 }
