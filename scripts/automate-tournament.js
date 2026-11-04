@@ -204,28 +204,27 @@ async function runAutomation() {
             };
         });
 
-        // Ordenar de mayor a menor prioridad competitiva (para ir llenando desde el último Hit hacia el primero):
-        // 1. Contendientes al podio de Absoluta (2º y 3º puesto si el 1º ya ganó) + Top 6 Absoluta / Top 4 Rookie
-        // 2. Lucha por la Primera División (Corte Top 10 Absoluta: puestos 7º al 14º) + el Campeón coronado
-        // 3. Lucha por Liga Plata (contendientes principales de Plata) y Corte de 2ª División (puestos 15º al 22º)
-        // 4. Resto de lucha por 2ª División y Liga Plata
+        // Ordenar de mayor a menor prioridad competitiva (para ir llenando desde el Hit 4 al Hit 1 antes de invertir para Shotgun):
+        // Tier 4 (Va al Hit 1 / Hoyo 1): Lucha directa por 2º y 3º Absoluta y Título/Podio Rookie (puestos 2 al 6 Absoluta)
+        // Tier 3 (Va al Hit 2 / Hoyo 2): Lucha por la 1ª División (Corte Top 10: puestos 7 al 14 de Absoluta) + Campeón coronado
+        // Tier 2 (Va al Hit 3 / Hoyo 3): Lucha por Liga Plata + Zona 2ª División consolidada (puestos 15 al 17 Absoluta)
+        // Tier 1 (Va al Hit 4 / Hoyo 4): Duelo directo por el Corte de 2ª División (puestos 19 al 24 Absoluta: Gustavo Verse vs Marc Company, Rojo, Linares) y Senior / Liga Plata
         const getCompetitiveTier = (p) => {
-            // Tier 4 (Va al ÚLTIMO HIT - Hit 4): Lucha directa por 2º y 3º Absoluta y Título/Podio Rookie (puestos 2 al 6 Absoluta)
             if (!p.isLockedChampion && p.absPos >= 2 && p.absPos <= 6) return 4;
-            if (!p.isLockedChampion && p.absPos === 1) return 4; // Si no estuviera cerrado el 1º
-            // Tier 3 (Va al Hit 3): Lucha por la 1ª División (Puestos 7 al 14 de Absoluta) + Campeón matemático si ya coronó
+            if (!p.isLockedChampion && p.absPos === 1) return 4;
             if (p.isLockedChampion || (p.absPos >= 7 && p.absPos <= 14)) return 3;
-            // Tier 2 (Va al Hit 2): Lucha por el Título de Liga Plata y frontera alta de 2ª División (puestos 15 al 20 Absoluta / Top 8 Plata)
-            if (p.absPos >= 15 && p.absPos <= 20) return 2;
-            // Tier 1 (Va al Hit 1): Asalto a 2ª División y Liga Plata (puesto 21 en adelante)
+            if (p.absPos >= 15 && p.absPos <= 18) return 2;
             return 1;
         };
 
         enriched.sort((a, b) => {
             const tierA = getCompetitiveTier(a);
             const tierB = getCompetitiveTier(b);
-            if (tierA !== tierB) return tierA - tierB; // Menor tier primero (Hit 1 -> Hit 4)
-            return b.absPos - a.absPos; // Dentro del mismo bloque, orden inverso de ranking para que los mejores cierren
+            if (tierA !== tierB) return tierA - tierB;
+            // Si Alexis Correa (debutante reciente en liga con pos 99/37) está en Tier 1, que suba al cierre del bloque Plata (Hit 3) para dejar juntos a Verse (19º), Company (21º), Rojo (23º) y Linares (24º) en el Hit 4
+            const scoreOrderA = a.absPos > 30 ? 18.5 : a.absPos;
+            const scoreOrderB = b.absPos > 30 ? 18.5 : b.absPos;
+            return scoreOrderB - scoreOrderA;
         });
 
         let idx = 0;
