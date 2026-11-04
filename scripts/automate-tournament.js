@@ -125,44 +125,155 @@ async function runAutomation() {
     const templatePath = path.resolve(__dirname, '../Excel_ImportHitsTournamentRound983_Export-2026-04-02 09_41_53.xlsx');
     const workbook = xlsx.readFile(templatePath);
 
-    // Jugadores designados para el último grupo (Partida estelar: Jorge Santiago, Iván Luengo, Xavi Leiva y Gustavo Verse)
-    const isLastGroupVIP = (name) => {
-        const lower = name.toLowerCase();
-        return lower.includes('santiago') || 
-               lower.includes('luengo') || 
-               (lower.includes('xavi') && lower.includes('leiva')) || 
-               lower.includes('verse');
-    };
-
-    const lastGroupVIPs = playerObjs.filter(p => isLastGroupVIP(p.rawName));
-    const otherPlayers = playerObjs.filter(p => !isLastGroupVIP(p.rawName));
-
-    const shuffledOthers = [...otherPlayers].sort(() => Math.random() - 0.5);
     const distribution = calculateHitDistribution(playerObjs.length);
     console.log(`Distribución de hits (menores primero):`, distribution);
 
-    // Construir los grupos de salida
     const hitGroups = [];
-    const lastHitSize = distribution[distribution.length - 1];
+    const esUltimas3Etapas = etapa.id >= 10 && etapa.id <= 12;
 
-    // Para el último hit: los VIPs + los que falten de los demás jugadores
-    const lastHitPlayers = [...lastGroupVIPs];
-    const neededForLast = lastHitSize - lastHitPlayers.length;
-    for (let i = 0; i < neededForLast; i++) {
-        lastHitPlayers.push(shuffledOthers.pop());
-    }
-    // Mezclar el último grupo para orden natural
-    lastHitPlayers.sort(() => Math.random() - 0.5);
+    if (esUltimas3Etapas) {
+        console.log('🏆 MODO ÚLTIMAS 3 ETAPAS ACTIVADO: Organizando salidas por competiciones y opciones matemáticas (SIN SORTEO)...');
+        // Obtener última clasificación publicada antes de esta etapa
+        const { data: prevStage } = await supabase
+            .from('etapas')
+            .select('archivo_excel')
+            .lt('id', etapa.id)
+            .eq('tipo', 'individual')
+            .not('archivo_excel', 'is', null)
+            .order('id', { ascending: false })
+            .limit(1)
+            .maybeSingle();
 
-    // Para los primeros hits (del 0 al penúltimo):
-    let currentIdx = 0;
-    for (let i = 0; i < distribution.length - 1; i++) {
-        const size = distribution[i];
-        hitGroups.push(shuffledOthers.slice(currentIdx, currentIdx + size));
-        currentIdx += size;
+        let absRank = [];
+        let rookRank = [];
+        let plataRank = [];
+        if (prevStage && prevStage.archivo_excel) {
+            const parsed = JSON.parse(prevStage.archivo_excel);
+            absRank = (parsed.categorias && parsed.categorias['Absoluta']) || [];
+            rookRank = (parsed.categorias && parsed.categorias['Rookie']) || [];
+            plataRank = (parsed.categorias && parsed.categorias['Liga Plata']) || [];
+        }
+
+        const etapasRestantes = 12 - etapa.id + 1; // 3 en E10, 2 en E11, 1 en E12
+
+        const calcMax = (entry, nBest, stageIndices) => {
+            if (!entry) return 0;
+            const scores = [];
+            stageIndices.forEach(idx => {
+                if (entry[`e${idx}`] !== undefined) scores.push(Number(entry[`e${idx}`]));
+            });
+            for (let k = 0; k < etapasRestantes; k++) scores.push(250);
+            scores.sort((a, b) => b - a);
+            return scores.slice(0, nBest).reduce((s, v) => s + v, 0);
+        };
+
+        const stageIndicesAll = Array.from({ length: etapa.id - 1 }, (_, i) => i + 1);
+        const stageIndicesPlata = stageIndicesAll.filter(x => x >= 7);
+
+        const findInCat = (catList, playerObj) => {
+            const norm = playerObj.rawName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+            return catList.find(c => {
+                const cNorm = c.name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+                return cNorm === norm || cNorm.includes(norm) || norm.includes(cNorm);
+            });
+        };
+
+        // Determinar si el 1º de Absoluta ya es campeón matemático
+        const firstAbs = absRank[0];
+        const secondMaxAbs = absRank.slice(1).reduce((max, r) => Math.max(max, calcSlottedMax(r)), 0);
+        function calcSlottedMax(r) {
+            return calcMax(r, 8, stageIndicesAll);
+        }
+        const isFirstAbsLocked = firstAbs && (firstAbs.total > secondMaxAbs);
+
+        // Enriquecer jugadores con sus métricas de competición
+        const enriched = playerObjs.map(p => {
+            const absEntry = findInCat(absRank, p);
+            const rookEntry = findInCat(rookRank, p);
+            const plataEntry = findInCat(plataRank, p);
+            return {
+                ...p,
+                absPos: absEntry ? absEntry.pos : 99,
+                absTotal: absEntry ? absEntry.total : 0,
+                absMax: calcMax(absEntry, 8, stageIndicesAll),
+                rookPos: rookEntry ? rookEntry.pos : 99,
+                rookTotal: rookEntry ? rookEntry.total : 0,
+                plataPos: plataEntry ? plataEntry.pos : 99,
+                plataTotal: plataEntry ? plataEntry.total : 0,
+                isLockedChampion: isFirstAbsLocked && absEntry && absEntry.pos === 1
+            };
+        });
+
+        // Ordenar de mayor a menor prioridad competitiva (para ir llenando desde el último Hit hacia el primero):
+        // 1. Contendientes al podio de Absoluta (2º y 3º puesto si el 1º ya ganó) + Top 6 Absoluta / Top 4 Rookie
+        // 2. Lucha por la Primera División (Corte Top 10 Absoluta: puestos 7º al 14º) + el Campeón coronado
+        // 3. Lucha por Liga Plata (contendientes principales de Plata) y Corte de 2ª División (puestos 15º al 22º)
+        // 4. Resto de lucha por 2ª División y Liga Plata
+        const getCompetitiveTier = (p) => {
+            // Tier 4 (Va al ÚLTIMO HIT - Hit 4): Lucha directa por 2º y 3º Absoluta y Título/Podio Rookie (puestos 2 al 6 Absoluta)
+            if (!p.isLockedChampion && p.absPos >= 2 && p.absPos <= 6) return 4;
+            if (!p.isLockedChampion && p.absPos === 1) return 4; // Si no estuviera cerrado el 1º
+            // Tier 3 (Va al Hit 3): Lucha por la 1ª División (Puestos 7 al 14 de Absoluta) + Campeón matemático si ya coronó
+            if (p.isLockedChampion || (p.absPos >= 7 && p.absPos <= 14)) return 3;
+            // Tier 2 (Va al Hit 2): Lucha por el Título de Liga Plata y frontera alta de 2ª División (puestos 15 al 20 Absoluta / Top 8 Plata)
+            if (p.absPos >= 15 && p.absPos <= 20) return 2;
+            // Tier 1 (Va al Hit 1): Asalto a 2ª División y Liga Plata (puesto 21 en adelante)
+            return 1;
+        };
+
+        enriched.sort((a, b) => {
+            const tierA = getCompetitiveTier(a);
+            const tierB = getCompetitiveTier(b);
+            if (tierA !== tierB) return tierA - tierB; // Menor tier primero (Hit 1 -> Hit 4)
+            return b.absPos - a.absPos; // Dentro del mismo bloque, orden inverso de ranking para que los mejores cierren
+        });
+
+        let idx = 0;
+        for (let i = 0; i < distribution.length; i++) {
+            const size = distribution[i];
+            const group = enriched.slice(idx, idx + size);
+            // Ordenar dentro del hit por ranking absoluto ascendente para presentación limpia
+            group.sort((a, b) => a.absPos - b.absPos);
+            hitGroups.push(group);
+            idx += size;
+        }
+    } else {
+        // Jugadores designados para el último grupo (Partida estelar: Jorge Santiago, Iván Luengo, Xavi Leiva y Gustavo Verse)
+        const isLastGroupVIP = (name) => {
+            const lower = name.toLowerCase();
+            return lower.includes('santiago') || 
+                   lower.includes('luengo') || 
+                   (lower.includes('xavi') && lower.includes('leiva')) || 
+                   lower.includes('verse');
+        };
+
+        const lastGroupVIPs = playerObjs.filter(p => isLastGroupVIP(p.rawName));
+        const otherPlayers = playerObjs.filter(p => !isLastGroupVIP(p.rawName));
+
+        const shuffledOthers = [...otherPlayers].sort(() => Math.random() - 0.5);
+
+        // Construir los grupos de salida
+        const lastHitSize = distribution[distribution.length - 1];
+
+        // Para el último hit: los VIPs + los que falten de los demás jugadores
+        const lastHitPlayers = [...lastGroupVIPs];
+        const neededForLast = lastHitSize - lastHitPlayers.length;
+        for (let i = 0; i < neededForLast; i++) {
+            lastHitPlayers.push(shuffledOthers.pop());
+        }
+        // Mezclar el último grupo para orden natural
+        lastHitPlayers.sort(() => Math.random() - 0.5);
+
+        // Para los primeros hits (del 0 al penúltimo):
+        let currentIdx = 0;
+        for (let i = 0; i < distribution.length - 1; i++) {
+            const size = distribution[i];
+            hitGroups.push(shuffledOthers.slice(currentIdx, currentIdx + size));
+            currentIdx += size;
+        }
+        // Añadir el último grupo
+        hitGroups.push(lastHitPlayers);
     }
-    // Añadir el último grupo
-    hitGroups.push(lastHitPlayers);
 
     const hitData = [];
     const footgolferData = [];
