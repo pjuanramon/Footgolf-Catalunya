@@ -237,6 +237,8 @@ async function runAutomation() {
             hitGroups.push(group);
             idx += size;
         }
+        // En salida a tiro (Shotgun), poner los grupos estelares primero (Hoyo 1, Hoyo 2, Hoyo 3, Hoyo 4...)
+        hitGroups.reverse();
     } else {
         // Jugadores designados para el último grupo (Partida estelar: Jorge Santiago, Iván Luengo, Xavi Leiva y Gustavo Verse)
         const isLastGroupVIP = (name) => {
@@ -281,10 +283,11 @@ async function runAutomation() {
 
     hitGroups.forEach((group, index) => {
         const hitNumber = index + 1;
+        const hoyoSalida = esUltimas3Etapas ? hitNumber : 1;
         
         hitData.push({
             'Número de Hit': hitNumber,
-            'Hoyo': 1,
+            'Hoyo': hoyoSalida,
             'Fecha de Salida \r\n DD/MM/YYYY': formatDateDDMMYYYY(fechaTorneoDate),
             'Hora de Salida \r\n HH:mm': formatTimeHHmm(currentStartTime)
         });
@@ -302,7 +305,9 @@ async function runAutomation() {
             });
         });
 
-        currentStartTime.setMinutes(currentStartTime.getMinutes() + 7);
+        if (!esUltimas3Etapas) {
+            currentStartTime.setMinutes(currentStartTime.getMinutes() + 7);
+        }
     });
 
     workbook.Sheets['HITS'] = xlsx.utils.json_to_sheet(hitData);
