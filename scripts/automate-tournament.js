@@ -3,6 +3,7 @@ const xlsx = require('xlsx');
 const { Resend } = require('resend');
 const fs = require('fs');
 const path = require('path');
+const { calcularFechaCierre } = require('../lib/stage-automation');
 
 // Configuración cargada via node --env-file=.env o manualmente
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
@@ -47,22 +48,20 @@ async function runAutomation() {
 
     console.log(`Torneo detectado: ${etapa.nombre} (${etapa.fecha})`);
 
-    // Validar fecha límite de cierre si está configurada
+    // Si la etapa ya está cerrada o finalizada, no volver a cerrar ni enviar hits salvo FORCE_AUTOMATION
+    if (etapa.estado !== 'abierta' && !process.env.FORCE_AUTOMATION) {
+        console.log(`La etapa ${etapa.nombre} ya se encuentra en estado "${etapa.estado}". No se requiere acción.`);
+        return;
+    }
+
+    // Validar fecha límite de cierre oficial (por defecto miércoles 18:00 hora España)
     const fechaCierre = etapa.fecha_cierre_inscripcion 
         ? new Date(etapa.fecha_cierre_inscripcion) 
-        : null;
+        : calcularFechaCierre(etapa);
 
-    if (fechaCierre) {
-        if (hoy < fechaCierre && !process.env.FORCE_AUTOMATION) {
-            console.log(`Aún no se ha alcanzado la fecha límite de cierre (${fechaCierre.toISOString()}). El registro continúa abierto.`);
-            return;
-        }
-    } else {
-        // Por defecto, validar si hoy es miércoles
-        if (hoy.getDay() !== 3 && !process.env.FORCE_AUTOMATION) {
-            console.log(`Hoy no es miércoles (es día ${hoy.getDay()}).`);
-            return;
-        }
+    if (hoy < fechaCierre && !process.env.FORCE_AUTOMATION) {
+        console.log(`Aún no se ha alcanzado la fecha límite de cierre (${fechaCierre.toISOString()}). El registro continúa abierto.`);
+        return;
     }
 
     console.log(`¡Iniciando cierre y generación de hits para el torneo del ${etapa.fecha}!`);

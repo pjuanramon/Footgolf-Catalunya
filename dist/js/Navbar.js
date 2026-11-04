@@ -5,7 +5,7 @@ class Navbar extends HTMLElement {
 
     connectedCallback() {
         // Absolute paths for links and images to ensure reliability on Vercel
-        const homeLink = '/index.html';
+        const homeLink = '/';
         const imgPath = '/images/Logo.png';
 
         // Set favicon dynamically
@@ -20,13 +20,14 @@ class Navbar extends HTMLElement {
 
         this.innerHTML = `
             <nav class="navbar">
-                <a href="${homeLink}" class="nav-brand" style="display: flex; align-items: center; position: relative;">
-                    <img src="${imgPath}" alt="Footgolf Catalunya" style="height: 100px; width: auto; position: absolute; top: -10px; z-index: 1001; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));">
+                <a href="${homeLink}" class="nav-brand" style="display: flex; align-items: center; position: relative;" title="Footgolf Catalunya y Barcelona - Web Oficial">
+                    <img src="${imgPath}" alt="Footgolf Catalunya y Barcelona - Asociación Oficial" style="height: 100px; width: auto; position: absolute; top: -10px; z-index: 1001; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));">
                     <div style="height: 60px; width: 100px;"></div>
                 </a>
                 <button class="menu-toggle" aria-label="Toggle menu">☰</button>
                 <div class="nav-links">
                     <a href="${homeLink}">Inicio</a>
+                    <a href="/src/pages/unete-2027.html" style="background: linear-gradient(135deg, #facc15 0%, #eab308 100%); color: #0f172a; padding: 0.35rem 0.85rem; border-radius: 999px; font-weight: 800; box-shadow: 0 2px 6px rgba(234, 179, 8, 0.35);">⚽ ¿Nuevo? Ven a Probar</a>
                     <a href="/src/pages/temporada-2027.html" style="background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: white; padding: 0.35rem 0.85rem; border-radius: 999px; font-weight: 800; box-shadow: 0 2px 6px rgba(22, 163, 74, 0.3);">✨ 2027</a>
                     <a href="/src/pages/calendario.html">Calendario 2026</a>
                     <a href="/src/pages/clasificaciones.html">Clasificaciones</a>
