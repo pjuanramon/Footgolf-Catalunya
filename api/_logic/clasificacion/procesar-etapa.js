@@ -31,7 +31,16 @@ module.exports = async function handler(req, res) {
         const logs = [];
         logs.push(`Filas leídas del Excel: ${rows.length}`);
 
+        // Si el Excel es un reporte multironda (Etapas 7 a 12 => Rondas 1 a 6), filtrar por la ronda correspondiente
+        const expectedRound = Number(etapa_id) >= 7 && Number(etapa_id) <= 12 ? Number(etapa_id) - 6 : null;
+        const hasExpectedRoundRows = expectedRound !== null && rows.some(r => Number(r['A']) === expectedRound);
+        if (hasExpectedRoundRows) {
+            logs.push(`Filtrando filas por RONDA = ${expectedRound} (correspondiente a Etapa ${etapa_id})`);
+        }
+
         for (const row of rows) {
+            if (hasExpectedRoundRows && Number(row['A']) !== expectedRound) continue;
+
             const rawName = String(row['D'] || '').trim();
             if (!rawName) continue;
 

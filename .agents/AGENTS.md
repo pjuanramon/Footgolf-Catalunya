@@ -10,3 +10,5 @@
   5. **Lucha por la Segunda División (Corte Top 20)**: Jugadores luchando por asegurar plaza en 2ª división.
   *(Además, se debe acompañar siempre de un análisis estilo cronista deportivo detallando las opciones matemáticas de cada jugador y el porqué de cada grupo).*
 - **Último Grupo en Etapas Clave**: En etapas decisivas o cuando se solicite, el grupo estelar (último hit) debe reunir a los principales contendientes por el podio/campeonato en juego.
+- **Regla Permanente de Edad para Categoría Senior (45+)**: Para pertenecer a la categoría **Senior (Senior 45+)** se tiene que cumplir **46 años en el año en curso** (por ejemplo, en la temporada 2026 los nacidos en 1981 NO son Senior; los nacidos en 1980 o antes SÍ lo son).
+
