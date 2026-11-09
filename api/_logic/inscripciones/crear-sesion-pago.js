@@ -20,6 +20,12 @@ module.exports = async function handler(req, res) {
 
         const emailNorm = email.trim().toLowerCase();
         const nickClean = nickname.trim();
+        const nickNormEspacios = nickClean
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .toLowerCase()
+            .replace(/\s+/g, ' ')
+            .trim();
 
         // 1. Verificar Etapa
         const { data: etapa } = await supabase.from('etapas').select('*').eq('id', etapa_id).single();
@@ -32,20 +38,39 @@ module.exports = async function handler(req, res) {
         // Si es Copa Catalana, por defecto NO incluye balón salvo que se marque la casilla explícitamente
         const conBalon = isCopa ? (incluye_balon === true || incluye_balon === 'true') : false;
 
-        // 2. Buscar o crear jugador
+        // 2. Buscar o crear jugador (manejando también fichas preexistentes por nickname)
         let jugador;
-        const { data: jugadorExistente } = await supabase.from('jugadores').select('*').eq('email', emailNorm).single();
+        const { data: jugadorExistente } = await supabase.from('jugadores').select('*').eq('email', emailNorm).maybeSingle();
 
         if (jugadorExistente) {
             jugador = jugadorExistente;
         } else {
-            const { data: newPlayer, error: pErr } = await supabase.from('jugadores').insert({
-                nickname: nickClean,
-                email: emailNorm,
-                tiene_licencia: false
-            }).select('*').single();
-            if (pErr) throw pErr;
-            jugador = newPlayer;
+            const { data: porNick } = nickNormEspacios
+                ? await supabase.from('jugadores').select('*').eq('nickname_normalizado', nickNormEspacios).maybeSingle()
+                : { data: null };
+
+            if (porNick) {
+                const oldEmail = (porNick.email || '').toLowerCase();
+                if (!oldEmail.includes('@') || oldEmail.endsWith('@example.com')) {
+                    const { data: updated } = await supabase
+                        .from('jugadores')
+                        .update({ email: emailNorm })
+                        .eq('id', porNick.id)
+                        .select('*')
+                        .single();
+                    jugador = updated || porNick;
+                } else {
+                    jugador = porNick;
+                }
+            } else {
+                const { data: newPlayer, error: pErr } = await supabase.from('jugadores').insert({
+                    nickname: nickClean,
+                    email: emailNorm,
+                    tiene_licencia: false
+                }).select('*').single();
+                if (pErr) throw pErr;
+                jugador = newPlayer;
+            }
         }
 
         // 3. Calcular Precio (verifica tanto email como nickname del jugador para aplicar los 5€ de Juan Ramón Pérez)
@@ -58,8 +83,8 @@ module.exports = async function handler(req, res) {
 
         // 4. Verificar inscripción previa
         const { data: yaInscrito } = await supabase.from('inscripciones')
-            .select('id').eq('jugador_id', jugador.id).eq('etapa_id', etapa_id).eq('estado', 'pagada').single();
-        if (yaInscrito) return res.status(400).json({ error: 'Ya estás inscrito en esta etapa.' });
+            .select('id').eq('jugador_id', jugador.id).eq('etapa_id', etapa_id).eq('estado', 'pagada').maybeSingle();
+        if (yaInscrito) return res.status(409).json({ alreadyRegistered: true, error: `Ya estás inscrito y pagado en "${etapa.nombre}".` });
 
         // 5. Crear sesión Stripe / Redsys unificada
         const esEquipo = etapa.tipo === 'equipos';
@@ -86,7 +111,7 @@ module.exports = async function handler(req, res) {
                 jugador_id: jugador.id,
                 etapa_id: String(etapa_id),
                 nickname: jugador.nickname,
-                email: jugador.email,
+                email: emailNorm,
                 equipo_nombre: equipo_nombre || '',
                 incluye_balon: conBalon ? 'true' : 'false',
                 cubre_primera_etapa_mp_2027: Number(etapa_id) === 301 ? 'true' : 'false'

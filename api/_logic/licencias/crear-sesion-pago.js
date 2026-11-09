@@ -80,53 +80,99 @@ module.exports = async function handler(req, res) {
             }
         }
 
-        // Buscar si el jugador ya existe
+        // Buscar si el jugador ya existe (por email o fallback por nickname si tenía email placeholder/distinto)
         const itemEmail = email.trim().toLowerCase();
-        const { data: jugadorExistente } = await supabase
+        const nickClean = nickname.trim();
+        const nickNormEspacios = nickClean
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .toLowerCase()
+            .replace(/\s+/g, ' ')
+            .trim();
+
+        let { data: jugadorExistente } = await supabase
             .from('jugadores')
             .select('*')
             .eq('email', itemEmail)
-            .single();
+            .maybeSingle();
+
+        let jugadorPorNick = null;
+        if (!jugadorExistente && nickNormEspacios) {
+            const { data: candidatoNick } = await supabase
+                .from('jugadores')
+                .select('*')
+                .eq('nickname_normalizado', nickNormEspacios)
+                .maybeSingle();
+
+            if (candidatoNick) {
+                jugadorPorNick = candidatoNick;
+                // Si la ficha previa tenía un email placeholder (@example.com o sin @), reutilizamos esa ficha
+                const oldEmail = (candidatoNick.email || '').toLowerCase();
+                if (!oldEmail.includes('@') || oldEmail.endsWith('@example.com')) {
+                    jugadorExistente = candidatoNick;
+                }
+            }
+        }
 
         let jugadorId = jugadorExistente ? jugadorExistente.id : null;
 
-        // Verificar si ya tiene licencia pagada (si no marcó ya_pagado)
-        if (jugadorExistente && !yaFuePagado) {
+        // Verificar si ya tiene licencia pagada para la temporada solicitada (si no marcó ya_pagado)
+        const jugadorAComprobar = jugadorExistente || jugadorPorNick;
+        if (jugadorAComprobar && !yaFuePagado) {
             const { data: licenciaExistente } = await supabase
                 .from('licencias')
-                .select('id')
-                .eq('jugador_id', jugadorExistente.id)
+                .select('id, fecha_compra, anio')
+                .eq('jugador_id', jugadorAComprobar.id)
                 .eq('anio', anioActual)
                 .eq('estado', 'pagada')
-                .single();
+                .maybeSingle();
 
             if (licenciaExistente) {
-                return res.status(400).json({ error: 'Ya tienes licencia pagada para esta temporada.' });
+                const fechaStr = licenciaExistente.fecha_compra
+                    ? ` (registrada el ${new Date(licenciaExistente.fecha_compra).toLocaleDateString('es-ES')})`
+                    : '';
+                const nombreMostrar = jugadorAComprobar.nombre_completo || jugadorAComprobar.nickname;
+                return res.status(409).json({
+                    alreadyPaid: true,
+                    anio: anioActual,
+                    jugador: nombreMostrar,
+                    fecha_compra: licenciaExistente.fecha_compra,
+                    error: `¡Buenas noticias, ${nombreMostrar}! Ya tienes tu Licencia Oficial ${anioActual} pagada y activa${fechaStr}. No necesitas volver a abonarla.`
+                });
             }
         }
 
         // Calcular precio
         const precio = calcularPrecioLicencia(jugadorExistente, esAntiguo, etapaInic, yaFuePagado, anioActual);
 
+        // Determinar año de primera licencia preservando antigüedad real si ya existía en BD
+        const anioPrimeraInput = esAntiguo ? (parseInt(anio_primera_licencia) || 2025) : anioActual;
+        const anioPrimeraEfectivo = (jugadorExistente && jugadorExistente.anio_licencia)
+            ? Math.min(jugadorExistente.anio_licencia, anioPrimeraInput)
+            : anioPrimeraInput;
+
         // CASO 0€: Registro directo
         if (precio === 0) {
             console.log('Precio 0€: Registro directo');
+            const currentYear = new Date().getFullYear();
             const userData = {
+                email: itemEmail,
                 nombre_completo: nombre_completo.trim(),
                 fecha_nacimiento: fecha_nacimiento,
                 genero: genero,
                 telefono: telefono.trim(),
                 club: club || 'Independiente',
-                anio_licencia: esAntiguo ? (parseInt(anio_primera_licencia) || 2025) : anioActual,
-                tiene_licencia: true
+                anio_licencia: anioPrimeraEfectivo
             };
+            if (anioActual <= currentYear || (jugadorExistente && jugadorExistente.tiene_licencia)) {
+                userData.tiene_licencia = true;
+            }
 
             if (jugadorExistente) {
                 await supabase.from('jugadores').update(userData).eq('id', jugadorId);
             } else {
                 const { data: newPlayer, error: pErr } = await supabase.from('jugadores').insert({
-                    nickname: nickname.trim(),
-                    email: itemEmail,
+                    nickname: nickClean,
                     ...userData
                 }).select('id').single();
                 if (pErr) throw pErr;
@@ -140,8 +186,11 @@ module.exports = async function handler(req, res) {
                 stripe_payment_id: 'PRE-PAID-EXTERNAL'
             });
 
+            // Preservar anio_licencia histórico frente al trigger de BD
+            await supabase.from('jugadores').update({ anio_licencia: anioPrimeraEfectivo }).eq('id', jugadorId);
+
             return res.status(200).json({
-                url: `${process.env.APP_URL}/src/pages/licencias.html?resultado=exito`,
+                url: `${process.env.APP_URL}/src/pages/licencias.html?resultado=exito&anio=${anioActual}`,
                 precio: 0
             });
         }
@@ -152,23 +201,23 @@ module.exports = async function handler(req, res) {
             orderId,
             amount: precio,
             concept: `Licencia Liga Catalana FootGolf ${anioActual}`,
-            description: `Licencia para ${nickname}`,
+            description: `Licencia ${anioActual} para ${nickClean}`,
             metadata: {
                 tipo: 'licencia',
-                nickname: nickname.trim(),
+                nickname: nickClean,
                 email: itemEmail,
                 nombre_completo: nombre_completo.trim(),
                 fecha_nacimiento: fecha_nacimiento,
                 genero: genero,
                 telefono: telefono.trim(),
                 club: club || '',
-                anio_primera_licencia: String(esAntiguo ? (parseInt(anio_primera_licencia) || 2025) : anioActual),
+                anio_primera_licencia: String(anioPrimeraEfectivo),
                 anio: String(anioActual),
                 etapa_inicio: String(etapaInic),
                 es_renovacion: String(esAntiguo)
             },
-            successUrl: `${process.env.APP_URL}/src/pages/licencias.html?resultado=exito`,
-            cancelUrl: `${process.env.APP_URL}/src/pages/licencias.html?resultado=cancelado`
+            successUrl: `${process.env.APP_URL}/src/pages/licencias.html?resultado=exito&anio=${anioActual}`,
+            cancelUrl: `${process.env.APP_URL}/src/pages/licencias.html?resultado=cancelado&anio=${anioActual}`
         });
 
         return res.status(200).json({ url: paymentSession.url, precio });

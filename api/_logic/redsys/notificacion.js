@@ -87,9 +87,21 @@ module.exports = async function handler(req, res) {
                 .eq('id', parseInt(meta.etapa_id))
                 .single();
 
+            const esCompeticion2027 = etapa && (etapa.id >= 300 || (etapa.nombre && etapa.nombre.includes('2027')) || new Date(etapa.fecha).getFullYear() >= 2027);
+            const anioRequerido = esCompeticion2027 ? 2027 : 2026;
+            const { data: licTemporada } = await supabase
+                .from('licencias')
+                .select('id')
+                .eq('jugador_id', meta.jugador_id)
+                .eq('anio', anioRequerido)
+                .eq('estado', 'pagada')
+                .maybeSingle();
+
+            const tieneLicenciaParaEtapa = Boolean(licTemporada) || (!esCompeticion2027 && jugador.tiene_licencia);
+
             // Enviar email de confirmación
             try {
-                if (jugador.tiene_licencia) {
+                if (tieneLicenciaParaEtapa) {
                     await enviarConfirmacionInscripcionConLicencia(jugador, etapa);
                 } else {
                     await enviarConfirmacionInscripcionSinLicencia(jugador, etapa);
@@ -101,44 +113,73 @@ module.exports = async function handler(req, res) {
         } else if (meta.tipo === 'licencia') {
             console.log(`Procesando licencia Redsys para: ${meta.email}`);
             
-            const anioActual = parseInt(meta.anio);
+            const anioActual = parseInt(meta.anio) || 2027;
+            const emailNorm = (meta.email || '').trim().toLowerCase();
+            const nickClean = (meta.nickname || '').trim();
+            const nickNormEspacios = nickClean
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .toLowerCase()
+                .replace(/\s+/g, ' ')
+                .trim();
 
             // Crear o actualizar jugador
             let jugadorId;
-            const { data: jugadorExistente } = await supabase
+            let { data: jugadorExistente } = await supabase
                 .from('jugadores')
-                .select('id')
-                .eq('email', meta.email)
-                .single();
+                .select('id, email, anio_licencia, tiene_licencia')
+                .eq('email', emailNorm)
+                .maybeSingle();
+
+            if (!jugadorExistente && nickNormEspacios) {
+                const { data: porNick } = await supabase
+                    .from('jugadores')
+                    .select('id, email, anio_licencia, tiene_licencia')
+                    .eq('nickname_normalizado', nickNormEspacios)
+                    .maybeSingle();
+                if (porNick) {
+                    jugadorExistente = porNick;
+                }
+            }
+
+            const anioPrimeraMeta = parseInt(meta.anio_primera_licencia) || anioActual;
+            const anioPrimeraEfectivo = (jugadorExistente && jugadorExistente.anio_licencia)
+                ? Math.min(jugadorExistente.anio_licencia, anioPrimeraMeta)
+                : anioPrimeraMeta;
+            const currentYear = new Date().getFullYear();
 
             if (jugadorExistente) {
                 jugadorId = jugadorExistente.id;
                 const updateData = {};
+                const oldEmail = (jugadorExistente.email || '').toLowerCase();
+                if (!oldEmail.includes('@') || oldEmail.endsWith('@example.com')) {
+                    updateData.email = emailNorm;
+                }
                 if (meta.nombre_completo) updateData.nombre_completo = meta.nombre_completo;
                 if (meta.fecha_nacimiento) updateData.fecha_nacimiento = meta.fecha_nacimiento;
                 if (meta.genero) updateData.genero = meta.genero;
                 if (meta.telefono) updateData.telefono = meta.telefono;
                 if (meta.club) updateData.club = meta.club;
-                if (meta.anio_primera_licencia) updateData.anio_licencia = parseInt(meta.anio_primera_licencia);
+                updateData.anio_licencia = anioPrimeraEfectivo;
+                if (anioActual <= currentYear) updateData.tiene_licencia = true;
 
-                if (Object.keys(updateData).length > 0) {
-                    await supabase
-                        .from('jugadores')
-                        .update(updateData)
-                        .eq('id', jugadorId);
-                }
+                await supabase
+                    .from('jugadores')
+                    .update(updateData)
+                    .eq('id', jugadorId);
             } else {
                 const { data: newPlayer, error: insertError } = await supabase
                     .from('jugadores')
                     .insert({
-                        nickname: meta.nickname,
-                        email: meta.email,
+                        nickname: nickClean,
+                        email: emailNorm,
                         nombre_completo: meta.nombre_completo || null,
                         fecha_nacimiento: meta.fecha_nacimiento || null,
                         genero: meta.genero || null,
                         telefono: meta.telefono || null,
                         club: meta.club || null,
-                        anio_licencia: parseInt(meta.anio_primera_licencia) || anioActual
+                        anio_licencia: anioPrimeraEfectivo,
+                        tiene_licencia: anioActual <= currentYear
                     })
                     .select('id')
                     .single();
@@ -147,17 +188,32 @@ module.exports = async function handler(req, res) {
                 jugadorId = newPlayer.id;
             }
 
-            // Registrar licencia
-            const { error: licError } = await supabase
+            // Registrar licencia de forma idempotente
+            const { data: yaExisteLic } = await supabase
                 .from('licencias')
-                .insert({
-                    jugador_id: jugadorId,
-                    anio: anioActual,
-                    stripe_payment_id: paymentId,
-                    estado: 'pagada'
-                });
+                .select('id')
+                .eq('jugador_id', jugadorId)
+                .eq('anio', anioActual)
+                .eq('estado', 'pagada')
+                .maybeSingle();
 
-            if (licError) throw licError;
+            if (!yaExisteLic) {
+                const { error: licError } = await supabase
+                    .from('licencias')
+                    .insert({
+                        jugador_id: jugadorId,
+                        anio: anioActual,
+                        stripe_payment_id: paymentId,
+                        estado: 'pagada'
+                    });
+
+                if (licError) throw licError;
+            }
+
+            await supabase
+                .from('jugadores')
+                .update({ anio_licencia: anioPrimeraEfectivo })
+                .eq('id', jugadorId);
 
             // Obtener jugador completo para email
             const { data: jugador } = await supabase

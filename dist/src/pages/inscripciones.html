@@ -7,7 +7,7 @@
     <title>Inscripciones Oficiales a Torneos en Barcelona y Catalunya | Footgolf Catalunya</title>
     <meta name="description" content="Inscríbete en las próximas etapas oficiales de la Liga Catalana de Footgolf y Copa Match Play en Golf La Garriga (Barcelona).">
     <link rel="canonical" href="https://www.footgolfcatalunya.com/src/pages/inscripciones.html">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <script src="/js/Navbar.js" defer></script>
     <script src="/js/Footer.js" defer></script>
     <style>
@@ -81,7 +81,7 @@
         }
     </style>
     <link rel="icon" type="image/png" href="/favicon.png?v=1">
-  <link rel="stylesheet" crossorigin href="/assets/main-BhkDyCiK.css">
+  <link rel="stylesheet" crossorigin href="/assets/main-B11l4bWY.css">
 </head>
 
 <body>
@@ -474,10 +474,16 @@
                         playerIsKnown = true;
                         if (nicknameHint) nicknameHint.style.display = 'none';
                         
-                        // Mostrar mensaje de éxito
+                        // Mostrar mensaje de éxito con estado de licencias
+                        const licsPagadas = (data.licencias_pagadas || []).map(l => Number(l.anio));
+                        const badges = [];
+                        if (licsPagadas.includes(2027)) badges.push('🛡️ Licencia 2027 activa');
+                        if (data.tiene_licencia || licsPagadas.includes(2026)) badges.push('Licencia 2026 activa');
+                        const badgeInfo = badges.length > 0 ? ` (${badges.join(' · ')})` : '';
+
                         const msg = document.createElement('div');
                         msg.style.cssText = 'font-size: 0.9rem; color: #166534; margin-top: -0.2rem; margin-bottom: 0.8rem; text-align: left; background: #dcfce7; border: 1px solid #86efac; padding: 0.7rem 0.9rem; border-radius: 0.6rem; font-weight: 600;';
-                        msg.textContent = `✅ Jugador encontrado: ${data.nickname}. ¡Bienvenido de nuevo!`;
+                        msg.textContent = `✅ Jugador encontrado: ${data.nickname}${badgeInfo}. ¡Bienvenido de nuevo!`;
                         msg.classList.add('player-msg');
                         emailInput.parentElement.insertAdjacentElement('afterend', msg);
 
@@ -586,7 +592,13 @@
                     window.location.href = data.url;
                 } else {
                     const errorMsg = data.message || data.error || (res.status + ' ' + res.statusText);
-                    alert('Error del servidor: ' + errorMsg);
+                    if (res.status === 409 || data.alreadyRegistered) {
+                        alert('✅ ' + errorMsg);
+                    } else if (res.status >= 400 && res.status < 500) {
+                        alert('⚠️ ' + errorMsg);
+                    } else {
+                        alert('Incidencia técnica temporal: ' + errorMsg);
+                    }
                 }
             } catch (err) {
                 alert('Error conectando con el servidor');

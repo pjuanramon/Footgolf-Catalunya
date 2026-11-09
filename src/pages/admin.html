@@ -156,7 +156,7 @@
                         <th>Email / Telefono</th>
                         <th>Edad / Género</th>
                         <th>Club</th>
-                        <th>Licencia 2026</th>
+                        <th>Licencias</th>
                         <th>Categorías</th>
                         <th>Acción</th>
                     </tr>
@@ -306,6 +306,13 @@
                 const match = j.tiene_licencia ? findBestMatch(j, state.rankingNames) : null;
                 const statusColor = match ? (match.type === 'exact' ? '#10b981' : '#f59e0b') : '#ef4444';
                 const matchText = match ? `Nick: <b>${match.name}</b>` : (j.tiene_licencia ? '⚠️ No encontrado' : '');
+                const licsAnios = j.licencias_anios || [];
+                const badge2027 = licsAnios.includes(2027)
+                    ? `<span class="badge badge-success" style="margin-right:4px;">2027 ✅</span>`
+                    : '';
+                const badge2026 = (j.tiene_licencia || licsAnios.includes(2026))
+                    ? `<span class="badge badge-warn">2026</span>`
+                    : (!licsAnios.includes(2027) ? `<span class="badge badge-error">SIN LIC</span>` : '');
                 return `
                 <tr>
                     <td><b>${j.nickname}</b><br><small style="color:#94a3b8">1ª Lic: ${j.anio_licencia || '?'}</small><br><small style="color:${statusColor}">${matchText}</small></td>
@@ -313,7 +320,7 @@
                     <td>${j.email}</td>
                     <td>${j.fecha_nacimiento || '-'}</td>
                     <td>${j.club || '-'}</td>
-                    <td><span class="badge ${j.tiene_licencia ? 'badge-success' : 'badge-error'}">${j.tiene_licencia ? 'SÍ' : 'NO'}</span></td>
+                    <td>${badge2027}${badge2026}</td>
                     <td>${(j.categorias_calculadas || []).join(', ') || '-'}</td>
                     <td>
                         <button onclick="uiEditJugador(${idx})" class="btn btn-sm">Editar</button>

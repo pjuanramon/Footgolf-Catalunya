@@ -16,6 +16,12 @@
   ],
   "rewrites": [
     { "source": "/directo", "destination": "/src/pages/directo.html" },
+    { "source": "/licencias", "destination": "/src/pages/licencias.html" },
+    { "source": "/inscripciones", "destination": "/src/pages/inscripciones.html" },
+    { "source": "/clasificaciones", "destination": "/src/pages/clasificaciones.html" },
+    { "source": "/calendario", "destination": "/src/pages/calendario.html" },
+    { "source": "/jugadores", "destination": "/src/pages/jugadores.html" },
+    { "source": "/temporada-2027", "destination": "/src/pages/temporada-2027.html" },
     { "source": "/barcelona", "destination": "/src/pages/unete-2027.html" },
     { "source": "/jugar-footgolf-barcelona", "destination": "/src/pages/unete-2027.html" },
     { "source": "/api/:path*", "destination": "/api/main" }

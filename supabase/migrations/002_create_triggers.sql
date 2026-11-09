@@ -120,11 +120,11 @@ RETURNS TRIGGER AS $$
 DECLARE
     anio_actual INTEGER := EXTRACT(YEAR FROM CURRENT_DATE)::INTEGER;
 BEGIN
-    -- Solo actuar cuando la licencia está pagada y es del año actual
+    -- Solo actuar cuando la licencia está pagada y es del año actual (preservando anio_licencia de veteranos)
     IF NEW.estado = 'pagada' AND NEW.anio = anio_actual THEN
         UPDATE jugadores
         SET tiene_licencia = TRUE,
-            anio_licencia = NEW.anio
+            anio_licencia = COALESCE(anio_licencia, NEW.anio)
         WHERE id = NEW.jugador_id;
     END IF;
 

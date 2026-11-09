@@ -51,7 +51,7 @@ module.exports = async function handler(req, res) {
         const meta = session.metadata;
 
         // 3. Verificar que es una inscripción
-        if (meta.tipo !== 'inscripcion') {
+        if (!meta || meta.tipo !== 'inscripcion') {
             return res.status(200).json({ received: true, skipped: 'not_inscripcion' });
         }
 
@@ -96,9 +96,21 @@ module.exports = async function handler(req, res) {
             .eq('id', parseInt(meta.etapa_id))
             .single();
 
-        // 6. Enviar email según licencia
+        // 6. Enviar email según licencia de la temporada correspondiente a la etapa
+        const esCompeticion2027 = etapa && (etapa.id >= 300 || (etapa.nombre && etapa.nombre.includes('2027')) || new Date(etapa.fecha).getFullYear() >= 2027);
+        const anioRequerido = esCompeticion2027 ? 2027 : 2026;
+        const { data: licTemporada } = await supabase
+            .from('licencias')
+            .select('id')
+            .eq('jugador_id', meta.jugador_id)
+            .eq('anio', anioRequerido)
+            .eq('estado', 'pagada')
+            .maybeSingle();
+
+        const tieneLicenciaParaEtapa = Boolean(licTemporada) || (!esCompeticion2027 && jugador && jugador.tiene_licencia);
+
         try {
-            if (jugador.tiene_licencia) {
+            if (tieneLicenciaParaEtapa) {
                 await enviarConfirmacionInscripcionConLicencia(jugador, etapa);
             } else {
                 await enviarConfirmacionInscripcionSinLicencia(jugador, etapa);

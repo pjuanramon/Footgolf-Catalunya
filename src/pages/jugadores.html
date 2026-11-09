@@ -53,19 +53,22 @@
         </section>
         <section class="section">
             <div class="container">
-                <!-- Listado de Licenciados 2026 -->
+                <!-- Listado de Licenciados 2026 / 2027 -->
                 <div id="roster-2026" style="margin-top: 1rem;">
-                    <div style="display: flex; align-items: baseline; gap: 1rem; margin-bottom: 2rem;">
-                        <h2 class="gradient-text" style="font-size: 2.2rem; margin-bottom: 0; text-align: left;">🛡️ Jugadores con Licencia 2026</h2>
-                        <span id="licencia-total" style="font-size: 1.3rem; font-weight: 800; color: var(--secondary-color); background: rgba(0,0,0,0.05); padding: 0.3rem 1rem; border-radius: 12px; border: 1px solid var(--border-color);">...</span>
+                    <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.75rem;">
+                        <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.85rem;">
+                            <h2 class="gradient-text" style="font-size: 2.1rem; margin-bottom: 0; text-align: left;">🛡️ Jugadores con Licencia Oficial</h2>
+                            <span id="licencia-total" style="font-size: 1.05rem; font-weight: 800; color: var(--secondary-color); background: rgba(0,0,0,0.04); padding: 0.3rem 0.9rem; border-radius: 12px; border: 1px solid var(--border-color);">...</span>
+                            <span id="licencia-2027-total" style="font-size: 0.95rem; font-weight: 800; color: #166534; background: #dcfce7; padding: 0.3rem 0.9rem; border-radius: 12px; border: 1px solid #86efac; display: none;"></span>
+                        </div>
                     </div>
-                    <div class="admin-card" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 1.5rem; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
-                        <table style="width: 100%; border-collapse: collapse; font-size: 1rem;">
+                    <div class="admin-card" style="background: #ffffff; border: 1px solid var(--border-color); border-radius: 1.5rem; overflow-x: auto; -webkit-overflow-scrolling: touch; box-shadow: var(--shadow-md);">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 0.98rem;">
                             <thead>
-                                <tr style="background: rgba(255,255,255,0.03); color: var(--secondary-color); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px;">
-                                    <th style="padding: 1.2rem 1.5rem; text-align: left; font-weight: 800;">Nombre Jugador</th>
-                                    <th style="padding: 1.2rem 1.5rem; text-align: center; font-weight: 800;">Categorías</th>
-                                    <th style="padding: 1.2rem 1.5rem; text-align: right; font-weight: 800;">Desde</th>
+                                <tr style="background: #f8fafc; color: var(--text-light); text-transform: uppercase; font-size: 0.78rem; letter-spacing: 0.8px; border-bottom: 1px solid var(--border-color);">
+                                    <th style="padding: 1.15rem 1.35rem; text-align: left; font-weight: 800;">Nombre Jugador</th>
+                                    <th style="padding: 1.15rem 1rem; text-align: center; font-weight: 800;">Categorías</th>
+                                    <th style="padding: 1.15rem 1.35rem; text-align: right; font-weight: 800;">Temporadas Activas</th>
                                 </tr>
                             </thead>
                             <tbody id="roster-table-body">
@@ -87,29 +90,48 @@
                     const res = await fetch('/api/licencias/listado-2026');
                     const listado = await res.json();
                     const totalSpan = document.getElementById('licencia-total');
-                    if (totalSpan) totalSpan.textContent = `${listado.length} Licencias`;
+                    const total27Span = document.getElementById('licencia-2027-total');
+                    if (totalSpan) totalSpan.textContent = `${listado.length} Jugadores`;
+                    const count27 = (listado || []).filter(j => j.tiene_2027).length;
+                    if (total27Span && count27 > 0) {
+                        total27Span.style.display = 'inline-block';
+                        total27Span.textContent = `✅ ${count27} Licencias 2027`;
+                    }
                     const tbody = document.getElementById('roster-table-body');
                     
                     if (!tbody) return;
                     if (!listado || listado.length === 0) {
-                        tbody.innerHTML = '<tr><td colspan="3" style="padding: 3rem; text-align: center; opacity: 0.6;">Sé el primero en sacar tu licencia 2026 🏁</td></tr>';
+                        tbody.innerHTML = '<tr><td colspan="3" style="padding: 3rem; text-align: center; opacity: 0.6;">Sé el primero en sacar tu licencia oficial 🏁</td></tr>';
                         return;
                     }
 
                     tbody.innerHTML = listado.map(j => {
                         const yearSince = j.desde || 2026;
                         const categories = (j.categorias || []).map(c => `
-                            <span style="background: rgba(255,255,255,0.05); padding: 0.2rem 0.6rem; border-radius: 99px; font-size: 0.75rem; border: 1px solid rgba(255,255,255,0.1); margin: 0 0.1rem; white-space: nowrap;">
+                            <span style="background: #f1f5f9; color: #334155; padding: 0.2rem 0.6rem; border-radius: 99px; font-size: 0.75rem; border: 1px solid #cbd5e1; font-weight: 600; white-space: nowrap;">
                                 ${c}
                             </span>
                         `).join('');
 
+                        const badges = [];
+                        if (j.tiene_2027) {
+                            badges.push(`<span style="display:inline-block; background:#dcfce7; color:#166534; border:1px solid #86efac; padding:0.22rem 0.65rem; border-radius:999px; font-size:0.76rem; font-weight:800; white-space:nowrap;">✅ 2027</span>`);
+                        }
+                        if (j.tiene_2026) {
+                            badges.push(`<span style="display:inline-block; background:#fef3c7; color:#92400e; border:1px solid #fde68a; padding:0.2rem 0.55rem; border-radius:999px; font-size:0.74rem; font-weight:700; white-space:nowrap;">2026</span>`);
+                        }
+
                         return `
-                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.03); transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='none'">
-                                <td style="padding: 1.2rem 1.5rem; font-weight: 600;">${j.nombre}</td>
-                                <td style="padding: 1.2rem 1.5rem; text-align: center; display: flex; flex-wrap: wrap; justify-content: center; gap: 0.2rem;">${categories}</td>
-                                <td style="padding: 1.2rem 1.5rem; text-align: right; font-weight: 800; color: var(--secondary-color); opacity: 0.8;">
-                                    ${yearSince === 2026 ? '✨ 2026' : yearSince}
+                            <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.2s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
+                                <td style="padding: 1rem 1.35rem; font-weight: 700; color: var(--text-main);">
+                                    ${j.nombre}
+                                    <div style="font-size: 0.74rem; color: var(--text-light); font-weight: 500;">Desde ${yearSince}</div>
+                                </td>
+                                <td style="padding: 1rem 0.75rem; text-align: center;">
+                                    <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 0.25rem;">${categories}</div>
+                                </td>
+                                <td style="padding: 1rem 1.35rem; text-align: right;">
+                                    <div style="display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0.3rem;">${badges.join('')}</div>
                                 </td>
                             </tr>
                         `;

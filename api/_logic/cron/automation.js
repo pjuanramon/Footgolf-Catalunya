@@ -23,10 +23,40 @@ module.exports = async function handler(req, res) {
     const resultados = {
         etapasCerradas: [],
         recordatoriosEnviados: [],
+        licenciasSincronizadas: 0,
         errores: []
     };
 
     try {
+        // 0. A partir del 1 de enero de cada nueva temporada (2027+), activar tiene_licencia
+        // para quienes pagaron por adelantado (Pronto Pago) sin alterar su anio_licencia histórico.
+        const currentYear = ahora.getFullYear();
+        if (currentYear >= 2027) {
+            const { data: licsAnio } = await supabase
+                .from('licencias')
+                .select('jugador_id')
+                .eq('anio', currentYear)
+                .eq('estado', 'pagada');
+
+            const idsConLicencia = Array.from(new Set((licsAnio || []).map(l => l.jugador_id)));
+            if (idsConLicencia.length > 0) {
+                const { data: pendientesActivar } = await supabase
+                    .from('jugadores')
+                    .select('id')
+                    .in('id', idsConLicencia)
+                    .eq('tiene_licencia', false);
+
+                if (pendientesActivar && pendientesActivar.length > 0) {
+                    const idsActivar = pendientesActivar.map(p => p.id);
+                    await supabase
+                        .from('jugadores')
+                        .update({ tiene_licencia: true })
+                        .in('id', idsActivar);
+                    resultados.licenciasSincronizadas = idsActivar.length;
+                }
+            }
+        }
+
         // 1. Buscar todas las etapas abiertas
         const { data: etapas, error: etapasError } = await supabase
             .from('etapas')
@@ -36,9 +66,15 @@ module.exports = async function handler(req, res) {
         if (etapasError) throw etapasError;
 
         for (const etapa of etapas) {
-            const fechaCierre = etapa.fecha_cierre_inscripcion 
-                ? new Date(etapa.fecha_cierre_inscripcion) 
-                : calcularFechaCierre(etapa);
+            // Para inscripciones especiales de temporada 2027 (301/302), cierre el 1 de diciembre a las 23:59 CET
+            let fechaCierre;
+            if (etapa.fecha_cierre_inscripcion) {
+                fechaCierre = new Date(etapa.fecha_cierre_inscripcion);
+            } else if (etapa.id === 301 || etapa.id === 302) {
+                fechaCierre = new Date('2026-12-01T23:59:59+01:00');
+            } else {
+                fechaCierre = calcularFechaCierre(etapa);
+            }
             const fechaRecordatorio = calcularFechaRecordatorioCierre(etapa);
 
             // A. ¿Toca cerrar la etapa? (ahora >= fechaCierre)
@@ -55,11 +91,7 @@ module.exports = async function handler(req, res) {
                 }
             }
             // B. ¿Toca enviar recordatorio? (ahora > fechaRecordatorio y no enviado aún)
-            // Para simplificar, enviamos si estamos en la ventana de tiempo (p.ej. el jueves)
-            // El cron debería correr una vez al día para no duplicar, o marcar en la BD que ya se envió.
-            else if (ahora >= fechaRecordatorio) {
-                // Aquí podríamos añadir una columna 'recordatorio_enviado' a la tabla etapas
-                // Por ahora, asumimos que el cron corre a una hora específica y lo enviamos
+            else if (etapa.id < 300 && ahora >= fechaRecordatorio) {
                 try {
                     const jugadores = await obtenerTodosLosJugadores();
                     await enviarCierreEtapa(etapa, jugadores);
