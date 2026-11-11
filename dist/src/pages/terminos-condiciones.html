@@ -2,6 +2,29 @@
 <html lang="es">
 
 <head>
+    <!-- Google Consent Mode v2 + Google Tag Manager (GTM-T47P62LQ) -->
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      (function() {
+        var saved = null;
+        try { saved = localStorage.getItem('fc_cookie_consent_v2'); } catch(e) {}
+        var state = (saved === 'granted') ? 'granted' : 'denied';
+        gtag('consent', 'default', {
+          'ad_storage': state,
+          'ad_user_data': state,
+          'ad_personalization': state,
+          'analytics_storage': state,
+          'wait_for_update': 500
+        });
+      })();
+      (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+      'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+      })(window,document,'script','dataLayer','GTM-T47P62LQ');
+    </script>
+    <script src="/js/tracking.js" defer></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Términos y Condiciones - Footgolf Catalunya</title>
@@ -58,6 +81,9 @@
 </head>
 
 <body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T47P62LQ"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <app-navbar></app-navbar>
 
     <main>
