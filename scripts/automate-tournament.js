@@ -436,7 +436,13 @@ function formatFootgolferName(fullName) {
         'Xavi Leiva Cañada': 'X. Leiva',
         'Chema Martínez Guillamon': 'C. Guillamon',
         'Tressens Olivier': 'O. Tressens',
-        'Olivier Tressens': 'O. Tressens'
+        'Olivier Tressens': 'O. Tressens',
+        'Carlos Andrés Sanclemente': 'C. Sanclemente',
+        'Alberto Calahorro Fernández': 'A. Calahorro',
+        'Leo Calahorro Peris': 'L. Calahorro',
+        'Christian Erthel': 'C. Erthel',
+        'Noah Schaul': 'N. Schaul',
+        'Albert Arrebola Sans': 'A. Arrebola'
     };
     
     if (manualMap[cleanName]) {
@@ -454,7 +460,7 @@ function formatFootgolferName(fullName) {
     const initial = parts[0][0].toUpperCase();
     
     // Check if the second word is a known middle name/second first name to skip to the third word for the surname
-    const secondWordsToSkip = ['ramon', 'ramón', 'alejandro', 'manuel', 'jose', 'josé', 'maria', 'maría', 'carlos', 'javier', 'miguel', 'antonio', 'angel', 'ángel'];
+    const secondWordsToSkip = ['ramon', 'ramón', 'alejandro', 'manuel', 'jose', 'josé', 'maria', 'maría', 'carlos', 'javier', 'miguel', 'antonio', 'angel', 'ángel', 'andres', 'andrés'];
     let surnameIndex = 1;
     if (parts.length > 2 && secondWordsToSkip.includes(parts[1].toLowerCase())) {
         surnameIndex = 2;
