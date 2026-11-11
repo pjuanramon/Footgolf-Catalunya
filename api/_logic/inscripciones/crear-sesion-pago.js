@@ -5,6 +5,7 @@
 const { supabase } = require('../../../lib/supabase');
 const paymentGateway = require('../../../lib/payment-gateway');
 const { calcularPrecioInscripcion, esJuanRa } = require('../../../lib/pricing');
+const { calcularFechaCierre } = require('../../../lib/stage-automation');
 
 module.exports = async function handler(req, res) {
     if (req.method !== 'POST') {
@@ -27,9 +28,13 @@ module.exports = async function handler(req, res) {
             .replace(/\s+/g, ' ')
             .trim();
 
-        // 1. Verificar Etapa
+        // 1. Verificar Etapa y cierre horario automático (miércoles 18:00h)
         const { data: etapa } = await supabase.from('etapas').select('*').eq('id', etapa_id).single();
         if (!etapa) return res.status(404).json({ error: 'Etapa no encontrada.' });
+        if (etapa.estado === 'abierta' && new Date() >= calcularFechaCierre(etapa)) {
+            await supabase.from('etapas').update({ estado: 'cerrada' }).eq('id', etapa_id);
+            return res.status(400).json({ error: 'El plazo de inscripción para esta etapa ya ha finalizado.' });
+        }
         if (etapa.estado !== 'abierta') {
             return res.status(400).json({ error: 'La etapa no está abierta.' });
         }
