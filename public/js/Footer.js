@@ -53,6 +53,7 @@ class Footer extends HTMLElement {
                             <li><a href="${pagesPrefix}terminos-condiciones.html">Términos y Condiciones</a></li>
                             <li><a href="${pagesPrefix}politica-privacidad.html">Política de Privacidad</a></li>
                             <li><a href="${pagesPrefix}politica-cookies.html">Política de Cookies</a></li>
+                            <li><a href="#" onclick="if(window.openFcCookieBanner){window.openFcCookieBanner();}return false;">Configurar Cookies</a></li>
                         </ul>
                     </div>
                 </div>
