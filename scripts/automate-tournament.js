@@ -54,7 +54,7 @@ async function runAutomation() {
         return;
     }
 
-    // Validar fecha límite de cierre oficial (por defecto miércoles 18:00 hora España)
+    // Validar fecha límite de cierre oficial (por defecto miércoles 23:59 hora España)
     const fechaCierre = etapa.fecha_cierre_inscripcion 
         ? new Date(etapa.fecha_cierre_inscripcion) 
         : calcularFechaCierre(etapa);

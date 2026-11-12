@@ -140,7 +140,7 @@ CREATE TRIGGER trg_actualizar_licencia
 
 -- ============================================================
 -- Función auxiliar: Calcular fecha de cierre de inscripciones
--- Miércoles anterior a la fecha de la etapa, a las 18:00
+-- Miércoles anterior a la fecha de la etapa, a las 23:59
 -- ============================================================
 CREATE OR REPLACE FUNCTION fn_calcular_fecha_cierre(fecha_etapa DATE)
 RETURNS TIMESTAMPTZ AS $$
@@ -165,8 +165,8 @@ BEGIN
 
     miercoles_anterior := fecha_etapa - dias_hasta_miercoles;
 
-    -- Devolver como timestamp con hora 18:00 en zona horaria de España
-    RETURN (miercoles_anterior::TEXT || ' 18:00:00')::TIMESTAMPTZ AT TIME ZONE 'Europe/Madrid';
+    -- Devolver como timestamp con hora 23:59:59 en zona horaria de España
+    RETURN (miercoles_anterior::TEXT || ' 23:59:59')::TIMESTAMPTZ AT TIME ZONE 'Europe/Madrid';
 END;
 $$ LANGUAGE plpgsql IMMUTABLE;
 

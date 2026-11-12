@@ -8,7 +8,7 @@
   "crons": [
     {
       "path": "/api/cron/automation",
-      "schedule": "5 17 * * *"
+      "schedule": "5 23 * * *"
     }
   ],
   "redirects": [

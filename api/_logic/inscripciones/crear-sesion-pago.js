@@ -28,7 +28,7 @@ module.exports = async function handler(req, res) {
             .replace(/\s+/g, ' ')
             .trim();
 
-        // 1. Verificar Etapa y cierre horario automático (miércoles 18:00h)
+        // 1. Verificar Etapa y cierre horario automático (miércoles 23:59h)
         const { data: etapa } = await supabase.from('etapas').select('*').eq('id', etapa_id).single();
         if (!etapa) return res.status(404).json({ error: 'Etapa no encontrada.' });
         if (etapa.estado === 'abierta' && new Date() >= calcularFechaCierre(etapa)) {

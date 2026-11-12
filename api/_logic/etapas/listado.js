@@ -1,7 +1,7 @@
 // ============================================================
 // GET /api/etapas/listado
 // Lista las etapas (opcionalmente filtradas por estado)
-// Incluye auto-cierre instantáneo al cumplirse la hora de cierre (miércoles 18:00h)
+// Incluye auto-cierre instantáneo al cumplirse la hora de cierre (miércoles 23:59h)
 // ============================================================
 const { supabase } = require('../../../lib/supabase');
 const { calcularFechaCierre } = require('../../../lib/stage-automation');

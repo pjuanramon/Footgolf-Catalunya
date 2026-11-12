@@ -121,6 +121,16 @@
 
         <section class="section">
             <div class="container">
+                <div style="max-width: 820px; margin: 0 auto 2rem; background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border: 2px solid #f59e0b; border-left: 6px solid #d97706; border-radius: 1rem; padding: 1.15rem 1.4rem; box-shadow: 0 6px 18px rgba(245, 158, 11, 0.15); display: flex; align-items: center; gap: 1rem; text-align: left;">
+                    <div style="font-size: 2.1rem; line-height: 1; flex-shrink: 0;">⏰</div>
+                    <div style="color: #78350f; font-size: 0.95rem; line-height: 1.5;">
+                        <strong style="font-size: 1.05rem; color: #92400e; text-transform: uppercase; letter-spacing: 0.3px; display: block; margin-bottom: 0.15rem;">
+                            Hora límite de registro: Miércoles previo a la competición a las 23:59h
+                        </strong>
+                        El plazo de inscripción para cada etapa cierra automáticamente el <strong style="color: #92400e; background: #fde68a; padding: 1px 6px; border-radius: 4px; border: 1px solid #f59e0b;">miércoles anterior a la competición a las 23:59h</strong>.
+                    </div>
+                </div>
+
                 <div class="search-container">
                     <h3>Paso 1: Identifícate</h3>
                     <p style="margin-bottom: 1.2rem; color: var(--text-light);">Introduce tus datos para vincular tu inscripción.</p>
@@ -256,12 +266,27 @@
                 }
             };
 
+            function obtenerTextoCierreMiercoles(fechaStr) {
+                if (!fechaStr) return 'Miércoles previo a las 23:59h';
+                const [y, m, d] = String(fechaStr).split('T')[0].split('-').map(Number);
+                if (!y || !m || !d) return 'Miércoles previo a las 23:59h';
+                const fecha = new Date(Date.UTC(y, m - 1, d, 12, 0, 0));
+                const diaSemana = fecha.getUTCDay();
+                const mapRestar = { 0: 4, 1: 5, 2: 6, 3: 7, 4: 1, 5: 2, 6: 3 };
+                const diasRestar = mapRestar[diaSemana] ?? 7;
+                const miercoles = new Date(Date.UTC(y, m - 1, d - diasRestar, 12, 0, 0));
+                const diaNum = miercoles.getUTCDate();
+                const mesCorto = miercoles.toLocaleString('es-ES', { month: 'short', timeZone: 'UTC' }).replace('.', '');
+                return `Miércoles ${diaNum} ${mesCorto} a las 23:59h`;
+            }
+
             stagesList.innerHTML = currentStages.map(etapa => {
                 const esEquipo = etapa.tipo === 'equipos';
                 const esCerrada = etapa.estado === 'cerrada';
                 const esCopa = etapa.id === 100 || (etapa.nombre && etapa.nombre.toLowerCase().includes('copa'));
                 const es2027 = etapa.id >= 300 || (etapa.nombre && etapa.nombre.includes('2027'));
                 const incluyeBalon = esCopa ? copaBalonSelected : false;
+                const textoLimiteMiercoles = obtenerTextoCierreMiercoles(etapa.fecha);
                 
                 let precio = 22;
                 if (esEquipo) {
@@ -298,6 +323,7 @@
                                     <span style="font-size: 0.85rem; color: #cbd5e1;">📍 ${etapa.ubicacion || 'Por determinar'}</span>
                                     ${esCopa ? '<span style="font-size: 0.85rem; color: #ffd700; font-weight: 600;">🏆 Match Play (Cierre: 27 Sep 23:59)</span>' : ''}
                                     ${es2027 && !esCerrada ? '<span style="font-size: 0.85rem; color: #4ade80; font-weight: 700; background: rgba(34, 197, 94, 0.15); padding: 2px 8px; border-radius: 4px; border: 1px solid rgba(34, 197, 94, 0.35);">✨ Temporada 2027 • Cierre: 1 Dic 23:59h</span>' : ''}
+                                    ${!es2027 && !esCopa && !esCerrada ? `<span style="font-size: 0.86rem; color: #fde047; font-weight: 800; background: rgba(245, 158, 11, 0.2); padding: 3px 10px; border-radius: 6px; border: 1px solid rgba(250, 204, 21, 0.5);">⏰ Hora límite: ${textoLimiteMiercoles}</span>` : ''}
                                     <span id="count-${etapa.id}" style="font-size: 0.85rem; color: var(--secondary-color); font-weight: 600;">Cargando inscritos...</span>
                                 </div>
                                 ${etapa.id === 301 ? `<p style="margin: 0.5rem 0 0 0; font-size: 0.85rem; color: #cbd5e1;">Incluye la competición Individual (MPI por divisiones) + Competición de Parejas (sorteo puro 1ª+2ª div). Esta inscripción (${precio}€) cubre íntegramente la <strong>1ª Etapa de la Liga Match Play 2027</strong> como compromiso deportivo.</p>` : ''}
@@ -331,6 +357,7 @@
                                     <button onclick="inscribirse(${etapa.id}, ${esEquipo})" class="btn btn-primary" ${colorStyle} style="padding: 0.8rem 1.5rem;">
                                         Inscribirme (${precio}€) →
                                     </button>
+                                    ${!es2027 && !esCopa ? `<span style="font-size: 0.76rem; color: #fde047; font-weight: 700; text-align: right;">⏰ Cierre: ${textoLimiteMiercoles}</span>` : ''}
                                 `}
                             </div>
                         </div>
