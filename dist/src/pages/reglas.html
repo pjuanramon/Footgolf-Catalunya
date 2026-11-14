@@ -667,6 +667,24 @@
                             </p>
                         </div>
 
+                        <!-- HOYO 15 -->
+                        <div id="hoyo-15" class="hole-rule-card">
+                            <div class="hole-header">
+                                <div class="hole-number-tag">
+                                    <span>🚩 Hoyo 15</span>
+                                </div>
+                                <span class="badge badge-no">Sin Alivio Gratuito</span>
+                            </div>
+                            <h3 style="font-size: 1.25rem; color: var(--text-main); font-weight: 700; margin-top: 0.5rem;">Casa de Madera Próxima al Hoyo</h3>
+                            <div class="rule-detail-box" style="border-left-color: #991b1b;">
+                                <strong>Criterio Oficial:</strong> La casa de madera situada cerca del hoyo <strong>NO se considera objeto artificial</strong> (es parte integrante del campo).
+                            </div>
+                            <p style="color: var(--text-light); font-size: 0.95rem; line-height: 1.6; margin: 0;">
+                                Al no tener consideración de objeto artificial, <strong>NO existe derecho a alivio sin penalización</strong> cuando la casa de madera interfiera como obstrucción directa al balón, en la colocación o postura del jugador (<em>stance</em>) o en el movimiento de golpeo.<br><br>
+                                ⚠️ <strong>Opciones del jugador:</strong> Se deberá jugar el balón tal como reposa o, si decide no jugarlo desde ahí, declarar <strong>balón injugable</strong> (con <strong>1 golpe de penalización</strong>).
+                            </p>
+                        </div>
+
                         <!-- HOYO 16 -->
                         <div class="hole-rule-card">
                             <div class="hole-header">
@@ -856,6 +874,26 @@
             event.target.classList.add('active');
             document.getElementById(tabId).classList.add('active');
         }
+
+        // Abrir pestaña directamente si la URL incluye hash (#local-rules-garriga o #hoyo-15)
+        window.addEventListener('DOMContentLoaded', () => {
+            const hash = window.location.hash;
+            if (hash === '#local-rules-garriga' || hash === '#hoyo-15') {
+                const navButtons = document.querySelectorAll('.rules-nav-btn');
+                const tabContents = document.querySelectorAll('.rules-tab-content');
+                navButtons.forEach(btn => {
+                    btn.classList.toggle('active', btn.getAttribute('onclick')?.includes('local-rules-garriga'));
+                });
+                tabContents.forEach(content => {
+                    content.classList.toggle('active', content.id === 'local-rules-garriga');
+                });
+                if (hash === '#hoyo-15') {
+                    setTimeout(() => {
+                        document.getElementById('hoyo-15')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 150);
+                }
+            }
+        });
 
         // Toggles the visibility of the fallback obstructions section
         function toggleFallback() {
